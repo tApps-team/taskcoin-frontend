@@ -1,0 +1,149 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ *
+ * TaskCoin — dark "liquid glass" theme (violet + teal neon)
+ * shadcn semantic tokens are mapped onto a deep violet glass palette.
+ * ------------------------------------------------------------------ */
+@layer base {
+  :root {
+    --background: 258 32% 6%;
+    --foreground: 260 25% 95%;
+
+    --card: 258 28% 11%;
+    --card-foreground: 260 25% 95%;
+
+    --popover: 258 30% 9%;
+    --popover-foreground: 260 25% 95%;
+
+    --primary: 258 90% 66%;
+    --primary-foreground: 258 45% 8%;
+
+    --secondary: 258 20% 18%;
+    --secondary-foreground: 260 25% 95%;
+
+    --muted: 258 18% 16%;
+    --muted-foreground: 255 14% 66%;
+
+    --accent: 174 72% 56%;
+    --accent-foreground: 200 45% 8%;
+
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 258 40% 24%;
+    --input: 258 25% 20%;
+    --ring: 258 90% 66%;
+
+    --radius: 1.1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    /* Ambient violet/teal glows behind the frosted-glass surfaces */
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(55% 45% at 12% -5%, hsl(258 85% 40% / 0.5), transparent 60%),
+      radial-gradient(45% 40% at 100% 0%, hsl(285 85% 45% / 0.4), transparent 55%),
+      radial-gradient(45% 45% at 90% 100%, hsl(174 70% 40% / 0.18), transparent 60%),
+      radial-gradient(40% 40% at 0% 100%, hsl(258 80% 35% / 0.25), transparent 60%);
+    background-attachment: fixed;
+  }
+  /* Thin, subtle scrollbars that fit the dark glass look */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(258 20% 30% / 0.6);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+  /* Full frosted glass — for major surfaces (cards, sidebar, header, modals) */
+  .glass {
+    background: hsl(258 30% 14% / 0.55);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid hsl(0 0% 100% / 0.08);
+    box-shadow:
+      0 12px 40px -16px hsl(258 60% 4% / 0.8),
+      inset 0 1px 0 0 hsl(0 0% 100% / 0.06);
+  }
+  /* Light glass — for repeated list items (cheaper blur to avoid jank) */
+  .glass-soft {
+    background: hsl(258 30% 16% / 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid hsl(0 0% 100% / 0.07);
+  }
+  .glass-hover {
+    @apply transition-colors duration-200;
+  }
+  .glass-hover:hover {
+    background: hsl(258 30% 20% / 0.55);
+    border-color: hsl(258 90% 70% / 0.35);
+  }
+  .glow-primary {
+    box-shadow: 0 10px 34px -10px hsl(258 90% 60% / 0.55);
+  }
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(100deg, hsl(258 95% 76%), hsl(174 80% 62%));
+  }
+  .ring-hairline {
+    box-shadow: inset 0 0 0 1px hsl(0 0% 100% / 0.06);
+  }
+}
+
+/* TipTap rendered content */
+.tiptap {
+  @apply text-foreground/90 leading-relaxed;
+}
+.tiptap:focus {
+  outline: none;
+}
+.tiptap h2 {
+  @apply text-xl font-bold text-white mt-4 mb-2;
+}
+.tiptap h3 {
+  @apply text-lg font-semibold text-white mt-3 mb-1.5;
+}
+.tiptap p {
+  @apply my-2;
+}
+.tiptap ul {
+  @apply list-disc pl-6 my-2;
+}
+.tiptap ol {
+  @apply list-decimal pl-6 my-2;
+}
+.tiptap a {
+  @apply text-brand-teal underline;
+}
+.tiptap img {
+  @apply rounded-2xl my-3 max-w-full;
+}
+.tiptap a.tt-button {
+  @apply no-underline inline-flex items-center justify-center text-white font-semibold rounded-2xl px-5 py-2.5 my-3;
+  background-image: linear-gradient(100deg, hsl(258 90% 62%), hsl(280 85% 62%));
+  box-shadow: 0 10px 30px -10px hsl(258 90% 55% / 0.7);
+}
+.tiptap .ProseMirror {
+  min-height: inherit;
+}
