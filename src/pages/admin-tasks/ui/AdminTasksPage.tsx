@@ -10,10 +10,10 @@ import {
   type TaskDetail,
 } from '@/entities/task'
 import { TaskFormModal } from '@/features/manage-tasks'
-import { formatCoins } from '@/shared/lib/format'
 import {
   Button,
   Card,
+  CoinAmount,
   SimpleSelect,
   Spinner,
   Table,
@@ -91,7 +91,9 @@ export function AdminTasksPage() {
                   <TableCell>
                     {task.category.icon} {task.category.title}
                   </TableCell>
-                  <TableCell className="text-brand-teal">{formatCoins(task.reward)}</TableCell>
+                  <TableCell>
+                    <CoinAmount value={task.reward} className="text-brand-teal" />
+                  </TableCell>
                   <TableCell>
                     {task.completions_count}
                     {task.max_completions ? ` / ${task.max_completions}` : ''}

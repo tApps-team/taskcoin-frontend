@@ -1,12 +1,12 @@
-import { ClipboardList, CreditCard, History, Hourglass, LogOut, User } from 'lucide-react'
+import { ClipboardList, Coins, CreditCard, History, Hourglass, LogOut, User } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useGetPublicSettingsQuery } from '@/entities/app-settings'
 import { loggedOut, useMeQuery } from '@/entities/session'
-import { coinsToMoney, formatCoins, formatMoney } from '@/shared/lib/format'
+import { coinsToMoney, formatMoney } from '@/shared/lib/format'
 import { cn } from '@/shared/lib/utils'
-import { Button } from '@/shared/ui'
+import { Button, CoinAmount } from '@/shared/ui'
 
 const tabs = [
   { to: '/app', key: 'tasks', Icon: ClipboardList, end: true },
@@ -18,8 +18,9 @@ const tabs = [
 
 function Logo() {
   return (
-    <div className="text-xl font-bold tracking-tight">
-      🍋 <span className="text-gradient">TaskCoin</span>
+    <div className="inline-flex items-center gap-1.5 text-xl font-bold tracking-tight">
+      <Coins className="size-6 text-brand-teal" />
+      <span className="text-gradient">TaskCoin</span>
     </div>
   )
 }
@@ -78,7 +79,7 @@ export function AppLayout() {
             <Logo />
           </div>
           <div className="ml-auto text-right">
-            <div className="text-xl font-bold text-brand-teal drop-shadow">{formatCoins(balance)}</div>
+            <CoinAmount value={balance} className="text-xl font-bold text-brand-teal drop-shadow" />
             {settings && (
               <div className="text-xs text-muted-foreground">≈ {formatMoney(money, settings.currency)}</div>
             )}

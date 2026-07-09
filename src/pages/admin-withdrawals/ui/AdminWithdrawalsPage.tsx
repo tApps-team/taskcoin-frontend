@@ -6,8 +6,8 @@ import {
   useAdminRejectWithdrawalMutation,
   type AdminWithdrawal,
 } from '@/entities/withdrawal'
-import { formatCoins, formatDate, formatMoney, maskCard } from '@/shared/lib/format'
-import { Button, Card, CardContent, EmptyState, Modal, Spinner, StatusBadge, Textarea } from '@/shared/ui'
+import { formatDate, formatMoney, maskCard } from '@/shared/lib/format'
+import { Button, Card, CardContent, CoinAmount, EmptyState, Modal, Spinner, StatusBadge, Textarea } from '@/shared/ui'
 
 const STATUSES = ['', 'pending', 'paid', 'rejected']
 
@@ -45,8 +45,8 @@ export function AdminWithdrawalsPage() {
             <Card key={w.id}>
               <CardContent className="p-4 flex items-center justify-between gap-4 flex-wrap">
                 <div>
-                  <div className="font-semibold">
-                    {formatCoins(w.amount_coins)} → {formatMoney(Number(w.amount_money), w.currency)}
+                  <div className="font-semibold inline-flex items-center gap-1">
+                    <CoinAmount value={w.amount_coins} /> → {formatMoney(Number(w.amount_money), w.currency)}
                   </div>
                   <div className="text-sm text-muted-foreground">
                     {w.user.email} · {maskCard(w.card_number)}

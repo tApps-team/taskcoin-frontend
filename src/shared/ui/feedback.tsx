@@ -12,7 +12,7 @@ export function Spinner() {
   )
 }
 
-export function EmptyState({ emoji = '🍋', text }: { emoji?: string; text: string }) {
+export function EmptyState({ emoji = '🪙', text }: { emoji?: string; text: string }) {
   return (
     <div className="text-center py-16 text-muted-foreground">
       <div className="text-5xl mb-3 opacity-80">{emoji}</div>

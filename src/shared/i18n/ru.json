@@ -1,5 +1,5 @@
 {
-  "app": { "name": "TaskCoin", "currency": "лимоны", "coin": "🍋" },
+  "app": { "name": "TaskCoin", "currency": "coin", "coin": "coin" },
   "nav": {
     "tasks": "Задания",
     "active": "Активные",
@@ -33,7 +33,7 @@
   },
   "auth": {
     "loginTitle": "Вход в TaskCoin",
-    "loginSubtitle": "Выполняй задания — получай лимоны 🍋",
+    "loginSubtitle": "Выполняй задания — получай coin",
     "googleButton": "Войти через Google",
     "googleSoon": "Google-вход появится позже",
     "devLoginTitle": "Быстрый вход (dev)",
@@ -87,7 +87,7 @@
     "balance": "Ваш баланс",
     "rate": "Курс",
     "min": "Минимальная сумма",
-    "amount": "Сумма в лимонах",
+    "amount": "Сумма в coin",
     "cardNumber": "Номер карты (16 цифр)",
     "cardHolder": "Имя держателя",
     "youGet": "Вы получите",
@@ -159,7 +159,7 @@
       "edit": "Редактировать задание",
       "name": "Название",
       "category": "Категория",
-      "reward": "Награда (LMN)",
+      "reward": "Награда (coin)",
       "timeLimit": "Лимит времени (мин)",
       "maxCompletions": "Лимит выполнений",
       "maxCompletionsHint": "пусто = без лимита",
@@ -192,8 +192,8 @@
     },
     "settings": {
       "title": "Настройки",
-      "coinRate": "Курс (LMN за 1000)",
-      "minWithdrawal": "Минимальная сумма вывода (LMN)",
+      "coinRate": "Курс (coin за 1000)",
+      "minWithdrawal": "Минимальная сумма вывода (coin)",
       "currency": "Валюта выплат",
       "saved": "Сохранено"
     },

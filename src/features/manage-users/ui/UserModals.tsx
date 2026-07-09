@@ -6,8 +6,7 @@ import {
   useAdminUpdateUserMutation,
   type User,
 } from '@/entities/user'
-import { formatCoins } from '@/shared/lib/format'
-import { Button, Input, Label, Modal, SimpleSelect } from '@/shared/ui'
+import { Button, CoinAmount, Input, Label, Modal, SimpleSelect } from '@/shared/ui'
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -131,8 +130,8 @@ export function BalanceModal({ user, onClose }: { user: User; onClose: () => voi
   return (
     <Modal title={t('admin.users.adjustBalance')} onClose={onClose}>
       <div className="space-y-3">
-        <div className="text-muted-foreground text-sm">
-          {user.email} · {formatCoins(user.balance)}
+        <div className="text-muted-foreground text-sm flex items-center gap-1.5 flex-wrap">
+          {user.email} · <CoinAmount value={user.balance} />
         </div>
         <Field label={t('admin.users.adjustAmount')}>
           <Input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="+100 / -50" />

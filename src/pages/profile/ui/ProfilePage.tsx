@@ -4,8 +4,7 @@ import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { loggedOut, useMeQuery } from '@/entities/session'
 import { useGetMyStatsQuery } from '@/entities/user'
-import { formatCoins } from '@/shared/lib/format'
-import { Avatar, AvatarFallback, AvatarImage, Button, Card, CardContent, Spinner } from '@/shared/ui'
+import { Avatar, AvatarFallback, AvatarImage, Button, Card, CardContent, CoinAmount, Spinner } from '@/shared/ui'
 
 export function ProfilePage() {
   const { t } = useTranslation()
@@ -41,9 +40,9 @@ export function ProfilePage() {
       </Card>
 
       <div className="grid grid-cols-3 gap-3 mb-6">
-        <Stat label={t('profile.totalEarned')} value={formatCoins(stats?.total_earned || 0)} />
-        <Stat label={t('profile.completedTasks')} value={String(stats?.completed_tasks ?? 0)} />
-        <Stat label={t('profile.balance')} value={formatCoins(me.balance)} />
+        <Stat label={t('profile.totalEarned')} value={<CoinAmount value={stats?.total_earned || 0} />} />
+        <Stat label={t('profile.completedTasks')} value={stats?.completed_tasks ?? 0} />
+        <Stat label={t('profile.balance')} value={<CoinAmount value={me.balance} />} />
       </div>
 
       <Button variant="secondary" className="w-full" onClick={logout}>
@@ -53,11 +52,11 @@ export function ProfilePage() {
   )
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <Card>
       <CardContent className="p-4 text-center">
-        <div className="text-brand-teal font-bold text-lg break-words">{value}</div>
+        <div className="text-brand-teal font-bold text-lg break-words flex justify-center">{value}</div>
         <div className="text-xs text-muted-foreground mt-1">{label}</div>
       </CardContent>
     </Card>

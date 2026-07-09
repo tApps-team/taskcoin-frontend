@@ -6,8 +6,8 @@ import {
   useAdminRejectMutation,
   type AdminSubmission,
 } from '@/entities/submission'
-import { formatCoins, formatDate } from '@/shared/lib/format'
-import { Button, Card, CardContent, Modal, StatusBadge, Textarea } from '@/shared/ui'
+import { formatDate } from '@/shared/lib/format'
+import { Button, Card, CardContent, CoinAmount, Modal, StatusBadge, Textarea } from '@/shared/ui'
 
 export function SubmissionCard({ submission }: { submission: AdminSubmission }) {
   const { t } = useTranslation()
@@ -26,8 +26,8 @@ export function SubmissionCard({ submission }: { submission: AdminSubmission }) 
         <div className="flex items-center justify-between mb-2">
           <div>
             <div className="font-semibold text-foreground">{s.task.title}</div>
-            <div className="text-sm text-muted-foreground">
-              {s.user.email} · {formatCoins(s.reward_snapshot)}
+            <div className="text-sm text-muted-foreground flex items-center gap-1.5 flex-wrap">
+              {s.user.email} · <CoinAmount value={s.reward_snapshot} />
             </div>
           </div>
           <StatusBadge status={s.status} />

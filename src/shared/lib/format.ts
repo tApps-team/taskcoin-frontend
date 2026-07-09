@@ -1,6 +1,6 @@
 // Currency + formatting helpers shared across the app.
 
-const MONEY_PER_UNIT = 1000 // coin_rate is "LMN per 1000 currency units"
+const MONEY_PER_UNIT = 1000 // coin_rate is "coins per 1000 currency units"
 
 export function coinsToMoney(coins: number | string, coinRate: number | string): number {
   const c = Number(coins)
@@ -8,9 +8,10 @@ export function coinsToMoney(coins: number | string, coinRate: number | string):
   return (c / rate) * MONEY_PER_UNIT
 }
 
+// Formats the numeric amount only. Render the coin icon via <CoinAmount>.
 export function formatCoins(value: number | string): string {
   const n = Number(value)
-  return `${n.toLocaleString('ru-RU', { maximumFractionDigits: 2 })} 🍋`
+  return n.toLocaleString('ru-RU', { maximumFractionDigits: 2 })
 }
 
 export function formatMoney(value: number, currency = 'RUB'): string {

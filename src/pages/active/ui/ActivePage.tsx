@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useGetMySubmissionsQuery } from '@/entities/submission'
-import { formatCoins } from '@/shared/lib/format'
 import { useCountdown } from '@/shared/lib/useCountdown'
-import { EmptyState, Spinner, StatusBadge } from '@/shared/ui'
+import { CoinAmount, EmptyState, Spinner, StatusBadge } from '@/shared/ui'
 
 function Row({ deadline, status }: { deadline: string; status: string }) {
   const { t } = useTranslation()
@@ -38,7 +37,7 @@ export function ActivePage() {
               <div className="glass-soft glass-hover rounded-2xl p-4 flex items-center justify-between">
                 <div>
                   <div className="font-semibold">{s.task.title}</div>
-                  <div className="text-brand-teal text-sm">{formatCoins(s.reward_snapshot)}</div>
+                  <CoinAmount value={s.reward_snapshot} className="text-brand-teal text-sm" />
                 </div>
                 <Row deadline={s.deadline_at} status={s.status} />
               </div>

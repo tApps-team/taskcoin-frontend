@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGetMySubmissionsQuery } from '@/entities/submission'
-import { formatCoins, formatDate } from '@/shared/lib/format'
-import { Button, Card, CardContent, EmptyState, Spinner, StatusBadge } from '@/shared/ui'
+import { formatDate } from '@/shared/lib/format'
+import { Button, Card, CardContent, CoinAmount, EmptyState, Spinner, StatusBadge } from '@/shared/ui'
 
 const STATUSES = ['', 'approved', 'rejected', 'expired'] as const
 
@@ -46,7 +46,7 @@ export function HistoryPage() {
                   <StatusBadge status={s.status} />
                 </div>
                 <div className="flex items-center justify-between mt-1 text-sm">
-                  <span className="text-brand-teal">{formatCoins(s.reward_snapshot)}</span>
+                  <CoinAmount value={s.reward_snapshot} className="text-brand-teal" />
                   <span className="text-muted-foreground">
                     {formatDate(s.reviewed_at || s.submitted_at || s.started_at)}
                   </span>

@@ -1,3 +1,4 @@
+import { Coins } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
@@ -30,7 +31,7 @@ export function LoginPage() {
     <div className="min-h-full flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center items-center">
-          <div className="text-5xl mb-1 animate-float">🍋</div>
+          <Coins className="size-12 mb-1 text-brand-teal animate-float" />
           <CardTitle className="text-2xl text-gradient">{t('auth.loginTitle')}</CardTitle>
           <p className="text-muted-foreground">{t('auth.loginSubtitle')}</p>
         </CardHeader>

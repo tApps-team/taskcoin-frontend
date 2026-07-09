@@ -3,8 +3,8 @@ import { useGetPublicSettingsQuery } from '@/entities/app-settings'
 import { useMeQuery } from '@/entities/session'
 import { useGetMyWithdrawalsQuery } from '@/entities/withdrawal'
 import { WithdrawForm } from '@/features/create-withdrawal'
-import { formatCoins, formatDate, formatMoney, maskCard } from '@/shared/lib/format'
-import { Card, CardContent, EmptyState, Spinner, StatusBadge } from '@/shared/ui'
+import { formatDate, formatMoney, maskCard } from '@/shared/lib/format'
+import { Card, CardContent, CoinAmount, EmptyState, Spinner, StatusBadge } from '@/shared/ui'
 
 export function WithdrawPage() {
   const { t } = useTranslation()
@@ -14,7 +14,7 @@ export function WithdrawPage() {
 
   const balance = me ? Number(me.balance) : 0
   const currency = settings?.currency || 'RUB'
-  const minCoins = settings ? Number(settings.min_withdrawal_coins) : 5000
+  const minCoins = settings ? Number(settings.min_withdrawal_coins) : 10
 
   return (
     <div>
@@ -24,14 +24,14 @@ export function WithdrawPage() {
         <CardContent className="p-5 grid grid-cols-2 gap-3 text-sm">
           <div>
             <div className="text-muted-foreground">{t('withdraw.balance')}</div>
-            <div className="text-brand-teal font-bold text-lg">{formatCoins(balance)}</div>
+            <CoinAmount value={balance} className="text-brand-teal font-bold text-lg" />
           </div>
           <div>
             <div className="text-muted-foreground">{t('withdraw.min')}</div>
-            <div className="font-semibold">{formatCoins(minCoins)}</div>
+            <CoinAmount value={minCoins} className="font-semibold" />
           </div>
-          <div className="col-span-2 text-muted-foreground">
-            {t('withdraw.rate')}: 100 🍋 = {formatMoney(1000, currency)}
+          <div className="col-span-2 text-muted-foreground inline-flex items-center gap-1">
+            {t('withdraw.rate')}: <CoinAmount value={100} /> = {formatMoney(1000, currency)}
           </div>
         </CardContent>
       </Card>
@@ -51,7 +51,7 @@ export function WithdrawPage() {
             <Card key={w.id}>
               <CardContent className="p-4 flex items-center justify-between">
                 <div>
-                  <div className="font-semibold">{formatCoins(w.amount_coins)}</div>
+                  <CoinAmount value={w.amount_coins} className="font-semibold" />
                   <div className="text-sm text-muted-foreground">
                     {formatMoney(Number(w.amount_money), w.currency)} · {maskCard(w.card_number)}
                   </div>

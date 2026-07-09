@@ -1,13 +1,13 @@
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Coins, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAdminDeleteUserMutation, useAdminGetUsersQuery, type User } from '@/entities/user'
 import { BalanceModal, CreateUserModal, EditUserModal } from '@/features/manage-users'
-import { formatCoins } from '@/shared/lib/format'
 import {
   Badge,
   Button,
   Card,
+  CoinAmount,
   Input,
   Spinner,
   Table,
@@ -73,15 +73,17 @@ export function AdminUsersPage() {
                   <TableCell>
                     {u.role === 'super_admin' ? t('admin.users.roleAdmin') : t('admin.users.roleUser')}
                   </TableCell>
-                  <TableCell className="text-brand-teal">{formatCoins(u.balance)}</TableCell>
+                  <TableCell>
+                    <CoinAmount value={u.balance} className="text-brand-teal" />
+                  </TableCell>
                   <TableCell>{u.is_blocked && <Badge variant="destructive">blocked</Badge>}</TableCell>
                   <TableCell>
                     <div className="flex gap-1.5">
                       <Button size="sm" variant="secondary" onClick={() => setEditUser(u)}>
                         {t('common.edit')}
                       </Button>
-                      <Button size="sm" variant="secondary" onClick={() => setBalanceUser(u)}>
-                        🍋
+                      <Button size="sm" variant="secondary" onClick={() => setBalanceUser(u)} title={t('admin.users.adjustBalance')}>
+                        <Coins />
                       </Button>
                       <Button
                         size="sm"

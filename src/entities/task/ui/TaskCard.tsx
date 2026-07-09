@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import type { TaskCard as TaskCardType } from '@/shared/api/types'
-import { formatCoins } from '@/shared/lib/format'
-import { Badge, StatusBadge } from '@/shared/ui'
+import { Badge, CoinAmount, StatusBadge } from '@/shared/ui'
 
 // Light-glass card for the tasks grid (cheaper blur — avoids list jank).
 export function TaskCard({ task }: { task: TaskCardType }) {
@@ -17,9 +16,7 @@ export function TaskCard({ task }: { task: TaskCardType }) {
         <h3 className="font-semibold leading-snug group-hover:text-white transition-colors">
           {task.title}
         </h3>
-        <div className="mt-auto flex items-center gap-1.5 text-brand-teal font-bold text-lg">
-          {formatCoins(task.reward)}
-        </div>
+        <CoinAmount value={task.reward} className="mt-auto text-brand-teal font-bold text-lg" />
       </div>
     </Link>
   )

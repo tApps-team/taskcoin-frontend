@@ -20,7 +20,7 @@ export function WithdrawForm() {
   const balance = me ? Number(me.balance) : 0
   const coinRate = settings ? Number(settings.coin_rate) : 100
   const currency = settings?.currency || 'RUB'
-  const minCoins = settings ? Number(settings.min_withdrawal_coins) : 5000
+  const minCoins = settings ? Number(settings.min_withdrawal_coins) : 10
   const amountNum = Number(amount) || 0
   const youGet = coinsToMoney(amountNum, coinRate)
 

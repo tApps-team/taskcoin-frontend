@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
 import { TaskContent, useGetTaskQuery } from '@/entities/task'
 import { TaskWork } from '@/features/task-work'
-import { formatCoins } from '@/shared/lib/format'
-import { Badge, Card, CardContent, Spinner } from '@/shared/ui'
+import { Badge, Card, CardContent, CoinAmount, Spinner } from '@/shared/ui'
 
 export function TaskDetailsPage() {
   const { t } = useTranslation()
@@ -26,7 +25,7 @@ export function TaskDetailsPage() {
             <Badge variant="secondary">
               {task.category.icon} {task.category.title}
             </Badge>
-            <span className="text-brand-teal font-bold text-xl">{formatCoins(task.reward)}</span>
+            <CoinAmount value={task.reward} className="text-brand-teal font-bold text-xl" />
           </div>
           <h1 className="text-2xl font-bold mb-3">{task.title}</h1>
 

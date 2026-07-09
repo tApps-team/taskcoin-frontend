@@ -7,10 +7,10 @@ import {
   useAdminGetTaskSubmissionsQuery,
 } from '@/entities/task'
 import { SubmissionCard } from '@/features/review-submission'
-import { formatCoins } from '@/shared/lib/format'
 import {
   Card,
   CardContent,
+  CoinAmount,
   EmptyState,
   Spinner,
   StatusBadge,
@@ -37,7 +37,7 @@ export function AdminTaskDetailsPage() {
       <div className="flex items-center justify-between mt-2 mb-4 gap-3 flex-wrap">
         <h1 className="text-2xl font-bold">{task.title}</h1>
         <div className="flex items-center gap-3">
-          <span className="text-brand-teal font-bold">{formatCoins(task.reward)}</span>
+          <CoinAmount value={task.reward} className="text-brand-teal font-bold" />
           <StatusBadge status={task.status} />
         </div>
       </div>
