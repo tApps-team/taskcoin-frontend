@@ -1,10 +1,12 @@
+import { motion, useReducedMotion } from 'framer-motion'
 import { ClipboardList, Coins, CreditCard, History, Hourglass, LogOut, User } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useGetPublicSettingsQuery } from '@/entities/app-settings'
 import { loggedOut, useMeQuery } from '@/entities/session'
 import { coinsToMoney, formatMoney } from '@/shared/lib/format'
+import { pageTransition } from '@/shared/lib/motion'
 import { cn } from '@/shared/lib/utils'
 import { Button, CoinAmount } from '@/shared/ui'
 
@@ -29,6 +31,8 @@ export function AppLayout() {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const reduce = useReducedMotion()
+  const location = useLocation()
   const { data: me } = useMeQuery()
   const { data: settings } = useGetPublicSettingsQuery()
 
@@ -87,7 +91,13 @@ export function AppLayout() {
         </header>
 
         <main className="flex-1 p-4 pb-28 md:pb-6 max-w-3xl w-full mx-auto">
-          <Outlet />
+          {reduce ? (
+            <Outlet />
+          ) : (
+            <motion.div key={location.pathname} variants={pageTransition} initial="hidden" animate="show">
+              <Outlet />
+            </motion.div>
+          )}
         </main>
       </div>
 

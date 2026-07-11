@@ -61,17 +61,6 @@
       radial-gradient(40% 40% at 0% 100%, hsl(258 80% 35% / 0.25), transparent 60%);
     background-attachment: fixed;
   }
-  /* Thin, subtle scrollbars that fit the dark glass look */
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: hsl(258 20% 30% / 0.6);
-    border-radius: 9999px;
-    border: 2px solid transparent;
-    background-clip: content-box;
-  }
 }
 
 @layer components {

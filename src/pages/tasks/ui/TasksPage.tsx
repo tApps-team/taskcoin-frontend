@@ -1,11 +1,14 @@
 import { useState } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { useGetCategoriesQuery } from '@/entities/category'
 import { TaskCard, useGetTasksQuery } from '@/entities/task'
-import { EmptyState, Input, SimpleSelect, Spinner } from '@/shared/ui'
+import { EmptyState, Input, SimpleSelect, TaskCardSkeleton } from '@/shared/ui'
+import { listContainer, listItem } from '@/shared/lib/motion'
 
 export function TasksPage() {
   const { t } = useTranslation()
+  const reduce = useReducedMotion()
   const [category, setCategory] = useState('')
   const [sort, setSort] = useState('newest')
   const [search, setSearch] = useState('')
@@ -38,20 +41,45 @@ export function TasksPage() {
           className="flex-1 min-w-[160px]"
           placeholder={t('tasks.searchPlaceholder')}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            const v = e.target.value
+            setSearch(v)
+            if (v) {
+              setCategory('')
+              setSort('newest')
+            }
+          }}
         />
       </div>
 
       {isLoading ? (
-        <Spinner />
+        <div className="grid gap-3 sm:grid-cols-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <TaskCardSkeleton key={i} />
+          ))}
+        </div>
       ) : !data || data.items.length === 0 ? (
         <EmptyState text={t('tasks.empty')} />
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {data.items.map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
-        </div>
+        <motion.div
+          className="grid gap-3 sm:grid-cols-2"
+          variants={reduce ? undefined : listContainer}
+          initial={reduce ? undefined : 'hidden'}
+          animate={reduce ? undefined : 'show'}
+        >
+          <AnimatePresence mode="popLayout">
+            {data.items.map((task) => (
+              <motion.div
+                key={task.id}
+                layout={!reduce}
+                variants={reduce ? undefined : listItem}
+                exit={reduce ? undefined : 'exit'}
+              >
+                <TaskCard task={task} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       )}
     </div>
   )

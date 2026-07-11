@@ -1,13 +1,16 @@
 import { useState } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { useGetMySubmissionsQuery } from '@/entities/submission'
 import { formatDate } from '@/shared/lib/format'
-import { Button, Card, CardContent, CoinAmount, EmptyState, Spinner, StatusBadge } from '@/shared/ui'
+import { listContainer, listItem } from '@/shared/lib/motion'
+import { Button, Card, CardContent, CoinAmount, EmptyState, ListRowSkeleton, StatusBadge } from '@/shared/ui'
 
 const STATUSES = ['', 'approved', 'rejected', 'expired'] as const
 
 export function HistoryPage() {
   const { t } = useTranslation()
+  const reduce = useReducedMotion()
   const [status, setStatus] = useState('')
   const { data, isLoading } = useGetMySubmissionsQuery({ status: status || undefined, limit: 100 })
 
@@ -33,33 +36,51 @@ export function HistoryPage() {
       </div>
 
       {isLoading ? (
-        <Spinner />
+        <div className="space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <ListRowSkeleton key={i} />
+          ))}
+        </div>
       ) : items.length === 0 ? (
         <EmptyState emoji="🕓" text={t('history.empty')} />
       ) : (
-        <div className="space-y-3">
-          {items.map((s) => (
-            <Card key={s.id}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div className="font-semibold">{s.task.title}</div>
-                  <StatusBadge status={s.status} />
-                </div>
-                <div className="flex items-center justify-between mt-1 text-sm">
-                  <CoinAmount value={s.reward_snapshot} className="text-brand-teal" />
-                  <span className="text-muted-foreground">
-                    {formatDate(s.reviewed_at || s.submitted_at || s.started_at)}
-                  </span>
-                </div>
-                {s.status === 'rejected' && s.reviewer_comment && (
-                  <div className="mt-2 text-sm text-red-300 bg-destructive/10 rounded-xl px-3 py-2">
-                    {t('history.rejectedReason')}: {s.reviewer_comment}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <motion.div
+          className="space-y-3"
+          variants={reduce ? undefined : listContainer}
+          initial={reduce ? undefined : 'hidden'}
+          animate={reduce ? undefined : 'show'}
+        >
+          <AnimatePresence mode="popLayout">
+            {items.map((s) => (
+              <motion.div
+                key={s.id}
+                layout={!reduce}
+                variants={reduce ? undefined : listItem}
+                exit={reduce ? undefined : 'exit'}
+              >
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="font-semibold">{s.task.title}</div>
+                      <StatusBadge status={s.status} />
+                    </div>
+                    <div className="flex items-center justify-between mt-1 text-sm">
+                      <CoinAmount value={s.reward_snapshot} className="text-brand-teal" />
+                      <span className="text-muted-foreground">
+                        {formatDate(s.reviewed_at || s.submitted_at || s.started_at)}
+                      </span>
+                    </div>
+                    {s.status === 'rejected' && s.reviewer_comment && (
+                      <div className="mt-2 text-sm text-red-300 bg-destructive/10 rounded-xl px-3 py-2">
+                        {t('history.rejectedReason')}: {s.reviewer_comment}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
       )}
     </div>
   )

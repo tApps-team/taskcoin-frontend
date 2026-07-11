@@ -95,8 +95,11 @@
     "historyTitle": "История заявок",
     "empty": "Заявок пока нет",
     "amountMoney": "Сумма",
-    "belowMin": "Сумма меньше минимума",
-    "aboveBalance": "Недостаточно средств"
+    "belowMin": "Минимум {{min}}",
+    "aboveBalance": "Недостаточно средств",
+    "amountInvalid": "Введите сумму",
+    "cardInvalid": "Введите 16 цифр карты",
+    "holderInvalid": "Минимум 3 символа"
   },
   "profile": {
     "title": "Профиль",
