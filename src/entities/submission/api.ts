@@ -37,7 +37,7 @@ export const submissionApi = baseApi.injectEndpoints({
     // admin
     adminGetSubmissions: b.query<
       Paginated<AdminSubmission>,
-      { status?: string; limit?: number; offset?: number } | void
+      { status?: string; search?: string; sort?: string; limit?: number; offset?: number } | void
     >({
       query: (params) => ({ url: '/admin/submissions', params: params || undefined }),
       providesTags: ['AdminSubmissions'],

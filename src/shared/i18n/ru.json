@@ -174,8 +174,13 @@
       "completions": "Выполнено"
     },
     "submissions": {
-      "title": "Очередь проверки",
+      "title": "Проверка заявок",
       "empty": "Нет откликов на проверке",
+      "emptyFiltered": "Ничего не найдено",
+      "filterAll": "Все",
+      "searchUser": "Поиск по пользователю",
+      "sortNewest": "Сначала новые",
+      "sortOldest": "Сначала старые",
       "user": "Пользователь",
       "task": "Задание",
       "screenshots": "Скриншоты",
