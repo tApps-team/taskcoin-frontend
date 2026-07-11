@@ -45,9 +45,9 @@ export function AppLayout() {
   }
 
   return (
-    <div className="min-h-full flex flex-col md:flex-row">
-      {/* Sidebar (desktop) */}
-      <aside className="hidden md:flex md:flex-col w-64 m-3 mr-0 rounded-3xl glass p-5">
+    <div className="min-h-full md:h-screen md:overflow-hidden flex flex-col md:flex-row">
+      {/* Sidebar (desktop) — fixed full height, only main scrolls */}
+      <aside className="hidden md:flex md:flex-col shrink-0 w-64 m-3 mr-0 rounded-3xl glass p-5 md:overflow-y-auto">
         <div className="mb-8 px-1">
           <Logo />
         </div>
@@ -76,9 +76,9 @@ export function AppLayout() {
         </Button>
       </aside>
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-10 m-3 md:mb-0 rounded-2xl glass px-4 py-3 flex items-center justify-between">
+      {/* Main — the only scrollable region on desktop */}
+      <div className="flex-1 flex flex-col min-w-0 md:min-h-0 md:overflow-hidden">
+        <header className="sticky top-0 z-10 m-3 md:mb-0 rounded-2xl glass px-4 py-3 flex items-center justify-between shrink-0">
           <div className="md:hidden">
             <Logo />
           </div>
@@ -90,15 +90,17 @@ export function AppLayout() {
           </div>
         </header>
 
-        <main className="flex-1 p-4 pb-28 md:pb-6 max-w-3xl w-full mx-auto">
-          {reduce ? (
-            <Outlet />
-          ) : (
-            <motion.div key={location.pathname} variants={pageTransition} initial="hidden" animate="show">
+        <div className="flex-1 md:min-h-0 md:overflow-y-auto">
+          <main className="p-4 pb-28 md:pb-6 max-w-3xl w-full mx-auto">
+            {reduce ? (
               <Outlet />
-            </motion.div>
-          )}
-        </main>
+            ) : (
+              <motion.div key={location.pathname} variants={pageTransition} initial="hidden" animate="show">
+                <Outlet />
+              </motion.div>
+            )}
+          </main>
+        </div>
       </div>
 
       {/* Bottom tab bar (mobile) */}

@@ -35,8 +35,8 @@ export function AdminLayout() {
   }
 
   return (
-    <div className="min-h-full flex p-3 gap-3">
-      <aside className="w-60 rounded-3xl glass flex flex-col p-5 shrink-0">
+    <div className="h-screen overflow-hidden flex p-3 gap-3">
+      <aside className="w-60 rounded-3xl glass flex flex-col p-5 shrink-0 overflow-y-auto">
         <div className="text-lg font-bold mb-8 text-gradient">{t('admin.title')}</div>
         <nav className="space-y-1.5 flex-1">
           {links.map(({ to, key, Icon }) => (
@@ -63,7 +63,7 @@ export function AdminLayout() {
         </Button>
       </aside>
 
-      <main className="flex-1 min-w-0 rounded-3xl glass p-6 overflow-x-auto">
+      <main className="flex-1 min-w-0 min-h-0 rounded-3xl glass p-6 overflow-auto">
         <Outlet />
       </main>
     </div>
