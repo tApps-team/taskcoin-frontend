@@ -1,7 +1,8 @@
-import { CheckSquare, CreditCard, ClipboardList, Users, UserX } from 'lucide-react'
+import { Activity, CheckSquare, CreditCard, Download, Megaphone, Users, UserX, Wallet } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAdminDashboardQuery } from '@/entities/app-settings'
+import { formatMoney } from '@/shared/lib/format'
 import { Card, CardContent, Spinner } from '@/shared/ui'
 
 export function DashboardPage() {
@@ -10,12 +11,15 @@ export function DashboardPage() {
 
   if (isLoading || !data) return <Spinner />
 
-  const cards: { label: string; value: number; Icon: LucideIcon; tint: string }[] = [
+  const cards: { label: string; value: string | number; Icon: LucideIcon; tint: string }[] = [
     { label: t('admin.dashboard.users'), value: data.users_total, Icon: Users, tint: 'from-brand-violet to-brand-purple' },
+    { label: t('admin.dashboard.activeToday'), value: data.users_active_today, Icon: Activity, tint: 'from-brand-teal to-cyan-500' },
     { label: t('admin.dashboard.blocked'), value: data.users_blocked, Icon: UserX, tint: 'from-red-500 to-rose-600' },
-    { label: t('admin.dashboard.activeTasks'), value: data.tasks_active, Icon: ClipboardList, tint: 'from-brand-teal to-cyan-500' },
-    { label: t('admin.dashboard.pendingSubmissions'), value: data.submissions_pending, Icon: CheckSquare, tint: 'from-brand-violet to-brand-teal' },
-    { label: t('admin.dashboard.pendingWithdrawals'), value: data.withdrawals_pending, Icon: CreditCard, tint: 'from-amber-400 to-orange-500' },
+    { label: t('admin.dashboard.activeCampaigns'), value: data.campaigns_active, Icon: Megaphone, tint: 'from-brand-violet to-brand-teal' },
+    { label: t('admin.dashboard.installsToday'), value: data.installs_today, Icon: Download, tint: 'from-emerald-400 to-teal-500' },
+    { label: t('admin.dashboard.pendingReview'), value: data.executions_pending, Icon: CheckSquare, tint: 'from-amber-400 to-orange-500' },
+    { label: t('admin.dashboard.totalBalance'), value: formatMoney(data.total_balance), Icon: Wallet, tint: 'from-brand-violet to-brand-purple' },
+    { label: t('admin.dashboard.aboveThreshold'), value: data.users_above_threshold, Icon: CreditCard, tint: 'from-sky-400 to-blue-500' },
   ]
 
   return (
@@ -33,6 +37,22 @@ export function DashboardPage() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      <h2 className="text-lg font-bold mt-8 mb-3">{t('admin.dashboard.giftStock')}</h2>
+      <div className="flex flex-wrap gap-3">
+        {data.gift_stock.length === 0 ? (
+          <p className="text-muted-foreground text-sm">{t('admin.dashboard.noGiftStock')}</p>
+        ) : (
+          data.gift_stock.map((g) => (
+            <Card key={g.label}>
+              <CardContent className="px-5 py-3 text-center">
+                <div className="text-xl font-bold">{g.count}</div>
+                <div className="text-muted-foreground text-sm">{g.label}</div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   )

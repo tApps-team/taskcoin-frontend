@@ -1,7 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { useGetMySubmissionsQuery } from '@/entities/submission'
+import { useGetMyExecutionsQuery } from '@/entities/execution'
 import { useCountdown } from '@/shared/lib/useCountdown'
 import { listContainer, listItem } from '@/shared/lib/motion'
 import { CoinAmount, EmptyState, ListRowSkeleton, StatusBadge } from '@/shared/ui'
@@ -12,7 +12,7 @@ function Row({ deadline, status }: { deadline: string; status: string }) {
   if (status !== 'in_progress') return <StatusBadge status={status} />
   return (
     <span className={`font-mono font-bold ${expired ? 'text-destructive' : 'text-brand-teal'}`}>
-      {expired ? t('submission.expired') : label}
+      {expired ? t('statuses.expired') : label}
     </span>
   )
 }
@@ -20,7 +20,7 @@ function Row({ deadline, status }: { deadline: string; status: string }) {
 export function ActivePage() {
   const { t } = useTranslation()
   const reduce = useReducedMotion()
-  const { data, isLoading } = useGetMySubmissionsQuery({ limit: 100 }, { pollingInterval: 30000 })
+  const { data, isLoading } = useGetMyExecutionsQuery({ limit: 100 }, { pollingInterval: 30000 })
 
   const items = (data?.items || []).filter(
     (s) => s.status === 'in_progress' || s.status === 'submitted',
@@ -52,10 +52,10 @@ export function ActivePage() {
                 variants={reduce ? undefined : listItem}
                 exit={reduce ? undefined : 'exit'}
               >
-                <Link to={`/app/tasks/${s.task_id}`}>
+                <Link to={`/app/offers/${s.campaign_id}`}>
                   <div className="glass-soft glass-hover rounded-2xl p-4 flex items-center justify-between">
                     <div>
-                      <div className="font-semibold">{s.task.title}</div>
+                      <div className="font-semibold">{s.keyword || s.application_name}</div>
                       <CoinAmount value={s.reward_snapshot} className="text-brand-teal text-sm" />
                     </div>
                     <Row deadline={s.deadline_at} status={s.status} />

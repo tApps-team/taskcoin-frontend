@@ -1,104 +1,120 @@
+import { Check, Copy, ExternalLink } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useGetPublicSettingsQuery } from '@/entities/app-settings'
 import { useMeQuery } from '@/entities/session'
-import { useCreateWithdrawalMutation } from '@/entities/withdrawal'
-import { coinsToMoney, formatMoney } from '@/shared/lib/format'
-import { Button, Card, CardContent, Input, Label } from '@/shared/ui'
+import { useCreateWithdrawalMutation, useGetDenominationsQuery } from '@/entities/withdrawal'
+import type { Withdrawal } from '@/shared/api/types'
+import { formatMoney } from '@/shared/lib/format'
+import { cn } from '@/shared/lib/utils'
+import { Button, Card, CardContent, Spinner } from '@/shared/ui'
 
-type FieldErrors = { amount?: string; card?: string; holder?: string }
+const PLATI_INSTRUCTION =
+  'https://docs.google.com/document/d/16SP70Qaq3i8Oz1llieQdLe_s25SeWuxcgqcUQEitzwI'
+
+function CopyRow({ label, value }: { label: string; value: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button
+      onClick={() => {
+        navigator.clipboard?.writeText(value)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1500)
+      }}
+      className="w-full flex items-center justify-between gap-2 glass-soft rounded-xl px-3 py-2 hover:bg-white/5 transition-colors"
+    >
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="font-mono font-semibold flex items-center gap-2">
+        {value}
+        {copied ? <Check className="size-3.5 text-brand-teal" /> : <Copy className="size-3.5" />}
+      </span>
+    </button>
+  )
+}
 
 export function WithdrawForm() {
   const { t } = useTranslation()
   const { data: me } = useMeQuery()
-  const { data: settings } = useGetPublicSettingsQuery()
-  const [createWithdrawal, { isLoading: creating }] = useCreateWithdrawalMutation()
-
-  const [amount, setAmount] = useState('')
-  const [card, setCard] = useState('')
-  const [holder, setHolder] = useState('')
-  const [errors, setErrors] = useState<FieldErrors>({})
-  const [formError, setFormError] = useState('')
+  const { data: denoms, isLoading } = useGetDenominationsQuery()
+  const [create, { isLoading: creating }] = useCreateWithdrawalMutation()
+  const [selected, setSelected] = useState<string | null>(null)
+  const [issued, setIssued] = useState<Withdrawal | null>(null)
+  const [error, setError] = useState('')
 
   const balance = me ? Number(me.balance) : 0
-  const coinRate = settings ? Number(settings.coin_rate) : 100
-  const currency = settings?.currency || 'RUB'
-  const minCoins = settings ? Number(settings.min_withdrawal_coins) : 10
-  const amountNum = Number(amount) || 0
-  const youGet = coinsToMoney(amountNum, coinRate)
 
-  const validate = (): FieldErrors => {
-    const next: FieldErrors = {}
-    if (!amount || amountNum <= 0) next.amount = t('withdraw.amountInvalid')
-    else if (amountNum < minCoins) next.amount = t('withdraw.belowMin', { min: minCoins })
-    else if (amountNum > balance) next.amount = t('withdraw.aboveBalance')
-    if (card.length !== 16) next.card = t('withdraw.cardInvalid')
-    if (holder.trim().length < 3) next.holder = t('withdraw.holderInvalid')
-    return next
-  }
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setFormError('')
-    const next = validate()
-    setErrors(next)
-    if (Object.keys(next).length > 0) return
+  const submit = async () => {
+    if (!selected) return
+    setError('')
     try {
-      await createWithdrawal({
-        amount_coins: String(amountNum),
-        card_number: card,
-        card_holder: holder.trim(),
-      }).unwrap()
-      setAmount('')
-      setCard('')
-      setHolder('')
-      setErrors({})
-    } catch (err: unknown) {
-      const detail = (err as { data?: { detail?: string } })?.data?.detail
-      setFormError(typeof detail === 'string' ? detail : t('common.error'))
+      const res = await create({ denomination_id: selected }).unwrap()
+      setIssued(res)
+      setSelected(null)
+    } catch (e) {
+      setError((e as { data?: { detail?: string } })?.data?.detail || t('common.error'))
     }
   }
 
-  return (
-    <Card>
-      <CardContent className="p-5">
-        <form onSubmit={submit} className="space-y-3" noValidate>
-          <div>
-            <Label className="mb-1 block">{t('withdraw.amount')}</Label>
-            <Input
-              type="number"
-              inputMode="numeric"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              min={minCoins}
-            />
-            {errors.amount && <p className="text-destructive text-sm mt-1">{errors.amount}</p>}
+  if (issued) {
+    return (
+      <Card className="border-brand-teal/40">
+        <CardContent className="p-5 space-y-3">
+          <div className="text-lg font-bold text-brand-teal">
+            {t('withdraw.issuedTitle')} {issued.denomination_label}
           </div>
-          <div>
-            <Label className="mb-1 block">{t('withdraw.cardNumber')}</Label>
-            <Input
-              inputMode="numeric"
-              value={card}
-              onChange={(e) => setCard(e.target.value.replace(/\D/g, '').slice(0, 16))}
-              placeholder="0000000000000000"
-            />
-            {errors.card && <p className="text-destructive text-sm mt-1">{errors.card}</p>}
-          </div>
-          <div>
-            <Label className="mb-1 block">{t('withdraw.cardHolder')}</Label>
-            <Input value={holder} onChange={(e) => setHolder(e.target.value)} />
-            {errors.holder && <p className="text-destructive text-sm mt-1">{errors.holder}</p>}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {t('withdraw.youGet')}:{' '}
-            <span className="text-brand-teal font-semibold">{formatMoney(youGet, currency)}</span>
-          </div>
-          {formError && <p className="text-destructive text-sm">{formError}</p>}
-          <Button className="w-full" disabled={creating}>
-            {t('withdraw.create')}
+          <p className="text-sm text-muted-foreground">{t('withdraw.issuedHint')}</p>
+          {issued.card_number && <CopyRow label={t('withdraw.cardNumber')} value={issued.card_number} />}
+          {issued.card_code && <CopyRow label={t('withdraw.cardCode')} value={issued.card_code} />}
+          <a href={PLATI_INSTRUCTION} target="_blank" rel="noreferrer">
+            <Button variant="outline" className="w-full">
+              <ExternalLink /> {t('withdraw.instruction')}
+            </Button>
+          </a>
+          <Button variant="secondary" className="w-full" onClick={() => setIssued(null)}>
+            {t('common.done')}
           </Button>
-        </form>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (isLoading) return <Spinner />
+  if (!denoms || denoms.length === 0) {
+    return <p className="text-muted-foreground text-sm">{t('withdraw.noDenominations')}</p>
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-3 gap-2">
+        {denoms.map((d) => {
+          const price = Number(d.price_rub)
+          const affordable = balance >= price
+          const disabled = !d.available || !affordable
+          return (
+            <button
+              key={d.id}
+              disabled={disabled}
+              onClick={() => setSelected(d.id)}
+              className={cn(
+                'rounded-2xl p-4 text-center border transition-all',
+                selected === d.id
+                  ? 'border-brand-violet bg-brand-violet/10'
+                  : 'border-white/10 glass-soft',
+                disabled && 'opacity-40 cursor-not-allowed',
+              )}
+            >
+              <div className="text-lg font-bold">{d.label}</div>
+              <div className="text-xs text-muted-foreground">{formatMoney(price)}</div>
+              {!d.available && <div className="text-[10px] text-amber-300 mt-1">{t('withdraw.outOfStock')}</div>}
+            </button>
+          )
+        })}
+      </div>
+
+      {error && <p className="text-destructive text-sm">{error}</p>}
+
+      <Button variant="teal" className="w-full" disabled={!selected || creating} onClick={submit}>
+        {t('withdraw.submit')}
+      </Button>
+    </div>
   )
 }

@@ -2,9 +2,27 @@ import { LogOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { loggedOut, useMeQuery } from '@/entities/session'
+import { loggedOut, useMeQuery, useUpdateProfileMutation } from '@/entities/session'
 import { useGetMyStatsQuery } from '@/entities/user'
-import { Avatar, AvatarFallback, AvatarImage, Button, Card, CardContent, CoinAmount, Spinner } from '@/shared/ui'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  Card,
+  CardContent,
+  CoinAmount,
+  SimpleSelect,
+  Spinner,
+} from '@/shared/ui'
+
+const COUNTRIES = [
+  { value: 'RU', label: 'Россия' },
+  { value: 'BY', label: 'Беларусь' },
+  { value: 'KZ', label: 'Казахстан' },
+  { value: 'UA', label: 'Украина' },
+  { value: 'UZ', label: 'Узбекистан' },
+]
 
 export function ProfilePage() {
   const { t } = useTranslation()
@@ -12,6 +30,7 @@ export function ProfilePage() {
   const navigate = useNavigate()
   const { data: me, isLoading } = useMeQuery()
   const { data: stats } = useGetMyStatsQuery()
+  const [updateProfile] = useUpdateProfileMutation()
 
   if (isLoading || !me) return <Spinner />
 
@@ -35,15 +54,30 @@ export function ProfilePage() {
           <div>
             <div className="text-lg font-bold">{me.full_name || '—'}</div>
             <div className="text-muted-foreground text-sm">{me.email}</div>
+            <div className="text-muted-foreground text-xs uppercase mt-0.5">
+              {me.platform || t('profile.platformUnknown')}
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-3 gap-3 mb-4">
         <Stat label={t('profile.totalEarned')} value={<CoinAmount value={stats?.total_earned || 0} />} />
-        <Stat label={t('profile.completedTasks')} value={stats?.completed_tasks ?? 0} />
+        <Stat label={t('profile.completedInstalls')} value={stats?.completed_installs ?? 0} />
         <Stat label={t('profile.balance')} value={<CoinAmount value={me.balance} />} />
       </div>
+
+      <Card className="mb-6">
+        <CardContent className="p-4">
+          <div className="text-sm text-muted-foreground mb-2">{t('profile.country')}</div>
+          <SimpleSelect
+            className="w-full"
+            value={me.country || 'RU'}
+            onValueChange={(v) => updateProfile({ country: v })}
+            options={COUNTRIES}
+          />
+        </CardContent>
+      </Card>
 
       <Button variant="secondary" className="w-full" onClick={logout}>
         <LogOut /> {t('auth.logout')}

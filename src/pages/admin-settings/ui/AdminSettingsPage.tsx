@@ -8,15 +8,13 @@ export function AdminSettingsPage() {
   const { data, isLoading } = useAdminGetSettingsQuery()
   const [update, { isLoading: saving }] = useAdminUpdateSettingsMutation()
 
-  const [coinRate, setCoinRate] = useState('')
   const [minWithdrawal, setMinWithdrawal] = useState('')
   const [currency, setCurrency] = useState('')
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     if (data) {
-      setCoinRate(data.coin_rate)
-      setMinWithdrawal(data.min_withdrawal_coins)
+      setMinWithdrawal(data.min_withdrawal)
       setCurrency(data.currency)
     }
   }, [data])
@@ -26,7 +24,7 @@ export function AdminSettingsPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaved(false)
-    await update({ coin_rate: coinRate, min_withdrawal_coins: minWithdrawal, currency }).unwrap()
+    await update({ min_withdrawal: minWithdrawal, currency }).unwrap()
     setSaved(true)
   }
 
@@ -36,10 +34,6 @@ export function AdminSettingsPage() {
       <Card>
         <CardContent className="p-5">
           <form onSubmit={submit} className="space-y-4">
-            <div>
-              <Label className="mb-1 block">{t('admin.settings.coinRate')}</Label>
-              <Input type="number" value={coinRate} onChange={(e) => setCoinRate(e.target.value)} />
-            </div>
             <div>
               <Label className="mb-1 block">{t('admin.settings.minWithdrawal')}</Label>
               <Input type="number" value={minWithdrawal} onChange={(e) => setMinWithdrawal(e.target.value)} />

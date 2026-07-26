@@ -49,9 +49,21 @@
   #root {
     height: 100%;
   }
+  #root {
+    /* Keep content clear of the device notch / status bar in a WebView */
+    padding-top: env(safe-area-inset-top);
+  }
+  html {
+    /* WebView: disable pull-to-refresh / rubber-band scroll and text auto-zoom */
+    overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     @apply bg-background text-foreground antialiased;
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
     /* Ambient violet/teal glows behind the frosted-glass surfaces */
     background-color: hsl(var(--background));
     background-image:

@@ -3,14 +3,24 @@ import type { AuthResponse, User } from '@/shared/api/types'
 
 export const sessionApi = baseApi.injectEndpoints({
   endpoints: (b) => ({
-    devLogin: b.mutation<AuthResponse, { email: string }>({
-      query: (body) => ({ url: '/auth/dev-login', method: 'POST', body }),
+    register: b.mutation<
+      AuthResponse,
+      { email: string; password: string; full_name?: string; platform?: string }
+    >({
+      query: (body) => ({ url: '/auth/register', method: 'POST', body }),
+    }),
+    login: b.mutation<AuthResponse, { email: string; password: string }>({
+      query: (body) => ({ url: '/auth/login', method: 'POST', body }),
     }),
     adminLogin: b.mutation<AuthResponse, { email: string; password: string }>({
       query: (body) => ({ url: '/auth/admin/login', method: 'POST', body }),
     }),
-    googleLogin: b.mutation<AuthResponse, { id_token: string }>({
-      query: (body) => ({ url: '/auth/google', method: 'POST', body }),
+    updateProfile: b.mutation<
+      User,
+      { full_name?: string; platform?: string; country?: string }
+    >({
+      query: (body) => ({ url: '/users/me', method: 'PATCH', body }),
+      invalidatesTags: ['Me'],
     }),
     me: b.query<User, void>({
       query: () => '/auth/me',
@@ -20,8 +30,9 @@ export const sessionApi = baseApi.injectEndpoints({
 })
 
 export const {
-  useDevLoginMutation,
+  useRegisterMutation,
+  useLoginMutation,
   useAdminLoginMutation,
-  useGoogleLoginMutation,
+  useUpdateProfileMutation,
   useMeQuery,
 } = sessionApi

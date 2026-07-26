@@ -1,7 +1,7 @@
-import { useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useGetMySubmissionsQuery } from '@/entities/submission'
+import { useGetMyExecutionsQuery } from '@/entities/execution'
 import { formatDate } from '@/shared/lib/format'
 import { listContainer, listItem } from '@/shared/lib/motion'
 import { Button, Card, CardContent, CoinAmount, EmptyState, ListRowSkeleton, StatusBadge } from '@/shared/ui'
@@ -12,7 +12,7 @@ export function HistoryPage() {
   const { t } = useTranslation()
   const reduce = useReducedMotion()
   const [status, setStatus] = useState('')
-  const { data, isLoading } = useGetMySubmissionsQuery({ status: status || undefined, limit: 100 })
+  const { data, isLoading } = useGetMyExecutionsQuery({ status: status || undefined, limit: 100 })
 
   const items = (data?.items || []).filter((s) =>
     status ? true : ['approved', 'rejected', 'expired'].includes(s.status),
@@ -61,7 +61,7 @@ export function HistoryPage() {
                 <Card>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
-                      <div className="font-semibold">{s.task.title}</div>
+                      <div className="font-semibold">{s.keyword || s.application_name}</div>
                       <StatusBadge status={s.status} />
                     </div>
                     <div className="flex items-center justify-between mt-1 text-sm">

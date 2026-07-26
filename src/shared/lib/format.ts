@@ -1,21 +1,12 @@
-// Currency + formatting helpers shared across the app.
+// Formatting helpers shared across the app. Balance and prices are in rubles.
 
-const MONEY_PER_UNIT = 1000 // coin_rate is "coins per 1000 currency units"
-
-export function coinsToMoney(coins: number | string, coinRate: number | string): number {
-  const c = Number(coins)
-  const rate = Number(coinRate) || 100
-  return (c / rate) * MONEY_PER_UNIT
-}
-
-// Formats the numeric amount only. Render the coin icon via <CoinAmount>.
-export function formatCoins(value: number | string): string {
+export function formatAmount(value: number | string): string {
   const n = Number(value)
   return n.toLocaleString('ru-RU', { maximumFractionDigits: 2 })
 }
 
-export function formatMoney(value: number, currency = 'RUB'): string {
-  return `${value.toLocaleString('ru-RU', { maximumFractionDigits: 2 })} ${currency}`
+export function formatMoney(value: number | string, currency = '₽'): string {
+  return `${formatAmount(value)} ${currency}`
 }
 
 export function formatDate(iso: string | null | undefined): string {
@@ -28,10 +19,4 @@ export function formatDate(iso: string | null | undefined): string {
     hour: '2-digit',
     minute: '2-digit',
   })
-}
-
-export function maskCard(card: string): string {
-  const digits = card.replace(/\D/g, '')
-  if (digits.length < 8) return card
-  return `${digits.slice(0, 4)} •••• •••• ${digits.slice(-4)}`
 }

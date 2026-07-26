@@ -3,9 +3,7 @@ import { ClipboardList, Coins, CreditCard, History, Hourglass, LogOut, User } fr
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { useGetPublicSettingsQuery } from '@/entities/app-settings'
 import { loggedOut, useMeQuery } from '@/entities/session'
-import { coinsToMoney, formatMoney } from '@/shared/lib/format'
 import { pageTransition } from '@/shared/lib/motion'
 import { cn } from '@/shared/lib/utils'
 import { Button, CoinAmount } from '@/shared/ui'
@@ -34,10 +32,8 @@ export function AppLayout() {
   const reduce = useReducedMotion()
   const location = useLocation()
   const { data: me } = useMeQuery()
-  const { data: settings } = useGetPublicSettingsQuery()
 
   const balance = me ? Number(me.balance) : 0
-  const money = settings ? coinsToMoney(balance, settings.coin_rate) : 0
 
   const logout = () => {
     dispatch(loggedOut())
@@ -84,9 +80,6 @@ export function AppLayout() {
           </div>
           <div className="ml-auto text-right">
             <CoinAmount value={balance} className="text-xl font-bold text-brand-teal drop-shadow" />
-            {settings && (
-              <div className="text-xs text-muted-foreground">≈ {formatMoney(money, settings.currency)}</div>
-            )}
           </div>
         </header>
 
@@ -103,8 +96,11 @@ export function AppLayout() {
         </div>
       </div>
 
-      {/* Bottom tab bar (mobile) */}
-      <nav className="md:hidden fixed bottom-3 inset-x-3 rounded-2xl glass flex justify-around py-2 z-20">
+      {/* Bottom tab bar (mobile) — offset above the home indicator */}
+      <nav
+        className="md:hidden fixed inset-x-3 rounded-2xl glass flex justify-around py-2 z-20"
+        style={{ bottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+      >
         {tabs.map(({ to, key, Icon, end }) => (
           <NavLink
             key={to}

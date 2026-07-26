@@ -1,10 +1,12 @@
 import {
   CheckSquare,
-  ClipboardList,
   CreditCard,
+  Gift,
   LayoutDashboard,
   LogOut,
+  Megaphone,
   Settings,
+  Smartphone,
   Users,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -17,8 +19,10 @@ import { Button } from '@/shared/ui'
 const links = [
   { to: '/admin/dashboard', key: 'dashboard', Icon: LayoutDashboard },
   { to: '/admin/users', key: 'users', Icon: Users },
-  { to: '/admin/tasks', key: 'tasks', Icon: ClipboardList },
-  { to: '/admin/submissions', key: 'submissions', Icon: CheckSquare },
+  { to: '/admin/applications', key: 'applications', Icon: Smartphone },
+  { to: '/admin/campaigns', key: 'campaigns', Icon: Megaphone },
+  { to: '/admin/executions', key: 'executions', Icon: CheckSquare },
+  { to: '/admin/gift-codes', key: 'giftCodes', Icon: Gift },
   { to: '/admin/withdrawals', key: 'withdrawals', Icon: CreditCard },
   { to: '/admin/settings', key: 'settings', Icon: Settings },
 ]

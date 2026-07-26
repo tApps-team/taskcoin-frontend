@@ -6,7 +6,7 @@ import { Badge } from './badge'
 const COLORS: Record<string, string> = {
   draft: 'bg-white/5 text-muted-foreground',
   active: 'bg-emerald-400/15 text-emerald-300',
-  deactivated: 'bg-amber-400/15 text-amber-300',
+  paused: 'bg-amber-400/15 text-amber-300',
   completed: 'bg-sky-400/15 text-sky-300',
   archived: 'bg-white/5 text-muted-foreground',
   in_progress: 'bg-brand-violet/20 text-brand-purple',

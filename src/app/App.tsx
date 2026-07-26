@@ -1,19 +1,21 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { RequireAdmin, RequireAuth } from '@/features/auth'
+import { AdminApplicationsPage } from '@/pages/admin-applications'
+import { AdminCampaignDetailsPage } from '@/pages/admin-campaign-details'
+import { AdminCampaignsPage } from '@/pages/admin-campaigns'
+import { AdminExecutionsPage } from '@/pages/admin-executions'
+import { AdminGiftCodesPage } from '@/pages/admin-gift-codes'
 import { AdminLoginPage } from '@/pages/admin-login'
 import { AdminSettingsPage } from '@/pages/admin-settings'
-import { AdminSubmissionsPage } from '@/pages/admin-submissions'
-import { AdminTaskDetailsPage } from '@/pages/admin-task-details'
-import { AdminTasksPage } from '@/pages/admin-tasks'
 import { AdminUsersPage } from '@/pages/admin-users'
 import { AdminWithdrawalsPage } from '@/pages/admin-withdrawals'
 import { DashboardPage } from '@/pages/admin-dashboard'
 import { ActivePage } from '@/pages/active'
 import { HistoryPage } from '@/pages/history'
 import { LoginPage } from '@/pages/login'
+import { OfferDetailsPage } from '@/pages/offer-details'
+import { OffersPage } from '@/pages/offers'
 import { ProfilePage } from '@/pages/profile'
-import { TaskDetailsPage } from '@/pages/task-details'
-import { TasksPage } from '@/pages/tasks'
 import { WithdrawPage } from '@/pages/withdraw'
 import { AdminLayout } from '@/widgets/admin-layout'
 import { AppLayout } from '@/widgets/app-layout'
@@ -27,8 +29,8 @@ export function App() {
 
       <Route element={<RequireAuth />}>
         <Route path="/app" element={<AppLayout />}>
-          <Route index element={<TasksPage />} />
-          <Route path="tasks/:id" element={<TaskDetailsPage />} />
+          <Route index element={<OffersPage />} />
+          <Route path="offers/:id" element={<OfferDetailsPage />} />
           <Route path="active" element={<ActivePage />} />
           <Route path="history" element={<HistoryPage />} />
           <Route path="withdraw" element={<WithdrawPage />} />
@@ -41,9 +43,11 @@ export function App() {
           <Route index element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="users" element={<AdminUsersPage />} />
-          <Route path="tasks" element={<AdminTasksPage />} />
-          <Route path="tasks/:id" element={<AdminTaskDetailsPage />} />
-          <Route path="submissions" element={<AdminSubmissionsPage />} />
+          <Route path="applications" element={<AdminApplicationsPage />} />
+          <Route path="campaigns" element={<AdminCampaignsPage />} />
+          <Route path="campaigns/:id" element={<AdminCampaignDetailsPage />} />
+          <Route path="executions" element={<AdminExecutionsPage />} />
+          <Route path="gift-codes" element={<AdminGiftCodesPage />} />
           <Route path="withdrawals" element={<AdminWithdrawalsPage />} />
           <Route path="settings" element={<AdminSettingsPage />} />
         </Route>

@@ -1,7 +1,8 @@
 export type Role = 'user' | 'super_admin'
-
-export type TaskStatus = 'draft' | 'active' | 'deactivated' | 'completed' | 'archived'
-export type SubmissionStatus =
+export type Platform = 'ios' | 'android'
+export type CampaignType = 'install' | 'install_review'
+export type CampaignStatus = 'draft' | 'active' | 'paused' | 'completed' | 'archived'
+export type ExecutionStatus =
   | 'in_progress'
   | 'submitted'
   | 'approved'
@@ -17,6 +18,8 @@ export interface User {
   role: Role
   balance: string
   is_blocked: boolean
+  platform: Platform | null
+  country: string | null
   created_at: string
 }
 
@@ -26,105 +29,165 @@ export interface AuthResponse {
   user: User
 }
 
-export interface Category {
+// ---- Applications & campaigns (admin) ----
+export interface Application {
   id: string
-  code: string
-  title: string
-  icon: string | null
-}
-
-export interface TaskCard {
-  id: string
-  title: string
-  reward: string
-  status: TaskStatus
-  category: Category
-}
-
-// TipTap JSON document (loosely typed)
-export type TipTapDoc = Record<string, unknown>
-
-export interface TaskDetail {
-  id: string
-  title: string
-  reward: string
-  status: TaskStatus
-  content: TipTapDoc
-  required_screenshots: number
-  time_limit_minutes: number
-  max_completions: number | null
-  completions_count: number
-  category: Category
+  name: string
+  platform: Platform
+  store_url: string
+  store_app_id: string | null
+  icon_url: string | null
+  notes: string | null
   created_at: string
 }
 
+export interface Keyword {
+  id: string
+  keyword: string
+  daily_target: number
+}
+
+export interface Campaign {
+  id: string
+  type: CampaignType
+  price: string
+  daily_limit: number | null
+  repeat_days: number
+  requires_open: boolean
+  requires_rating: boolean
+  requires_review: boolean
+  rating_instruction: string | null
+  review_instruction: string | null
+  allowed_countries: string[]
+  status: CampaignStatus
+  total_target: number | null
+  completed_count: number
+  created_at: string
+  application: Application
+  keywords: Keyword[]
+  today_count: number
+}
+
+// ---- Offers (user feed) ----
+export interface Offer {
+  campaign_id: string
+  application_name: string
+  icon_url: string | null
+  platform: Platform
+  keyword: string | null
+  price: string
+  type: CampaignType
+}
+
+export interface OfferDetail extends Offer {
+  store_url: string
+  requires_open: boolean
+  requires_rating: boolean
+  requires_review: boolean
+  rating_instruction: string | null
+  review_instruction: string | null
+}
+
+// ---- Executions ----
 export interface Screenshot {
   id: string
   file_path: string
   uploaded_at: string
 }
 
-export interface SubmissionTaskInfo {
+export interface Execution {
   id: string
-  title: string
-  reward: string
-}
-
-export interface Submission {
-  id: string
-  task_id: string
+  campaign_id: string
   user_id: string
-  status: SubmissionStatus
+  status: ExecutionStatus
   started_at: string
   deadline_at: string
   submitted_at: string | null
   reviewed_at: string | null
   reviewer_comment: string | null
   reward_snapshot: string
+  application_name: string
+  icon_url: string | null
+  keyword: string | null
   screenshots: Screenshot[]
-  task: SubmissionTaskInfo
 }
 
-export interface AdminSubmission extends Submission {
+export interface AdminExecution extends Execution {
   user: { id: string; email: string; full_name: string | null }
+}
+
+// ---- Gift codes & withdrawals ----
+export interface Denomination {
+  id: string
+  label: string
+  price_rub: string
+  is_active: boolean
+  sort: number
+  available_count: number
+}
+
+export interface DenominationPublic {
+  id: string
+  label: string
+  price_rub: string
+  available: boolean
 }
 
 export interface Withdrawal {
   id: string
   user_id: string
-  amount_coins: string
-  amount_money: string
+  amount: string
   currency: string
-  card_number: string
-  card_holder: string | null
+  denomination_label: string | null
   status: WithdrawalStatus
   admin_comment: string | null
   created_at: string
   processed_at: string | null
+  card_number: string | null
+  card_code: string | null
 }
 
-export interface AdminWithdrawal extends Withdrawal {
+export interface AdminWithdrawal {
+  id: string
+  user_id: string
+  amount: string
+  currency: string
+  denomination_label: string | null
+  status: WithdrawalStatus
+  admin_comment: string | null
+  created_at: string
+  processed_at: string | null
   user: { id: string; email: string; full_name: string | null }
 }
 
+// ---- Misc ----
 export interface PublicSettings {
-  coin_rate: string
-  min_withdrawal_coins: string
   currency: string
+  min_withdrawal: string
 }
 
 export interface UserStats {
   total_earned: string
-  completed_tasks: number
+  completed_installs: number
   balance: string
+}
+
+export interface GiftStockItem {
+  label: string
+  count: number
 }
 
 export interface DashboardStats {
   users_total: number
+  users_active_today: number
   users_blocked: number
-  tasks_active: number
-  submissions_pending: number
-  withdrawals_pending: number
+  campaigns_active: number
+  executions_pending: number
+  withdrawals_total: number
+  installs_today: number
+  total_balance: string
+  users_above_threshold: number
+  gift_stock: GiftStockItem[]
 }
 
 export interface Paginated<T> {

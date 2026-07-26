@@ -3,8 +3,9 @@ export type { SessionState } from './model/slice'
 export { useSession, useIsAuthenticated } from './model/selectors'
 export {
   sessionApi,
-  useDevLoginMutation,
+  useRegisterMutation,
+  useLoginMutation,
   useAdminLoginMutation,
-  useGoogleLoginMutation,
+  useUpdateProfileMutation,
   useMeQuery,
 } from './api'
