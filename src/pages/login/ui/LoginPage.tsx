@@ -9,6 +9,9 @@ import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '@/share
 
 type Mode = 'login' | 'register'
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+const isValidEmail = (v: string) => EMAIL_RE.test(v.trim())
+
 export function LoginPage() {
   const { t } = useTranslation()
   const dispatch = useDispatch()
@@ -22,8 +25,18 @@ export function LoginPage() {
   const [register, { isLoading: registering }] = useRegisterMutation()
   const isLoading = loggingIn || registering
 
+  const emailInvalid = email.length > 0 && !isValidEmail(email)
+
   const submit = async () => {
     setError('')
+    if (!isValidEmail(email)) {
+      setError(t('auth.emailInvalid'))
+      return
+    }
+    if (password.length < 6) {
+      setError(t('auth.passwordShort'))
+      return
+    }
     try {
       const res =
         mode === 'login'
@@ -68,12 +81,20 @@ export function LoginPage() {
                 onChange={(e) => setName(e.target.value)}
               />
             )}
-            <Input
-              type="email"
-              placeholder="email@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <div>
+              <Input
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                placeholder="email@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={emailInvalid ? 'border-destructive focus-visible:ring-destructive' : ''}
+              />
+              {emailInvalid && (
+                <p className="text-destructive text-xs mt-1">{t('auth.emailInvalid')}</p>
+              )}
+            </div>
             <Input
               type="password"
               placeholder={t('auth.password')}
@@ -84,7 +105,7 @@ export function LoginPage() {
             <Button
               variant="teal"
               className="w-full"
-              disabled={isLoading || !email || !password}
+              disabled={isLoading || !isValidEmail(email) || password.length < 6}
               onClick={submit}
             >
               {mode === 'login' ? t('auth.signIn') : t('auth.signUp')}

@@ -38,7 +38,9 @@
     "signIn": "Войти",
     "signUp": "Регистрация",
     "logout": "Выйти",
-    "invalidCredentials": "Неверные данные для входа"
+    "invalidCredentials": "Неверные данные для входа",
+    "emailInvalid": "Введите корректный email",
+    "passwordShort": "Пароль — минимум 6 символов"
   },
   "offers": {
     "title": "Задания",
