@@ -40,7 +40,8 @@
     "logout": "Выйти",
     "invalidCredentials": "Неверные данные для входа",
     "emailInvalid": "Введите корректный email",
-    "passwordShort": "Пароль — минимум 6 символов"
+    "passwordShort": "Пароль — минимум 6 символов",
+    "adminLogin": "Панель управления"
   },
   "offers": {
     "title": "Задания",

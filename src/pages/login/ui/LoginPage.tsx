@@ -48,7 +48,7 @@ export function LoginPage() {
               platform: detectPlatform(),
             }).unwrap()
       dispatch(setCredentials(res))
-      navigate('/app')
+      navigate(res.user.role === 'super_admin' ? '/admin' : '/app')
     } catch (e) {
       const detail = (e as { data?: { detail?: string } })?.data?.detail
       setError(detail || t('auth.invalidCredentials'))

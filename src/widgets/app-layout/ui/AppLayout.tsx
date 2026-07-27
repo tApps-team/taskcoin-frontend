@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { loggedOut, useMeQuery } from '@/entities/session'
+import { baseApi } from '@/shared/api'
 import { pageTransition } from '@/shared/lib/motion'
 import { cn } from '@/shared/lib/utils'
 import { Button, CoinAmount } from '@/shared/ui'
@@ -35,8 +36,9 @@ export function AppLayout() {
 
   const balance = me ? Number(me.balance) : 0
 
-  const logout = () => {
+  const onLogout = () => {
     dispatch(loggedOut())
+    dispatch(baseApi.util.resetApiState())
     navigate('/login')
   }
 
@@ -67,7 +69,7 @@ export function AppLayout() {
             </NavLink>
           ))}
         </nav>
-        <Button variant="secondary" className="mt-4" onClick={logout}>
+        <Button variant="secondary" className="mt-4" onClick={onLogout}>
           <LogOut /> {t('auth.logout')}
         </Button>
       </aside>

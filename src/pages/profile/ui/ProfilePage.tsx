@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { loggedOut, useMeQuery, useUpdateProfileMutation } from '@/entities/session'
+import { baseApi } from '@/shared/api'
 import { useGetMyStatsQuery } from '@/entities/user'
 import {
   Avatar,
@@ -34,8 +35,9 @@ export function ProfilePage() {
 
   if (isLoading || !me) return <Spinner />
 
-  const logout = () => {
+  const onLogout = () => {
     dispatch(loggedOut())
+    dispatch(baseApi.util.resetApiState())
     navigate('/login')
   }
 
@@ -79,7 +81,7 @@ export function ProfilePage() {
         </CardContent>
       </Card>
 
-      <Button variant="secondary" className="w-full" onClick={logout}>
+      <Button variant="secondary" className="w-full" onClick={onLogout}>
         <LogOut /> {t('auth.logout')}
       </Button>
     </div>

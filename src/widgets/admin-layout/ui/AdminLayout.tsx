@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { loggedOut, useMeQuery } from '@/entities/session'
+import { baseApi } from '@/shared/api'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui'
 
@@ -33,8 +34,9 @@ export function AdminLayout() {
   const navigate = useNavigate()
   const { data: me } = useMeQuery()
 
-  const logout = () => {
+  const onLogout = () => {
     dispatch(loggedOut())
+    dispatch(baseApi.util.resetApiState())
     navigate('/admin/login')
   }
 
@@ -62,7 +64,7 @@ export function AdminLayout() {
           ))}
         </nav>
         <div className="text-xs text-muted-foreground mb-2 truncate">{me?.email}</div>
-        <Button variant="secondary" size="sm" onClick={logout}>
+        <Button variant="secondary" size="sm" onClick={onLogout}>
           <LogOut /> {t('auth.logout')}
         </Button>
       </aside>
