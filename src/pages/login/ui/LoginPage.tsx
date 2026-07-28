@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { setCredentials, useLoginMutation, useRegisterMutation } from '@/entities/session'
+import { getErrorMessage } from '@/shared/lib/errors'
 import { detectPlatform } from '@/shared/lib/platform'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '@/shared/ui'
 
@@ -50,8 +51,7 @@ export function LoginPage() {
       dispatch(setCredentials(res))
       navigate(res.user.role === 'super_admin' ? '/admin' : '/app')
     } catch (e) {
-      const detail = (e as { data?: { detail?: string } })?.data?.detail
-      setError(detail || t('auth.invalidCredentials'))
+      setError(getErrorMessage(e, t('auth.invalidCredentials')))
     }
   }
 

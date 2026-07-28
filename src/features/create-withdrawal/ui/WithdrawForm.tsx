@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useMeQuery } from '@/entities/session'
 import { useCreateWithdrawalMutation, useGetDenominationsQuery } from '@/entities/withdrawal'
 import type { Withdrawal } from '@/shared/api/types'
+import { getErrorMessage } from '@/shared/lib/errors'
 import { formatMoney } from '@/shared/lib/format'
 import { cn } from '@/shared/lib/utils'
 import { Button, Card, CardContent, Spinner } from '@/shared/ui'
@@ -50,7 +51,7 @@ export function WithdrawForm() {
       setIssued(res)
       setSelected(null)
     } catch (e) {
-      setError((e as { data?: { detail?: string } })?.data?.detail || t('common.error'))
+      setError(getErrorMessage(e, t('common.error')))
     }
   }
 

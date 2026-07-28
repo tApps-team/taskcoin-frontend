@@ -9,6 +9,7 @@ import {
 import type { TipTapDoc } from '@/shared/api/types'
 import { EMPTY_DOC } from '@/shared/lib/tiptap'
 import { cn } from '@/shared/lib/utils'
+import { getErrorMessage } from '@/shared/lib/errors'
 import { Button, Input, Label, Modal } from '@/shared/ui'
 import { RichTextEditor } from './RichTextEditor'
 
@@ -57,7 +58,7 @@ export function NewsModal({ article, onClose }: { article?: NewsArticle | null; 
       else await create(payload).unwrap()
       onClose()
     } catch (err) {
-      setError((err as { data?: { detail?: string } })?.data?.detail || t('common.error'))
+      setError(getErrorMessage(err, t('common.error')))
     }
   }
 

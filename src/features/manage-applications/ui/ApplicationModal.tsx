@@ -6,6 +6,7 @@ import {
   useAdminUploadImageMutation,
   type Application,
 } from '@/entities/application'
+import { getErrorMessage } from '@/shared/lib/errors'
 import { Button, Input, Label, Modal, SimpleSelect, Textarea } from '@/shared/ui'
 
 export function ApplicationModal({
@@ -55,7 +56,7 @@ export function ApplicationModal({
       else await create(body).unwrap()
       onClose()
     } catch (err) {
-      setError((err as { data?: { detail?: string } })?.data?.detail || t('common.error'))
+      setError(getErrorMessage(err, t('common.error')))
     }
   }
 

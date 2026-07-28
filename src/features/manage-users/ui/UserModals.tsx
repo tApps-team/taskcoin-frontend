@@ -6,6 +6,7 @@ import {
   useAdminUpdateUserMutation,
   type User,
 } from '@/entities/user'
+import { getErrorMessage } from '@/shared/lib/errors'
 import { Button, CoinAmount, Input, Label, Modal, SimpleSelect } from '@/shared/ui'
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -40,7 +41,7 @@ export function CreateUserModal({ onClose }: { onClose: () => void }) {
       await create({ email, full_name: name || null, role, balance, password: password || null }).unwrap()
       onClose()
     } catch (e: unknown) {
-      setError((e as { data?: { detail?: string } })?.data?.detail || t('common.error'))
+      setError(getErrorMessage(e, t('common.error')))
     }
   }
 
@@ -123,7 +124,7 @@ export function BalanceModal({ user, onClose }: { user: User; onClose: () => voi
       await adjust({ id: user.id, amount, comment: comment || undefined }).unwrap()
       onClose()
     } catch (e: unknown) {
-      setError((e as { data?: { detail?: string } })?.data?.detail || t('common.error'))
+      setError(getErrorMessage(e, t('common.error')))
     }
   }
 

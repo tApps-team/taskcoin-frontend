@@ -5,6 +5,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useGetMyExecutionsQuery } from '@/entities/execution'
 import { useGetOfferQuery, useStartOfferMutation } from '@/entities/offer'
 import { OfferWork } from '@/features/offer-work'
+import { getErrorMessage } from '@/shared/lib/errors'
 import { Button, Card, CardContent, CoinAmount, Spinner, StatusBadge } from '@/shared/ui'
 
 export function OfferDetailsPage() {
@@ -35,7 +36,7 @@ export function OfferDetailsPage() {
     try {
       await start({ campaignId: id }).unwrap()
     } catch (e) {
-      setError((e as { data?: { detail?: string } })?.data?.detail || t('common.error'))
+      setError(getErrorMessage(e, t('common.error')))
     }
   }
 

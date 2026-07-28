@@ -7,6 +7,7 @@ import {
   useUploadScreenshotsMutation,
   type Execution,
 } from '@/entities/execution'
+import { getErrorMessage } from '@/shared/lib/errors'
 import { useCountdown } from '@/shared/lib/useCountdown'
 import { Button } from '@/shared/ui'
 
@@ -34,7 +35,7 @@ export function OfferWork({ execution }: { execution: Execution }) {
     try {
       await upload({ executionId: execution.id, files: form }).unwrap()
     } catch (err) {
-      setError((err as { data?: { detail?: string } })?.data?.detail || t('common.error'))
+      setError(getErrorMessage(err, t('common.error')))
     }
     e.target.value = ''
   }
@@ -44,7 +45,7 @@ export function OfferWork({ execution }: { execution: Execution }) {
     try {
       await submit(execution.id).unwrap()
     } catch (err) {
-      setError((err as { data?: { detail?: string } })?.data?.detail || t('common.error'))
+      setError(getErrorMessage(err, t('common.error')))
     }
   }
 

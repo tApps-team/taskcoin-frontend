@@ -7,6 +7,7 @@ import {
   useAdminUpdateCampaignMutation,
   type Campaign,
 } from '@/entities/campaign'
+import { getErrorMessage } from '@/shared/lib/errors'
 import { Button, Input, Label, Modal, SimpleSelect } from '@/shared/ui'
 
 interface KeywordRow {
@@ -76,7 +77,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
       else await create(body).unwrap()
       onClose()
     } catch (err) {
-      setError((err as { data?: { detail?: string } })?.data?.detail || t('common.error'))
+      setError(getErrorMessage(err, t('common.error')))
     }
   }
 
@@ -120,7 +121,14 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
           </div>
           <div>
             <Label>{t('admin.campaigns.repeatDays')}</Label>
-            <Input type="number" value={repeatDays} onChange={(e) => setRepeatDays(e.target.value)} />
+            <Input
+              type="number"
+              step="0.5"
+              min="0"
+              value={repeatDays}
+              onChange={(e) => setRepeatDays(e.target.value)}
+              title={t('admin.campaigns.repeatDaysHint')}
+            />
           </div>
           <div>
             <Label>{t('admin.campaigns.totalTarget')}</Label>
