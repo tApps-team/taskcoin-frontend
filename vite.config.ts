@@ -18,4 +18,32 @@ export default defineConfig({
       '/uploads': { target: 'http://127.0.0.1:8000', changeOrigin: true },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Split big vendors into their own chunks so they download in parallel
+        // and stay cached across deploys (their hash changes only when they do).
+        manualChunks(id: string) {
+          if (!id.includes('node_modules')) return
+          if (id.includes('/framer-motion/')) return 'motion'
+          if (
+            id.includes('/@reduxjs/') ||
+            id.includes('/react-redux/') ||
+            id.includes('/redux/') ||
+            id.includes('/immer/') ||
+            id.includes('/reselect/')
+          )
+            return 'redux'
+          if (
+            id.includes('/react/') ||
+            id.includes('/react-dom/') ||
+            id.includes('/react-router/') ||
+            id.includes('/react-router-dom/') ||
+            id.includes('/scheduler/')
+          )
+            return 'react'
+        },
+      },
+    },
+  },
 })

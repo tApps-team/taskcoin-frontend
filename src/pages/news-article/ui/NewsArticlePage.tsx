@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
 import { useGetArticleQuery } from '@/entities/news'
 import { formatDate } from '@/shared/lib/format'
-import { RichTextContent, Spinner } from '@/shared/ui'
+import { Spinner } from '@/shared/ui'
+import { RichTextContent } from '@/shared/ui/rich-text'
 
 export function NewsArticlePage() {
   const { t } = useTranslation()

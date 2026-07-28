@@ -16,4 +16,6 @@ export * from './skeleton'
 export * from './simple-select'
 export * from './status-badge'
 export * from './coin-amount'
-export * from './rich-text'
+// NOTE: rich-text is intentionally NOT re-exported here — it pulls in TipTap
+// (~heavy). Import it directly from '@/shared/ui/rich-text' where needed so it
+// only lands in lazily-loaded chunks, not the shared bundle every page uses.
