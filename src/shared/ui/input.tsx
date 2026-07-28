@@ -8,16 +8,27 @@ const inputClass =
   "flex h-10 w-full rounded-xl bg-white/5 px-3.5 py-1 text-base transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
 
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, onWheel, ...props }, ref) => {
     const { t } = useTranslation()
     const [revealed, setRevealed] = React.useState(false)
     const isPassword = type === "password"
+    const isNumber = type === "number"
+
+    // Prevent the mouse wheel from changing a number input's value while it is
+    // focused (annoying when scrolling a form). Page scrolling still works.
+    const handleWheel = isNumber
+      ? (e: React.WheelEvent<HTMLInputElement>) => {
+          e.currentTarget.blur()
+          onWheel?.(e)
+        }
+      : onWheel
 
     const input = (
       <input
         type={isPassword && revealed ? "text" : type}
         className={cn(inputClass, isPassword && "pr-10", className)}
         ref={ref}
+        onWheel={handleWheel}
         {...props}
       />
     )

@@ -20,10 +20,16 @@ import {
 
 const COUNTRIES = [
   { value: 'RU', label: 'Россия' },
-  { value: 'BY', label: 'Беларусь' },
-  { value: 'KZ', label: 'Казахстан' },
-  { value: 'UA', label: 'Украина' },
   { value: 'UZ', label: 'Узбекистан' },
+  { value: 'KZ', label: 'Казахстан' },
+  { value: 'BY', label: 'Беларусь' },
+  { value: 'UA', label: 'Украина' },
+  { value: 'KG', label: 'Киргизия' },
+  { value: 'TJ', label: 'Таджикистан' },
+  { value: 'AZ', label: 'Азербайджан' },
+  { value: 'AM', label: 'Армения' },
+  { value: 'GE', label: 'Грузия' },
+  { value: 'MD', label: 'Молдова' },
 ]
 
 export function ProfilePage() {
