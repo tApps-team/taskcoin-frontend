@@ -1,12 +1,14 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { ClipboardList, Coins, CreditCard, History, Hourglass, LogOut, User } from 'lucide-react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { loggedOut, useMeQuery } from '@/entities/session'
+import { loggedOut, useMeQuery, useUpdateProfileMutation } from '@/entities/session'
 import { baseApi } from '@/shared/api'
 import { haptic } from '@/shared/lib/haptics'
 import { pageTransition } from '@/shared/lib/motion'
+import { detectPlatform } from '@/shared/lib/platform'
 import { cn } from '@/shared/lib/utils'
 import { Button, CoinAmount } from '@/shared/ui'
 
@@ -34,6 +36,18 @@ export function AppLayout() {
   const reduce = useReducedMotion()
   const location = useLocation()
   const { data: me } = useMeQuery()
+  const [updateProfile] = useUpdateProfileMutation()
+
+  // Keep the stored OS in sync with the actual device: backfills users who
+  // registered on desktop and updates it if they switch phones. Only writes
+  // when we can detect a mobile OS and it differs from what's saved.
+  useEffect(() => {
+    if (!me) return
+    const detected = detectPlatform()
+    if (detected && detected !== me.platform) {
+      updateProfile({ platform: detected })
+    }
+  }, [me, updateProfile])
 
   const balance = me ? Number(me.balance) : 0
 
