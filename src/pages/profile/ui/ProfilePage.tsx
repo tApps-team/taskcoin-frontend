@@ -1,7 +1,8 @@
-import { LogOut } from 'lucide-react'
+import { Headset, LogOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { useGetPublicSettingsQuery } from '@/entities/app-settings'
 import { loggedOut, useMeQuery, useUpdateProfileMutation } from '@/entities/session'
 import { baseApi } from '@/shared/api'
 import { useGetMyStatsQuery } from '@/entities/user'
@@ -31,6 +32,7 @@ export function ProfilePage() {
   const navigate = useNavigate()
   const { data: me, isLoading } = useMeQuery()
   const { data: stats } = useGetMyStatsQuery()
+  const { data: settings } = useGetPublicSettingsQuery()
   const [updateProfile] = useUpdateProfileMutation()
 
   if (isLoading || !me) return <Spinner />
@@ -81,10 +83,41 @@ export function ProfilePage() {
         </CardContent>
       </Card>
 
+      {settings?.support_telegram_link && (
+        <Card className="mb-6 relative overflow-hidden">
+          <div className="pointer-events-none absolute -right-10 -top-12 size-44 rounded-full bg-gradient-to-br from-brand-violet/30 to-brand-teal/20 blur-3xl" />
+          <CardContent className="p-5 relative flex flex-col sm:flex-row items-center gap-4">
+            <div className="relative shrink-0">
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-brand-violet/60 to-brand-teal/50 blur-2xl" />
+              <div className="relative size-20 rounded-3xl bg-gradient-to-br from-brand-violet to-brand-teal flex items-center justify-center shadow-glow">
+                <Headset className="size-10 text-white" />
+              </div>
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <div className="text-lg font-bold">{t('support.title')}</div>
+              <p className="text-sm text-muted-foreground mt-0.5">{t('support.text')}</p>
+              <Button asChild variant="teal" className="mt-3 w-full sm:w-auto">
+                <a href={settings.support_telegram_link} target="_blank" rel="noreferrer">
+                  <TelegramIcon /> {t('support.contact')}
+                </a>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Button variant="secondary" className="w-full" onClick={onLogout}>
         <LogOut /> {t('auth.logout')}
       </Button>
     </div>
+  )
+}
+
+function TelegramIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
+    </svg>
   )
 }
 

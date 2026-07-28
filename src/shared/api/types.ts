@@ -164,6 +164,7 @@ export interface AdminWithdrawal {
 export interface PublicSettings {
   currency: string
   min_withdrawal: string
+  support_telegram_link: string
 }
 
 export interface UserStats {
