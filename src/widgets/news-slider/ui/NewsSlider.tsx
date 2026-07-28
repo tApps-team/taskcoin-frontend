@@ -18,7 +18,7 @@ export function NewsSlider() {
               : { backgroundColor: n.accent || '#7c5cff' }
           }
         >
-          <div className="relative z-10 font-bold text-white text-sm leading-tight line-clamp-2 [text-shadow:0_1px_10px_rgba(0,0,0,0.65)]">
+          <div className="relative z-10 font-bold text-white text-sm leading-tight line-clamp-2">
             {n.title}
           </div>
         </Link>
