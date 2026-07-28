@@ -2,6 +2,7 @@ import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
+import { haptic } from "@/shared/lib/haptics"
 import { cn } from "@/shared/lib/utils"
 
 const buttonVariants = cva(
@@ -15,9 +16,9 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground shadow hover:bg-destructive/90",
         outline:
-          "border border-white/15 bg-white/5 backdrop-blur hover:bg-white/10 hover:border-white/25",
+          "bg-white/5 backdrop-blur hover:bg-white/10",
         secondary:
-          "border border-white/10 bg-white/5 backdrop-blur text-secondary-foreground hover:bg-white/10",
+          "bg-white/5 backdrop-blur text-secondary-foreground hover:bg-white/10",
         ghost: "hover:bg-white/5 text-foreground",
         link: "text-brand-violet underline-offset-4 hover:underline",
       },
@@ -35,6 +36,9 @@ const buttonVariants = cva(
   }
 )
 
+// Variants that count as "important" actions get a subtle haptic tap.
+const HAPTIC_VARIANTS = new Set([undefined, "default", "teal", "destructive"])
+
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
@@ -42,12 +46,17 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, onClick, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (HAPTIC_VARIANTS.has(variant ?? undefined)) haptic()
+      onClick?.(e)
+    }
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        onClick={handleClick}
         {...props}
       />
     )

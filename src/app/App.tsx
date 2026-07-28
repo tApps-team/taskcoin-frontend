@@ -12,7 +12,9 @@ import { AdminWithdrawalsPage } from '@/pages/admin-withdrawals'
 import { DashboardPage } from '@/pages/admin-dashboard'
 import { ActivePage } from '@/pages/active'
 import { HistoryPage } from '@/pages/history'
+import { AdminNewsPage } from '@/pages/admin-news'
 import { LoginPage } from '@/pages/login'
+import { NewsArticlePage } from '@/pages/news-article'
 import { OfferDetailsPage } from '@/pages/offer-details'
 import { OffersPage } from '@/pages/offers'
 import { ProfilePage } from '@/pages/profile'
@@ -31,6 +33,7 @@ export function App() {
         <Route path="/app" element={<AppLayout />}>
           <Route index element={<OffersPage />} />
           <Route path="offers/:id" element={<OfferDetailsPage />} />
+          <Route path="news/:id" element={<NewsArticlePage />} />
           <Route path="active" element={<ActivePage />} />
           <Route path="history" element={<HistoryPage />} />
           <Route path="withdraw" element={<WithdrawPage />} />
@@ -47,6 +50,7 @@ export function App() {
           <Route path="campaigns" element={<AdminCampaignsPage />} />
           <Route path="campaigns/:id" element={<AdminCampaignDetailsPage />} />
           <Route path="executions" element={<AdminExecutionsPage />} />
+          <Route path="news" element={<AdminNewsPage />} />
           <Route path="gift-codes" element={<AdminGiftCodesPage />} />
           <Route path="withdrawals" element={<AdminWithdrawalsPage />} />
           <Route path="settings" element={<AdminSettingsPage />} />

@@ -190,6 +190,20 @@ export interface DashboardStats {
   gift_stock: GiftStockItem[]
 }
 
+export type TipTapDoc = Record<string, unknown>
+
+export interface NewsArticle {
+  id: string
+  title: string
+  cover_url: string | null
+  accent: string | null
+  body: TipTapDoc
+  is_published: boolean
+  sort: number
+  published_at: string | null
+  created_at: string
+}
+
 export interface Paginated<T> {
   items: T[]
   total: number

@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   LogOut,
   Megaphone,
+  Newspaper,
   Settings,
   Smartphone,
   Users,
@@ -14,6 +15,7 @@ import { useDispatch } from 'react-redux'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { loggedOut, useMeQuery } from '@/entities/session'
 import { baseApi } from '@/shared/api'
+import { haptic } from '@/shared/lib/haptics'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui'
 
@@ -23,6 +25,7 @@ const links = [
   { to: '/admin/applications', key: 'applications', Icon: Smartphone },
   { to: '/admin/campaigns', key: 'campaigns', Icon: Megaphone },
   { to: '/admin/executions', key: 'executions', Icon: CheckSquare },
+  { to: '/admin/news', key: 'news', Icon: Newspaper },
   { to: '/admin/gift-codes', key: 'giftCodes', Icon: Gift },
   { to: '/admin/withdrawals', key: 'withdrawals', Icon: CreditCard },
   { to: '/admin/settings', key: 'settings', Icon: Settings },
@@ -49,6 +52,7 @@ export function AdminLayout() {
             <NavLink
               key={to}
               to={to}
+              onClick={() => haptic()}
               className={({ isActive }) =>
                 cn(
                   'flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-medium transition-all',

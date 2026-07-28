@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { useGetOffersQuery } from '@/entities/offer'
 import { listContainer, listItem } from '@/shared/lib/motion'
 import { Card, CardContent, CoinAmount, EmptyState, ListRowSkeleton } from '@/shared/ui'
+import { NewsSlider } from '@/widgets/news-slider'
 
 export function OffersPage() {
   const { t } = useTranslation()
@@ -13,6 +14,7 @@ export function OffersPage() {
 
   return (
     <div>
+      <NewsSlider />
       <h1 className="text-3xl font-bold mb-5 tracking-tight">{t('offers.title')}</h1>
 
       {isLoading ? (

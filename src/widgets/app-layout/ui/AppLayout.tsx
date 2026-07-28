@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { loggedOut, useMeQuery } from '@/entities/session'
 import { baseApi } from '@/shared/api'
+import { haptic } from '@/shared/lib/haptics'
 import { pageTransition } from '@/shared/lib/motion'
 import { cn } from '@/shared/lib/utils'
 import { Button, CoinAmount } from '@/shared/ui'
@@ -55,6 +56,7 @@ export function AppLayout() {
               key={to}
               to={to}
               end={end}
+              onClick={() => haptic()}
               className={({ isActive }) =>
                 cn(
                   'flex items-center gap-3 px-3.5 py-3 rounded-2xl font-medium transition-all',
@@ -108,6 +110,7 @@ export function AppLayout() {
             key={to}
             to={to}
             end={end}
+            onClick={() => haptic()}
             className={({ isActive }) =>
               cn(
                 'flex flex-col items-center gap-0.5 px-2 py-1 text-[11px] transition-colors',
