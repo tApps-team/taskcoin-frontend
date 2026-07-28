@@ -41,6 +41,8 @@
     "invalidCredentials": "Неверные данные для входа",
     "emailInvalid": "Введите корректный email",
     "passwordShort": "Пароль — минимум 6 символов",
+    "showPassword": "Показать пароль",
+    "hidePassword": "Скрыть пароль",
     "adminLogin": "Панель управления"
   },
   "offers": {

@@ -56,7 +56,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-full flex items-center justify-center p-4">
+    <div className="min-h-[var(--app-min-h)] flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center items-center">
           <Wallet className="size-12 mb-1 text-brand-teal animate-float" />

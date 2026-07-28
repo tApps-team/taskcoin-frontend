@@ -44,7 +44,7 @@ export function AppLayout() {
   }
 
   return (
-    <div className="min-h-full md:h-screen md:overflow-hidden flex flex-col md:flex-row">
+    <div className="min-h-[var(--app-min-h)] md:h-screen md:overflow-hidden flex flex-col md:flex-row">
       {/* Sidebar (desktop) — fixed full height, only main scrolls */}
       <aside className="hidden md:flex md:flex-col shrink-0 w-64 m-3 mr-0 rounded-3xl glass p-5 md:overflow-y-auto">
         <div className="mb-8 px-1">
@@ -78,7 +78,7 @@ export function AppLayout() {
 
       {/* Main — the only scrollable region on desktop */}
       <div className="flex-1 flex flex-col min-w-0 md:min-h-0 md:overflow-hidden">
-        <header className="sticky top-0 z-10 m-3 md:mb-0 rounded-2xl glass px-4 py-3 flex items-center justify-between shrink-0">
+        <header className="px-4 py-3 flex items-center justify-between shrink-0 md:m-3 md:mb-0 md:rounded-2xl md:glass">
           <div className="md:hidden">
             <Logo />
           </div>
@@ -100,10 +100,10 @@ export function AppLayout() {
         </div>
       </div>
 
-      {/* Bottom tab bar (mobile) — offset above the home indicator */}
+      {/* Bottom tab bar (mobile) — edge-to-edge, padded for the home indicator */}
       <nav
-        className="md:hidden fixed inset-x-3 rounded-2xl glass flex justify-around py-2 z-20"
-        style={{ bottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}
+        className="md:hidden fixed inset-x-0 bottom-0 z-20 flex justify-around pt-2 glass border-t border-white/5"
+        style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
       >
         {tabs.map(({ to, key, Icon, end }) => (
           <NavLink

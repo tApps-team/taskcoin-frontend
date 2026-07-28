@@ -27,7 +27,7 @@ export function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-full flex items-center justify-center p-4">
+    <div className="min-h-[var(--app-min-h)] flex items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-gradient">{t('admin.title')}</CardTitle>
