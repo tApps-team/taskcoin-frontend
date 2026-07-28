@@ -11,15 +11,14 @@ export function NewsSlider() {
         <Link
           key={n.id}
           to={`/app/news/${n.id}`}
-          className="relative shrink-0 snap-start w-56 h-20 rounded-lg md:w-64 md:h-24 md:rounded-xl overflow-hidden p-3 flex items-end bg-cover bg-center"
+          className="relative shrink-0 snap-start w-56 h-20 rounded-lg md:w-64 md:h-24 md:rounded-xl overflow-hidden p-3 flex items-end bg-cover bg-center transition hover:brightness-110 active:scale-[0.99]"
           style={
             n.cover_url
               ? { backgroundImage: `url(${n.cover_url})` }
               : { backgroundColor: n.accent || '#7c5cff' }
           }
         >
-          {n.cover_url && <span className="absolute inset-0 bg-black/30 pointer-events-none" />}
-          <div className="relative z-10 font-bold text-white text-sm leading-tight drop-shadow line-clamp-2">
+          <div className="relative z-10 font-bold text-white text-sm leading-tight line-clamp-2 [text-shadow:0_1px_10px_rgba(0,0,0,0.65)]">
             {n.title}
           </div>
         </Link>
