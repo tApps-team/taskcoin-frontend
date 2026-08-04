@@ -1,19 +1,21 @@
-import { Plus, X } from 'lucide-react'
+import { Plus, Star, X } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAdminGetApplicationsQuery } from '@/entities/application'
+import { useAdminGetApplicationsQuery, useAdminUploadImageMutation } from '@/entities/application'
 import {
   useAdminCreateCampaignMutation,
   useAdminUpdateCampaignMutation,
   type Campaign,
 } from '@/entities/campaign'
 import { getErrorMessage } from '@/shared/lib/errors'
-import { Button, Input, Label, Modal, SimpleSelect } from '@/shared/ui'
+import { Button, Input, Label, Modal, SimpleSelect, Textarea } from '@/shared/ui'
 
 interface KeywordRow {
   keyword: string
   daily_target: number
 }
+
+const STARS = [1, 2, 3, 4, 5]
 
 function Check({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -29,6 +31,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
   const { data: apps } = useAdminGetApplicationsQuery()
   const [create, { isLoading: creating }] = useAdminCreateCampaignMutation()
   const [update, { isLoading: updating }] = useAdminUpdateCampaignMutation()
+  const [uploadImage, { isLoading: uploadingInstruction }] = useAdminUploadImageMutation()
 
   const [applicationId, setApplicationId] = useState(campaign?.application.id || '')
   const [type, setType] = useState(campaign?.type || 'install')
@@ -39,8 +42,14 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
   const [requiresOpen, setRequiresOpen] = useState(campaign?.requires_open ?? true)
   const [requiresRating, setRequiresRating] = useState(campaign?.requires_rating ?? false)
   const [requiresReview, setRequiresReview] = useState(campaign?.requires_review ?? false)
-  const [ratingInstruction, setRatingInstruction] = useState(campaign?.rating_instruction || '')
+  const [ratingWeights, setRatingWeights] = useState<Record<string, number>>(
+    () => campaign?.rating_weights ?? {},
+  )
   const [reviewInstruction, setReviewInstruction] = useState(campaign?.review_instruction || '')
+  const [instructionText, setInstructionText] = useState(campaign?.instruction_text || '')
+  const [instructionMedia, setInstructionMedia] = useState<string | null>(
+    campaign?.instruction_media_url || null,
+  )
   const [countries, setCountries] = useState((campaign?.allowed_countries || []).join(', '))
   const [status, setStatus] = useState(campaign?.status || 'active')
   const [keywords, setKeywords] = useState<KeywordRow[]>(
@@ -50,6 +59,23 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
 
   const setKw = (i: number, patch: Partial<KeywordRow>) =>
     setKeywords((rows) => rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r)))
+
+  const setWeight = (star: number, value: string) =>
+    setRatingWeights((w) => ({ ...w, [String(star)]: Math.max(0, Math.min(100, Number(value) || 0)) }))
+
+  const onInstructionImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const form = new FormData()
+    form.append('file', file)
+    try {
+      const res = await uploadImage(form).unwrap()
+      setInstructionMedia(res.url)
+    } catch (err) {
+      setError(getErrorMessage(err, t('common.error')))
+    }
+    e.target.value = ''
+  }
 
   const save = async () => {
     setError('')
@@ -63,8 +89,10 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
       requires_open: requiresOpen,
       requires_rating: requiresRating,
       requires_review: requiresReview,
-      rating_instruction: ratingInstruction || null,
+      rating_weights: requiresRating ? ratingWeights : {},
       review_instruction: reviewInstruction || null,
+      instruction_text: instructionText || null,
+      instruction_media_url: instructionMedia,
       allowed_countries: countries
         .split(',')
         .map((c) => c.trim().toUpperCase())
@@ -146,12 +174,58 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
           <Check label={t('admin.campaigns.requiresOpen')} checked={requiresOpen} onChange={setRequiresOpen} />
           <Check label={t('admin.campaigns.requiresRating')} checked={requiresRating} onChange={setRequiresRating} />
           {requiresRating && (
-            <Input value={ratingInstruction} onChange={(e) => setRatingInstruction(e.target.value)} placeholder={t('admin.campaigns.ratingHint')} />
+            <div className="pl-6 space-y-1.5">
+              <p className="text-xs text-muted-foreground">{t('admin.campaigns.ratingWeightsHint')}</p>
+              {STARS.map((star) => (
+                <div key={star} className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 w-16 text-sm text-amber-400">
+                    {star} <Star className="size-3.5 fill-current" />
+                  </div>
+                  <Input
+                    className="w-24"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={ratingWeights[String(star)] ?? 0}
+                    onChange={(e) => setWeight(star, e.target.value)}
+                  />
+                  <span className="text-sm text-muted-foreground">%</span>
+                </div>
+              ))}
+            </div>
           )}
           <Check label={t('admin.campaigns.requiresReview')} checked={requiresReview} onChange={setRequiresReview} />
           {requiresReview && (
-            <Input value={reviewInstruction} onChange={(e) => setReviewInstruction(e.target.value)} placeholder={t('admin.campaigns.reviewHint')} />
+            <Textarea value={reviewInstruction} onChange={(e) => setReviewInstruction(e.target.value)} placeholder={t('admin.campaigns.reviewHint')} />
           )}
+        </div>
+
+        <div className="space-y-2 border-t border-white/10 pt-3">
+          <div className="font-semibold text-sm">{t('admin.campaigns.instruction')}</div>
+          <p className="text-xs text-muted-foreground">{t('admin.campaigns.instructionHint')}</p>
+          <div className="flex items-center gap-3">
+            {instructionMedia && (
+              <img src={instructionMedia} alt="" className="size-16 rounded-xl object-cover" />
+            )}
+            <label className="text-sm text-brand-teal cursor-pointer">
+              {uploadingInstruction ? t('common.loading') : t('admin.campaigns.instructionImage')}
+              <input type="file" accept="image/*" hidden onChange={onInstructionImage} />
+            </label>
+            {instructionMedia && (
+              <button
+                type="button"
+                className="text-xs text-destructive"
+                onClick={() => setInstructionMedia(null)}
+              >
+                {t('common.delete')}
+              </button>
+            )}
+          </div>
+          <Textarea
+            value={instructionText}
+            onChange={(e) => setInstructionText(e.target.value)}
+            placeholder={t('admin.campaigns.instructionText')}
+          />
         </div>
 
         <div className="space-y-2 border-t border-white/10 pt-3">

@@ -35,7 +35,6 @@ export interface Application {
   name: string
   platform: Platform
   store_url: string
-  store_app_id: string | null
   icon_url: string | null
   notes: string | null
   created_at: string
@@ -56,8 +55,10 @@ export interface Campaign {
   requires_open: boolean
   requires_rating: boolean
   requires_review: boolean
-  rating_instruction: string | null
+  rating_weights: Record<string, number>
   review_instruction: string | null
+  instruction_text: string | null
+  instruction_media_url: string | null
   allowed_countries: string[]
   status: CampaignStatus
   total_target: number | null
@@ -80,12 +81,12 @@ export interface Offer {
 }
 
 export interface OfferDetail extends Offer {
-  store_url: string
   requires_open: boolean
   requires_rating: boolean
   requires_review: boolean
-  rating_instruction: string | null
   review_instruction: string | null
+  instruction_text: string | null
+  instruction_media_url: string | null
 }
 
 // ---- Executions ----
@@ -106,6 +107,7 @@ export interface Execution {
   reviewed_at: string | null
   reviewer_comment: string | null
   reward_snapshot: string
+  assigned_rating: number | null
   application_name: string
   icon_url: string | null
   keyword: string | null

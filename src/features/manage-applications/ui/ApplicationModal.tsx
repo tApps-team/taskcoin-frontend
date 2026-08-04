@@ -1,9 +1,10 @@
+import { Download, Loader2, Smartphone } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   useAdminCreateApplicationMutation,
+  useAdminFetchStoreMetaMutation,
   useAdminUpdateApplicationMutation,
-  useAdminUploadImageMutation,
   type Application,
 } from '@/entities/application'
 import { getErrorMessage } from '@/shared/lib/errors'
@@ -19,7 +20,7 @@ export function ApplicationModal({
   const { t } = useTranslation()
   const [create, { isLoading: creating }] = useAdminCreateApplicationMutation()
   const [update, { isLoading: updating }] = useAdminUpdateApplicationMutation()
-  const [uploadImage, { isLoading: uploading }] = useAdminUploadImageMutation()
+  const [fetchMeta, { isLoading: fetching }] = useAdminFetchStoreMetaMutation()
 
   const [name, setName] = useState(application?.name || '')
   const [platform, setPlatform] = useState(application?.platform || 'android')
@@ -27,19 +28,21 @@ export function ApplicationModal({
   const [iconUrl, setIconUrl] = useState<string | null>(application?.icon_url || null)
   const [notes, setNotes] = useState(application?.notes || '')
   const [error, setError] = useState('')
+  const [metaMsg, setMetaMsg] = useState('')
 
-  const onIcon = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const form = new FormData()
-    form.append('file', file)
+  const pullMeta = async () => {
+    setError('')
+    setMetaMsg('')
+    const url = storeUrl.trim()
+    if (!url) return
     try {
-      const res = await uploadImage(form).unwrap()
-      setIconUrl(res.url)
-    } catch {
-      setError(t('common.error'))
+      const meta = await fetchMeta({ store_url: url }).unwrap()
+      if (meta.icon_url) setIconUrl(meta.icon_url)
+      if (meta.name) setName(meta.name)
+      if (!meta.icon_url && !meta.name) setMetaMsg(t('admin.apps.metaFail'))
+    } catch (err) {
+      setMetaMsg(getErrorMessage(err, t('admin.apps.metaFail')))
     }
-    e.target.value = ''
   }
 
   const save = async () => {
@@ -64,10 +67,6 @@ export function ApplicationModal({
     <Modal title={application ? t('admin.apps.edit') : t('admin.apps.create')} onClose={onClose}>
       <div className="space-y-3">
         <div>
-          <Label>{t('admin.apps.name')}</Label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} />
-        </div>
-        <div>
           <Label>{t('admin.apps.platform')}</Label>
           <SimpleSelect
             className="w-full"
@@ -81,17 +80,34 @@ export function ApplicationModal({
         </div>
         <div>
           <Label>{t('admin.apps.storeUrl')}</Label>
-          <Input value={storeUrl} onChange={(e) => setStoreUrl(e.target.value)} placeholder="https://..." />
+          <div className="flex gap-2">
+            <Input
+              value={storeUrl}
+              onChange={(e) => setStoreUrl(e.target.value)}
+              onBlur={pullMeta}
+              placeholder="https://apps.apple.com/... | https://play.google.com/..."
+            />
+            <Button type="button" variant="secondary" disabled={fetching || !storeUrl.trim()} onClick={pullMeta}>
+              {fetching ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
+              {t('admin.apps.pullMeta')}
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">{t('admin.apps.storeUrlHint')}</p>
+          {metaMsg && <p className="text-xs text-amber-400 mt-1">{metaMsg}</p>}
         </div>
         <div>
-          <Label>{t('admin.apps.icon')}</Label>
+          <Label>{t('admin.apps.name')}</Label>
           <div className="flex items-center gap-3">
-            {iconUrl && <img src={iconUrl} alt="" className="size-12 rounded-xl object-cover" />}
-            <label className="text-sm text-brand-teal cursor-pointer">
-              {uploading ? t('common.loading') : t('admin.apps.uploadIcon')}
-              <input type="file" accept="image/*" hidden onChange={onIcon} />
-            </label>
+            {iconUrl ? (
+              <img src={iconUrl} alt="" className="size-12 rounded-xl object-cover shrink-0" />
+            ) : (
+              <div className="size-12 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
+                <Smartphone className="size-6 text-muted-foreground" />
+              </div>
+            )}
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('admin.apps.name')} />
           </div>
+          <p className="text-xs text-muted-foreground mt-1">{t('admin.apps.iconAuto')}</p>
         </div>
         <div>
           <Label>{t('admin.apps.notes')}</Label>

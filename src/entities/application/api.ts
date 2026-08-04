@@ -22,6 +22,9 @@ export const applicationApi = baseApi.injectEndpoints({
     adminUploadImage: b.mutation<{ url: string }, FormData>({
       query: (body) => ({ url: '/uploads', method: 'POST', body }),
     }),
+    adminFetchStoreMeta: b.mutation<{ name: string | null; icon_url: string | null }, { store_url: string }>({
+      query: (body) => ({ url: '/admin/applications/fetch-meta', method: 'POST', body }),
+    }),
   }),
 })
 
@@ -31,4 +34,5 @@ export const {
   useAdminUpdateApplicationMutation,
   useAdminDeleteApplicationMutation,
   useAdminUploadImageMutation,
+  useAdminFetchStoreMetaMutation,
 } = applicationApi

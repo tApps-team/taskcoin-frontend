@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -8,19 +8,13 @@ import {
   useAdminGetDenominationsQuery,
 } from '@/entities/giftcode'
 import { formatMoney } from '@/shared/lib/format'
-import { Button, Card, CardContent, Input, Label, Modal, SimpleSelect, Spinner, Textarea } from '@/shared/ui'
+import { Button, Card, CardContent, Input, Label, Modal, SimpleSelect, Spinner } from '@/shared/ui'
 
-function parseCodes(text: string): { card_number: string; card_code: string }[] {
-  return text
-    .split('\n')
-    .map((l) => l.trim())
-    .filter(Boolean)
-    .map((l) => {
-      const parts = l.split(/[\s,;\t]+/).filter(Boolean)
-      return { card_number: parts[0] || '', card_code: parts[1] || '' }
-    })
-    .filter((c) => c.card_number && c.card_code)
+interface CodeRow {
+  card_number: string
+  card_code: string
 }
+const EMPTY_ROW: CodeRow = { card_number: '', card_code: '' }
 
 export function AdminGiftCodesPage() {
   const { t } = useTranslation()
@@ -35,8 +29,14 @@ export function AdminGiftCodesPage() {
 
   const [codesOpen, setCodesOpen] = useState(false)
   const [codesDenom, setCodesDenom] = useState('')
-  const [codesText, setCodesText] = useState('')
+  const [rows, setRows] = useState<CodeRow[]>([{ ...EMPTY_ROW }])
   const [msg, setMsg] = useState('')
+
+  const setRow = (i: number, patch: Partial<CodeRow>) =>
+    setRows((rs) => rs.map((r, idx) => (idx === i ? { ...r, ...patch } : r)))
+  const addRow = () => setRows((rs) => [...rs, { ...EMPTY_ROW }])
+  const removeRow = (i: number) =>
+    setRows((rs) => (rs.length > 1 ? rs.filter((_, idx) => idx !== i) : [{ ...EMPTY_ROW }]))
 
   const saveDenom = async () => {
     await createDenom({ label, price_rub: price, is_active: true, sort: 0 }).unwrap()
@@ -47,14 +47,14 @@ export function AdminGiftCodesPage() {
 
   const saveCodes = async () => {
     setMsg('')
-    const codes = parseCodes(codesText)
+    const codes = rows.filter((r) => r.card_number.trim() && r.card_code.trim())
     if (!codesDenom || codes.length === 0) {
       setMsg(t('admin.gift.parseError'))
       return
     }
     const res = await addCodes({ denomination_id: codesDenom, codes }).unwrap()
     setMsg(res.detail)
-    setCodesText('')
+    setRows([{ ...EMPTY_ROW }])
   }
 
   return (
@@ -130,14 +130,40 @@ export function AdminGiftCodesPage() {
               />
             </div>
             <div>
-              <Label>{t('admin.gift.codesLabel')}</Label>
-              <Textarea
-                className="min-h-[160px] font-mono text-sm"
-                value={codesText}
-                onChange={(e) => setCodesText(e.target.value)}
-                placeholder={'номер1 код1\nномер2 код2'}
-              />
-              <p className="text-xs text-muted-foreground mt-1">{t('admin.gift.codesHint')}</p>
+              <div className="grid grid-cols-[1fr_1fr_auto] gap-2 mb-1 px-0.5">
+                <span className="text-xs text-muted-foreground">{t('admin.gift.cardNumber')}</span>
+                <span className="text-xs text-muted-foreground">{t('admin.gift.cardCode')}</span>
+                <span className="w-9" />
+              </div>
+              <div className="space-y-2 max-h-[320px] overflow-y-auto">
+                {rows.map((r, i) => (
+                  <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-2">
+                    <Input
+                      className="font-mono text-sm"
+                      value={r.card_number}
+                      onChange={(e) => setRow(i, { card_number: e.target.value })}
+                      placeholder="1595807"
+                    />
+                    <Input
+                      className="font-mono text-sm"
+                      value={r.card_code}
+                      onChange={(e) => setRow(i, { card_code: e.target.value })}
+                      placeholder="7756836670948845"
+                    />
+                    <Button
+                      size="icon"
+                      variant="secondary"
+                      onClick={() => removeRow(i)}
+                      aria-label={t('common.delete')}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              <Button size="sm" variant="secondary" className="mt-2" onClick={addRow}>
+                <Plus className="size-4" /> {t('admin.gift.addRow')}
+              </Button>
             </div>
             {msg && <p className="text-sm text-brand-teal">{msg}</p>}
             <Button className="w-full" disabled={adding} onClick={saveCodes}>
