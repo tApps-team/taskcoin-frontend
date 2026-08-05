@@ -1,5 +1,5 @@
 import { ArrowLeft, Check, Copy, ExternalLink, Loader2, MessageSquare, Smartphone, Star } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
 import { useGetMyExecutionsQuery, type Execution } from '@/entities/execution'
@@ -14,19 +14,50 @@ const WAIT_MS = 60000
 
 type Stage = 'copy' | 'store' | 'installing' | 'actions' | 'screenshot'
 
-// Wall-clock timer: advances after `ms` of REAL elapsed time, even if the tab
-// was backgrounded (mobile browsers freeze JS timers when the user leaves for
-// the store). We fix a deadline and re-check on interval + when the tab
-// becomes visible again, so time spent away still counts.
-function useWallClockTimer(active: boolean, ms: number, onDone: () => void) {
+// --- Ceremony state persistence ---------------------------------------------
+// The step-by-step flow (copy → store → wait → screenshot) lives in-memory, so
+// leaving the page used to reset it — a user who took the task (clicked "copy")
+// and came back via "Активные" jumped straight to the final screenshot form.
+// We persist the current stage + the running timer deadline per campaign so the
+// flow resumes exactly where the user left off.
+interface FlowState {
+  stage: Stage
+  deadline: number | null // wall-clock ms for the running installing/actions wait
+}
+
+const flowKey = (campaignId: string) => `taskcoin-offer-flow-${campaignId}`
+
+function loadFlow(campaignId: string): FlowState | null {
+  try {
+    const raw = localStorage.getItem(flowKey(campaignId))
+    const parsed = raw ? JSON.parse(raw) : null
+    return parsed && typeof parsed.stage === 'string' ? parsed : null
+  } catch {
+    return null
+  }
+}
+
+function saveFlow(campaignId: string, state: FlowState) {
+  try {
+    localStorage.setItem(flowKey(campaignId), JSON.stringify(state))
+  } catch {
+    /* storage unavailable — flow just won't persist */
+  }
+}
+
+// Wall-clock timer: fires once `deadline` (an absolute ms timestamp) is reached
+// in REAL time, even if the tab was backgrounded (mobile browsers freeze JS
+// timers when the user leaves for the store). We re-check on an interval and
+// when the tab becomes visible again, so time spent away still counts.
+function useDeadlineTimer(deadline: number | null, onDone: () => void) {
   const doneRef = useRef(onDone)
   doneRef.current = onDone
   useEffect(() => {
-    if (!active) return
-    const deadline = Date.now() + ms
+    if (deadline == null) return
     const check = () => {
       if (Date.now() >= deadline) doneRef.current()
     }
+    check()
     const id = setInterval(check, 1000)
     const onVisible = () => {
       if (document.visibilityState === 'visible') check()
@@ -36,7 +67,7 @@ function useWallClockTimer(active: boolean, ms: number, onDone: () => void) {
       clearInterval(id)
       document.removeEventListener('visibilitychange', onVisible)
     }
-  }, [active, ms])
+  }, [deadline])
 }
 
 export function OfferDetailsPage() {
@@ -106,18 +137,34 @@ function OfferFlow({
   const [start] = useStartOfferMutation()
   const hasActions = offer.requires_rating || offer.requires_review
 
-  // If a task is already taken (page reload lost the in-memory ceremony),
-  // jump straight to the work stage. Otherwise start the ceremony.
-  const [stage, setStage] = useState<Stage>(() => (execution ? 'screenshot' : 'copy'))
-  const [copied, setCopied] = useState(false)
+  // Resume the saved ceremony if the task is already taken; otherwise start
+  // fresh. A taken task without saved state (e.g. an older session) resumes at
+  // the "go to store" step rather than jumping to the final form.
+  const [stage, setStageRaw] = useState<Stage>(() =>
+    execution ? (loadFlow(campaignId)?.stage ?? 'store') : 'copy',
+  )
+  const [deadline, setDeadline] = useState<number | null>(() =>
+    execution ? (loadFlow(campaignId)?.deadline ?? null) : null,
+  )
+  const [copied, setCopied] = useState(() => !!execution)
   const [error, setError] = useState('')
 
-  // After tapping the store link: wait 60s, then reveal rating/review or screenshot.
-  useWallClockTimer(stage === 'installing', WAIT_MS, () =>
-    setStage(hasActions ? 'actions' : 'screenshot'),
+  // Move to a stage and persist it (+ a fresh deadline for timed waits).
+  const go = useCallback(
+    (next: Stage) => {
+      const dl = next === 'installing' || next === 'actions' ? Date.now() + WAIT_MS : null
+      setStageRaw(next)
+      setDeadline(dl)
+      saveFlow(campaignId, { stage: next, deadline: dl })
+    },
+    [campaignId],
   )
-  // Verification step shown for 60s before the screenshot upload form appears.
-  useWallClockTimer(stage === 'actions', WAIT_MS, () => setStage('screenshot'))
+
+  // Single timer for whichever wait stage is active; advances via `go`.
+  useDeadlineTimer(stage === 'installing' || stage === 'actions' ? deadline : null, () => {
+    if (stage === 'installing') go(hasActions ? 'actions' : 'screenshot')
+    else if (stage === 'actions') go('screenshot')
+  })
 
   const onCopy = async () => {
     setError('')
@@ -125,7 +172,7 @@ function OfferFlow({
     setCopied(true)
     try {
       if (!execution) await start({ campaignId }).unwrap()
-      setStage('store')
+      go('store')
     } catch (e) {
       setCopied(false)
       setError(getErrorMessage(e, t('common.error')))
@@ -165,7 +212,7 @@ function OfferFlow({
                   href={storeHomeUrl(offer.platform)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => setStage('installing')}
+                  onClick={() => go('installing')}
                 >
                   <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.platform) })}
                 </a>
