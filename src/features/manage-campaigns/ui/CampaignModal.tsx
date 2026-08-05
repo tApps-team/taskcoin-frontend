@@ -149,6 +149,10 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
 
   const save = async () => {
     setError('')
+    // Rating/review only apply to "Установка + отзыв/оценка"; drop them otherwise.
+    const withActions = type === 'install_review'
+    const rating = withActions && requiresRating
+    const review = withActions && requiresReview
     const body: Record<string, unknown> = {
       application_id: applicationId,
       type,
@@ -159,10 +163,10 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
       daily_schedule: dailyMode === 'scheduled' ? schedule : {},
       total_target: totalTarget ? Number(totalTarget) : null,
       requires_open: requiresOpen,
-      requires_rating: requiresRating,
-      requires_review: requiresReview,
-      rating_weights: requiresRating ? ratingWeights : {},
-      review_instruction: reviewInstruction || null,
+      requires_rating: rating,
+      requires_review: review,
+      rating_weights: rating ? ratingWeights : {},
+      review_instruction: review ? reviewInstruction || null : null,
       use_standard_instruction: useStandard,
       instruction_text: useStandard ? null : instructionText || null,
       instruction_media_url: useStandard ? null : instructionMedia,
@@ -261,27 +265,32 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
         <div className="space-y-2 border-t border-white/10 pt-3">
           <div className="font-semibold text-sm">{t('admin.campaigns.actions')}</div>
           <Check label={t('admin.campaigns.requiresOpen')} checked={requiresOpen} onChange={setRequiresOpen} />
-          <Check label={t('admin.campaigns.requiresRating')} checked={requiresRating} onChange={setRequiresRating} />
-          {requiresRating && (
-            <div className="pl-6 space-y-1.5">
-              <p className="text-xs text-muted-foreground">{t('admin.campaigns.ratingWeightsHint')}</p>
-              <PercentSliders
-                items={STARS.map((s) => ({
-                  key: String(s),
-                  label: (
-                    <span className="flex items-center gap-1 text-amber-400">
-                      {s} <Star className="size-3.5 fill-current" />
-                    </span>
-                  ),
-                }))}
-                values={ratingWeights}
-                onChange={setRatingWeights}
-              />
-            </div>
-          )}
-          <Check label={t('admin.campaigns.requiresReview')} checked={requiresReview} onChange={setRequiresReview} />
-          {requiresReview && (
-            <Textarea value={reviewInstruction} onChange={(e) => setReviewInstruction(e.target.value)} placeholder={t('admin.campaigns.reviewHint')} />
+          {/* Rating/review actions apply only to "Установка + отзыв/оценка" campaigns. */}
+          {type === 'install_review' && (
+            <>
+              <Check label={t('admin.campaigns.requiresRating')} checked={requiresRating} onChange={setRequiresRating} />
+              {requiresRating && (
+                <div className="pl-6 space-y-1.5">
+                  <p className="text-xs text-muted-foreground">{t('admin.campaigns.ratingWeightsHint')}</p>
+                  <PercentSliders
+                    items={STARS.map((s) => ({
+                      key: String(s),
+                      label: (
+                        <span className="flex items-center gap-1 text-amber-400">
+                          {s} <Star className="size-3.5 fill-current" />
+                        </span>
+                      ),
+                    }))}
+                    values={ratingWeights}
+                    onChange={setRatingWeights}
+                  />
+                </div>
+              )}
+              <Check label={t('admin.campaigns.requiresReview')} checked={requiresReview} onChange={setRequiresReview} />
+              {requiresReview && (
+                <Textarea value={reviewInstruction} onChange={(e) => setReviewInstruction(e.target.value)} placeholder={t('admin.campaigns.reviewHint')} />
+              )}
+            </>
           )}
         </div>
 
