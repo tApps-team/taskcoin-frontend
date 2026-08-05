@@ -1,4 +1,5 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { Smartphone } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useGetMyExecutionsQuery } from '@/entities/execution'
@@ -53,9 +54,17 @@ export function ActivePage() {
                 exit={reduce ? undefined : 'exit'}
               >
                 <Link to={`/app/offers/${s.campaign_id}`}>
-                  <div className="glass-soft glass-hover rounded-2xl p-4 flex items-center justify-between">
-                    <div>
-                      <div className="font-semibold">{s.keyword || s.application_name}</div>
+                  <div className="glass-soft glass-hover rounded-2xl p-4 flex items-center gap-3">
+                    {s.icon_url ? (
+                      <img src={s.icon_url} alt="" className="size-12 rounded-xl object-cover shrink-0" />
+                    ) : (
+                      <div className="size-12 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
+                        <Smartphone className="size-6 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <div className="font-semibold truncate">{s.application_name}</div>
+                      {s.keyword && <div className="text-xs text-muted-foreground truncate">{s.keyword}</div>}
                       <CoinAmount value={s.reward_snapshot} className="text-brand-teal text-sm" />
                     </div>
                     <Row deadline={s.deadline_at} status={s.status} />

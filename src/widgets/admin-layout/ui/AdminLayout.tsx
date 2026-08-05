@@ -1,4 +1,5 @@
 import {
+  BookText,
   CheckSquare,
   CreditCard,
   Gift,
@@ -10,10 +11,12 @@ import {
   Smartphone,
   Users,
 } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { loggedOut, useMeQuery } from '@/entities/session'
+import { StandardInstructionModal } from '@/features/manage-standard-instruction'
 import { baseApi } from '@/shared/api'
 import { haptic } from '@/shared/lib/haptics'
 import { cn } from '@/shared/lib/utils'
@@ -36,6 +39,7 @@ export function AdminLayout() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { data: me } = useMeQuery()
+  const [instructionOpen, setInstructionOpen] = useState(false)
 
   const onLogout = () => {
     dispatch(loggedOut())
@@ -66,6 +70,17 @@ export function AdminLayout() {
               {t(`admin.nav.${key}`)}
             </NavLink>
           ))}
+          <button
+            type="button"
+            onClick={() => {
+              haptic()
+              setInstructionOpen(true)
+            }}
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground transition-all"
+          >
+            <BookText className="size-4" />
+            {t('admin.nav.standardInstruction')}
+          </button>
         </nav>
         <div className="text-xs text-muted-foreground mb-2 truncate">{me?.email}</div>
         <Button variant="secondary" size="sm" onClick={onLogout}>
@@ -76,6 +91,8 @@ export function AdminLayout() {
       <main className="flex-1 min-w-0 min-h-0 rounded-3xl glass p-6 overflow-auto">
         <Outlet />
       </main>
+
+      {instructionOpen && <StandardInstructionModal onClose={() => setInstructionOpen(false)} />}
     </div>
   )
 }

@@ -131,8 +131,8 @@ export function AdminGiftCodesPage() {
             </div>
             <div>
               <div className="grid grid-cols-[1fr_1fr_auto] gap-2 mb-1 px-0.5">
-                <span className="text-xs text-muted-foreground">{t('admin.gift.cardNumber')}</span>
                 <span className="text-xs text-muted-foreground">{t('admin.gift.cardCode')}</span>
+                <span className="text-xs text-muted-foreground">{t('admin.gift.cardNumber')}</span>
                 <span className="w-9" />
               </div>
               <div className="space-y-2 max-h-[320px] overflow-y-auto">

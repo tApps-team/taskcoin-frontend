@@ -62,12 +62,21 @@ export function AdminCampaignDetailsPage() {
             <CardContent className="p-5 space-y-2 text-sm">
               <Row label={t('admin.campaigns.platform')} value={c.application.platform} />
               <Row label={t('admin.campaigns.type')} value={c.type} />
-              <Row label={t('admin.campaigns.repeatDays')} value={String(c.repeat_days)} />
-              <Row label={t('admin.campaigns.dailyLimit')} value={c.daily_limit ? String(c.daily_limit) : '∞'} />
+              <Row label={t('admin.campaigns.hourlyLimit')} value={c.hourly_limit ? String(c.hourly_limit) : '∞'} />
+              <Row
+                label={t('admin.campaigns.dailyLimit')}
+                value={
+                  c.daily_limit_mode === 'scheduled'
+                    ? t('admin.campaigns.dailyScheduled')
+                    : c.daily_limit
+                      ? String(c.daily_limit)
+                      : '∞'
+                }
+              />
               <Row label={t('admin.campaigns.totalTarget')} value={c.total_target ? String(c.total_target) : '∞'} />
               <Row label={t('admin.campaigns.progress')} value={`${c.completed_count} · ${t('admin.campaigns.today')}: ${c.today_count}`} />
               <Row label={t('admin.campaigns.countries')} value={c.allowed_countries.length ? c.allowed_countries.join(', ') : t('admin.campaigns.allCountries')} />
-              <Row label={t('admin.campaigns.keywords')} value={c.keywords.map((k) => `${k.keyword} (${k.daily_target}/д)`).join(', ') || '—'} />
+              <Row label={t('admin.campaigns.keywords')} value={c.keywords.map((k) => `${k.keyword} (${k.percent}%)`).join(', ') || '—'} />
             </CardContent>
           </Card>
         </TabsContent>

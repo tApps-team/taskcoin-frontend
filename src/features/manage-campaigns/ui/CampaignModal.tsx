@@ -1,4 +1,4 @@
-import { Plus, Star, X } from 'lucide-react'
+import { Plus, Star, Trash2, X } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAdminGetApplicationsQuery, useAdminUploadImageMutation } from '@/entities/application'
@@ -7,15 +7,31 @@ import {
   useAdminUpdateCampaignMutation,
   type Campaign,
 } from '@/entities/campaign'
+import { useGetStandardInstructionQuery } from '@/entities/standard-instruction'
 import { getErrorMessage } from '@/shared/lib/errors'
 import { Button, Input, Label, Modal, SimpleSelect, Textarea } from '@/shared/ui'
+import { PercentSliders } from './PercentSliders'
 
 interface KeywordRow {
   keyword: string
-  daily_target: number
+  percent: number
 }
 
 const STARS = [1, 2, 3, 4, 5]
+
+// YYYY-MM-DD for a Date (used as daily_schedule keys).
+const toKey = (d: Date) => d.toISOString().slice(0, 10)
+const fmtDay = (key: string) => key.split('-').reverse().join('-') // dd-mm-yyyy
+
+function nextDays(n: number): string[] {
+  const out: string[] = []
+  const d = new Date()
+  for (let i = 0; i < n; i++) {
+    out.push(toKey(d))
+    d.setDate(d.getDate() + 1)
+  }
+  return out
+}
 
 function Check({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
@@ -26,9 +42,19 @@ function Check({ label, checked, onChange }: { label: string; checked: boolean; 
   )
 }
 
+function Radio({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
+  return (
+    <label className="flex items-center gap-2 text-sm cursor-pointer">
+      <input type="radio" checked={checked} onChange={onChange} className="size-4 accent-brand-violet" />
+      {label}
+    </label>
+  )
+}
+
 export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | null; onClose: () => void }) {
   const { t } = useTranslation()
   const { data: apps } = useAdminGetApplicationsQuery()
+  const { data: standardInstruction } = useGetStandardInstructionQuery()
   const [create, { isLoading: creating }] = useAdminCreateCampaignMutation()
   const [update, { isLoading: updating }] = useAdminUpdateCampaignMutation()
   const [uploadImage, { isLoading: uploadingInstruction }] = useAdminUploadImageMutation()
@@ -36,32 +62,70 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
   const [applicationId, setApplicationId] = useState(campaign?.application.id || '')
   const [type, setType] = useState(campaign?.type || 'install')
   const [price, setPrice] = useState(campaign?.price || '10')
+  const [hourlyLimit, setHourlyLimit] = useState(campaign?.hourly_limit?.toString() || '')
+  const [dailyMode, setDailyMode] = useState<'constant' | 'scheduled'>(campaign?.daily_limit_mode || 'constant')
   const [dailyLimit, setDailyLimit] = useState(campaign?.daily_limit?.toString() || '')
-  const [repeatDays, setRepeatDays] = useState(campaign?.repeat_days?.toString() || '3')
+  const [schedule, setSchedule] = useState<Record<string, number>>(() => campaign?.daily_schedule ?? {})
   const [totalTarget, setTotalTarget] = useState(campaign?.total_target?.toString() || '')
   const [requiresOpen, setRequiresOpen] = useState(campaign?.requires_open ?? true)
   const [requiresRating, setRequiresRating] = useState(campaign?.requires_rating ?? false)
   const [requiresReview, setRequiresReview] = useState(campaign?.requires_review ?? false)
-  const [ratingWeights, setRatingWeights] = useState<Record<string, number>>(
-    () => campaign?.rating_weights ?? {},
-  )
+  const [ratingWeights, setRatingWeights] = useState<Record<string, number>>(() => {
+    const w = campaign?.rating_weights ?? {}
+    return Object.fromEntries(STARS.map((s) => [String(s), w[String(s)] ?? 0]))
+  })
   const [reviewInstruction, setReviewInstruction] = useState(campaign?.review_instruction || '')
+  const [useStandard, setUseStandard] = useState(campaign?.use_standard_instruction ?? true)
   const [instructionText, setInstructionText] = useState(campaign?.instruction_text || '')
-  const [instructionMedia, setInstructionMedia] = useState<string | null>(
-    campaign?.instruction_media_url || null,
-  )
+  const [instructionMedia, setInstructionMedia] = useState<string | null>(campaign?.instruction_media_url || null)
   const [countries, setCountries] = useState((campaign?.allowed_countries || []).join(', '))
   const [status, setStatus] = useState(campaign?.status || 'active')
   const [keywords, setKeywords] = useState<KeywordRow[]>(
-    campaign?.keywords.map((k) => ({ keyword: k.keyword, daily_target: k.daily_target })) || [],
+    campaign?.keywords.map((k) => ({ keyword: k.keyword, percent: k.percent })) || [],
   )
   const [error, setError] = useState('')
 
   const setKw = (i: number, patch: Partial<KeywordRow>) =>
     setKeywords((rows) => rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r)))
 
-  const setWeight = (star: number, value: string) =>
-    setRatingWeights((w) => ({ ...w, [String(star)]: Math.max(0, Math.min(100, Number(value) || 0)) }))
+  const addKeyword = () =>
+    setKeywords((rows) => {
+      const next = [...rows, { keyword: '', percent: 0 }]
+      const even = Math.floor(100 / next.length)
+      return next.map((r, i) => ({ ...r, percent: i === next.length - 1 ? 100 - even * (next.length - 1) : even }))
+    })
+
+  const removeKeyword = (i: number) =>
+    setKeywords((rows) => {
+      const next = rows.filter((_, idx) => idx !== i)
+      if (next.length === 0) return next
+      const even = Math.floor(100 / next.length)
+      return next.map((r, idx) => ({ ...r, percent: idx === next.length - 1 ? 100 - even * (next.length - 1) : even }))
+    })
+
+  // Scheduled daily limit
+  const scheduleDays = Object.keys(schedule).sort()
+  const initScheduled = () => {
+    if (Object.keys(schedule).length === 0) {
+      setSchedule(Object.fromEntries(nextDays(5).map((k) => [k, 0])))
+    }
+    setDailyMode('scheduled')
+  }
+  const setDayLimit = (key: string, val: string) =>
+    setSchedule((s) => ({ ...s, [key]: Math.max(0, Number(val) || 0) }))
+  const removeDay = (key: string) =>
+    setSchedule((s) => {
+      const next = { ...s }
+      delete next[key]
+      return next
+    })
+  const addDay = () =>
+    setSchedule((s) => {
+      const keys = Object.keys(s).sort()
+      const last = keys.length ? new Date(keys[keys.length - 1]) : new Date()
+      last.setDate(last.getDate() + 1)
+      return { ...s, [toKey(last)]: 0 }
+    })
 
   const onInstructionImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -83,16 +147,19 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
       application_id: applicationId,
       type,
       price,
-      daily_limit: dailyLimit ? Number(dailyLimit) : null,
-      repeat_days: Number(repeatDays),
+      hourly_limit: hourlyLimit ? Number(hourlyLimit) : null,
+      daily_limit_mode: dailyMode,
+      daily_limit: dailyMode === 'constant' && dailyLimit ? Number(dailyLimit) : null,
+      daily_schedule: dailyMode === 'scheduled' ? schedule : {},
       total_target: totalTarget ? Number(totalTarget) : null,
       requires_open: requiresOpen,
       requires_rating: requiresRating,
       requires_review: requiresReview,
       rating_weights: requiresRating ? ratingWeights : {},
       review_instruction: reviewInstruction || null,
-      instruction_text: instructionText || null,
-      instruction_media_url: instructionMedia,
+      use_standard_instruction: useStandard,
+      instruction_text: useStandard ? null : instructionText || null,
+      instruction_media_url: useStandard ? null : instructionMedia,
       allowed_countries: countries
         .split(',')
         .map((c) => c.trim().toUpperCase())
@@ -142,26 +209,42 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label>{t('admin.campaigns.dailyLimit')}</Label>
-            <Input type="number" value={dailyLimit} onChange={(e) => setDailyLimit(e.target.value)} placeholder="∞" />
-          </div>
-          <div>
-            <Label>{t('admin.campaigns.repeatDays')}</Label>
-            <Input
-              type="number"
-              step="0.5"
-              min="0"
-              value={repeatDays}
-              onChange={(e) => setRepeatDays(e.target.value)}
-              title={t('admin.campaigns.repeatDaysHint')}
-            />
+            <Label>{t('admin.campaigns.hourlyLimit')}</Label>
+            <Input type="number" value={hourlyLimit} onChange={(e) => setHourlyLimit(e.target.value)} placeholder="∞" />
           </div>
           <div>
             <Label>{t('admin.campaigns.totalTarget')}</Label>
             <Input type="number" value={totalTarget} onChange={(e) => setTotalTarget(e.target.value)} placeholder="∞" />
           </div>
+        </div>
+
+        {/* Daily limit: constant vs scheduled */}
+        <div className="space-y-2 border-t border-white/10 pt-3">
+          <div className="font-semibold text-sm">{t('admin.campaigns.dailyLimit')}</div>
+          <div className="flex gap-4">
+            <Radio label={t('admin.campaigns.dailyConstant')} checked={dailyMode === 'constant'} onChange={() => setDailyMode('constant')} />
+            <Radio label={t('admin.campaigns.dailyScheduled')} checked={dailyMode === 'scheduled'} onChange={initScheduled} />
+          </div>
+          {dailyMode === 'constant' ? (
+            <Input type="number" value={dailyLimit} onChange={(e) => setDailyLimit(e.target.value)} placeholder="∞" />
+          ) : (
+            <div className="space-y-2">
+              {scheduleDays.map((key) => (
+                <div key={key} className="flex items-center gap-2">
+                  <div className="w-28 shrink-0 text-sm font-mono">{fmtDay(key)}</div>
+                  <Input type="number" className="flex-1" value={schedule[key]} onChange={(e) => setDayLimit(key, e.target.value)} placeholder="лимит" />
+                  <Button size="icon" variant="secondary" onClick={() => removeDay(key)} aria-label={t('common.delete')}>
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
+              ))}
+              <Button size="sm" variant="secondary" onClick={addDay}>
+                <Plus className="size-4" /> {t('admin.campaigns.addDay')}
+              </Button>
+            </div>
+          )}
         </div>
 
         <div>
@@ -176,22 +259,18 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
           {requiresRating && (
             <div className="pl-6 space-y-1.5">
               <p className="text-xs text-muted-foreground">{t('admin.campaigns.ratingWeightsHint')}</p>
-              {STARS.map((star) => (
-                <div key={star} className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 w-16 text-sm text-amber-400">
-                    {star} <Star className="size-3.5 fill-current" />
-                  </div>
-                  <Input
-                    className="w-24"
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={ratingWeights[String(star)] ?? 0}
-                    onChange={(e) => setWeight(star, e.target.value)}
-                  />
-                  <span className="text-sm text-muted-foreground">%</span>
-                </div>
-              ))}
+              <PercentSliders
+                items={STARS.map((s) => ({
+                  key: String(s),
+                  label: (
+                    <span className="flex items-center gap-1 text-amber-400">
+                      {s} <Star className="size-3.5 fill-current" />
+                    </span>
+                  ),
+                }))}
+                values={ratingWeights}
+                onChange={setRatingWeights}
+              />
             </div>
           )}
           <Check label={t('admin.campaigns.requiresReview')} checked={requiresReview} onChange={setRequiresReview} />
@@ -200,50 +279,68 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
           )}
         </div>
 
-        <div className="space-y-2 border-t border-white/10 pt-3">
-          <div className="font-semibold text-sm">{t('admin.campaigns.instruction')}</div>
-          <p className="text-xs text-muted-foreground">{t('admin.campaigns.instructionHint')}</p>
-          <div className="flex items-center gap-3">
-            {instructionMedia && (
-              <img src={instructionMedia} alt="" className="size-16 rounded-xl object-cover" />
-            )}
-            <label className="text-sm text-brand-teal cursor-pointer">
-              {uploadingInstruction ? t('common.loading') : t('admin.campaigns.instructionImage')}
-              <input type="file" accept="image/*" hidden onChange={onInstructionImage} />
-            </label>
-            {instructionMedia && (
-              <button
-                type="button"
-                className="text-xs text-destructive"
-                onClick={() => setInstructionMedia(null)}
-              >
-                {t('common.delete')}
-              </button>
-            )}
-          </div>
-          <Textarea
-            value={instructionText}
-            onChange={(e) => setInstructionText(e.target.value)}
-            placeholder={t('admin.campaigns.instructionText')}
-          />
-        </div>
-
+        {/* Keywords by percent */}
         <div className="space-y-2 border-t border-white/10 pt-3">
           <div className="flex items-center justify-between">
             <div className="font-semibold text-sm">{t('admin.campaigns.keywords')}</div>
-            <Button size="sm" variant="secondary" onClick={() => setKeywords((r) => [...r, { keyword: '', daily_target: 0 }])}>
+            <Button size="sm" variant="secondary" onClick={addKeyword}>
               <Plus className="size-4" /> {t('admin.campaigns.addKeyword')}
             </Button>
           </div>
+          {keywords.length > 0 && (
+            <p className="text-xs text-muted-foreground">{t('admin.campaigns.keywordsPercentHint')}</p>
+          )}
           {keywords.map((k, i) => (
             <div key={i} className="flex gap-2">
               <Input className="flex-1" value={k.keyword} onChange={(e) => setKw(i, { keyword: e.target.value })} placeholder={t('admin.campaigns.keyword')} />
-              <Input className="w-24" type="number" value={k.daily_target} onChange={(e) => setKw(i, { daily_target: Number(e.target.value) })} placeholder="/день" />
-              <Button size="icon" variant="destructive" onClick={() => setKeywords((r) => r.filter((_, idx) => idx !== i))}>
+              <div className="w-14 shrink-0 flex items-center justify-center text-sm font-mono text-muted-foreground">
+                {keywords.length === 1 ? 100 : k.percent}%
+              </div>
+              <Button size="icon" variant="destructive" onClick={() => removeKeyword(i)}>
                 <X className="size-4" />
               </Button>
             </div>
           ))}
+          {keywords.length > 1 && (
+            <PercentSliders
+              items={keywords.map((k, i) => ({ key: String(i), label: k.keyword || `${t('admin.campaigns.keyword')} ${i + 1}` }))}
+              values={Object.fromEntries(keywords.map((k, i) => [String(i), k.percent]))}
+              onChange={(v) => setKeywords((rows) => rows.map((r, i) => ({ ...r, percent: v[String(i)] ?? 0 })))}
+            />
+          )}
+        </div>
+
+        {/* Result instruction: standard vs unique */}
+        <div className="space-y-2 border-t border-white/10 pt-3">
+          <div className="font-semibold text-sm uppercase">{t('admin.campaigns.instructionResult')}</div>
+          <Radio label={t('admin.campaigns.instructionStandard')} checked={useStandard} onChange={() => setUseStandard(true)} />
+          <Radio label={t('admin.campaigns.instructionUnique')} checked={!useStandard} onChange={() => setUseStandard(false)} />
+          {useStandard ? (
+            <div className="glass-soft rounded-xl p-3">
+              {standardInstruction?.media_url && (
+                <img src={standardInstruction.media_url} alt="" className="w-full rounded-lg mb-2 object-cover max-h-48" />
+              )}
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                {standardInstruction?.text || t('admin.campaigns.instructionStandardEmpty')}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                {instructionMedia && <img src={instructionMedia} alt="" className="size-16 rounded-xl object-cover" />}
+                <label className="text-sm text-brand-teal cursor-pointer">
+                  {uploadingInstruction ? t('common.loading') : t('admin.campaigns.instructionImage')}
+                  <input type="file" accept="image/*" hidden onChange={onInstructionImage} />
+                </label>
+                {instructionMedia && (
+                  <button type="button" className="text-xs text-destructive" onClick={() => setInstructionMedia(null)}>
+                    {t('common.delete')}
+                  </button>
+                )}
+              </div>
+              <Textarea value={instructionText} onChange={(e) => setInstructionText(e.target.value)} placeholder={t('admin.campaigns.instructionText')} />
+            </div>
+          )}
         </div>
 
         <div>

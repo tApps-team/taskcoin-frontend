@@ -43,20 +43,23 @@ export interface Application {
 export interface Keyword {
   id: string
   keyword: string
-  daily_target: number
+  percent: number
 }
 
 export interface Campaign {
   id: string
   type: CampaignType
   price: string
+  hourly_limit: number | null
   daily_limit: number | null
-  repeat_days: number
+  daily_limit_mode: 'constant' | 'scheduled'
+  daily_schedule: Record<string, number>
   requires_open: boolean
   requires_rating: boolean
   requires_review: boolean
   rating_weights: Record<string, number>
   review_instruction: string | null
+  use_standard_instruction: boolean
   instruction_text: string | null
   instruction_media_url: string | null
   allowed_countries: string[]

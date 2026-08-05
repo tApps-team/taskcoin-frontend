@@ -10,7 +10,6 @@ import { getErrorMessage } from '@/shared/lib/errors'
 import { storeHomeUrl } from '@/shared/lib/store'
 import { Button, Card, CardContent, CoinAmount, Spinner, StatusBadge } from '@/shared/ui'
 
-const LOADER_MS = 3000
 const WAIT_MS = 60000
 
 type Stage = 'copy' | 'store' | 'installing' | 'actions' | 'screenshot'
@@ -85,24 +84,16 @@ function OfferFlow({
   // If a task is already taken (page reload lost the in-memory ceremony),
   // jump straight to the work stage. Otherwise start the ceremony.
   const [stage, setStage] = useState<Stage>(() => (execution ? 'screenshot' : 'copy'))
-  const [loaderDone, setLoaderDone] = useState(false)
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState('')
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
-  // Step 3: fake 3s loader → open the store, then wait 60s.
+  // After tapping the store link: wait 60s, then reveal rating/review or screenshot.
   useEffect(() => {
     if (stage !== 'installing') return
-    if (!loaderDone) {
-      const tmr = setTimeout(() => {
-        setLoaderDone(true)
-        window.open(storeHomeUrl(offer.platform), '_blank', 'noopener')
-      }, LOADER_MS)
-      return () => clearTimeout(tmr)
-    }
     timerRef.current = setTimeout(() => setStage(hasActions ? 'actions' : 'screenshot'), WAIT_MS)
     return () => clearTimeout(timerRef.current)
-  }, [stage, loaderDone, hasActions, offer.platform])
+  }, [stage, hasActions])
 
   // Rating/review steps shown for 60s before the screenshot form appears.
   useEffect(() => {
@@ -151,18 +142,25 @@ function OfferFlow({
             {offer.icon_url && (
               <img src={offer.icon_url} alt="" className="size-12 rounded-xl object-cover mb-2" />
             )}
-            <Button variant="teal" disabled={stage !== 'store'} onClick={() => setStage('installing')}>
-              <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.platform) })}
-            </Button>
-          </Step>
-
-          <Step index={3} state={step3State} title={t('offer.flow.step3')} last>
-            {stage === 'installing' && !loaderDone && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="size-4 animate-spin" /> {t('offer.flow.checking')}
-              </div>
+            {stage === 'store' ? (
+              <Button asChild variant="teal">
+                <a
+                  href={storeHomeUrl(offer.platform)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setStage('installing')}
+                >
+                  <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.platform) })}
+                </a>
+              </Button>
+            ) : (
+              <Button variant="teal" disabled>
+                <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.platform) })}
+              </Button>
             )}
           </Step>
+
+          <Step index={3} state={step3State} title={t('offer.flow.step3')} last />
 
           {error && <p className="text-destructive text-sm mt-2">{error}</p>}
         </CardContent>
