@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, Copy, ExternalLink, Loader2, Smartphone, Star } from 'lucide-react'
+import { ArrowLeft, Check, Copy, ExternalLink, Loader2, MessageSquare, Smartphone, Star } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
@@ -13,6 +13,31 @@ import { Button, Card, CardContent, CoinAmount, Spinner, StatusBadge } from '@/s
 const WAIT_MS = 60000
 
 type Stage = 'copy' | 'store' | 'installing' | 'actions' | 'screenshot'
+
+// Wall-clock timer: advances after `ms` of REAL elapsed time, even if the tab
+// was backgrounded (mobile browsers freeze JS timers when the user leaves for
+// the store). We fix a deadline and re-check on interval + when the tab
+// becomes visible again, so time spent away still counts.
+function useWallClockTimer(active: boolean, ms: number, onDone: () => void) {
+  const doneRef = useRef(onDone)
+  doneRef.current = onDone
+  useEffect(() => {
+    if (!active) return
+    const deadline = Date.now() + ms
+    const check = () => {
+      if (Date.now() >= deadline) doneRef.current()
+    }
+    const id = setInterval(check, 1000)
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') check()
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => {
+      clearInterval(id)
+      document.removeEventListener('visibilitychange', onVisible)
+    }
+  }, [active, ms])
+}
 
 export function OfferDetailsPage() {
   const { t } = useTranslation()
@@ -86,21 +111,13 @@ function OfferFlow({
   const [stage, setStage] = useState<Stage>(() => (execution ? 'screenshot' : 'copy'))
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState('')
-  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   // After tapping the store link: wait 60s, then reveal rating/review or screenshot.
-  useEffect(() => {
-    if (stage !== 'installing') return
-    timerRef.current = setTimeout(() => setStage(hasActions ? 'actions' : 'screenshot'), WAIT_MS)
-    return () => clearTimeout(timerRef.current)
-  }, [stage, hasActions])
-
-  // Rating/review steps shown for 60s before the screenshot form appears.
-  useEffect(() => {
-    if (stage !== 'actions') return
-    const tmr = setTimeout(() => setStage('screenshot'), WAIT_MS)
-    return () => clearTimeout(tmr)
-  }, [stage])
+  useWallClockTimer(stage === 'installing', WAIT_MS, () =>
+    setStage(hasActions ? 'actions' : 'screenshot'),
+  )
+  // Verification step shown for 60s before the screenshot upload form appears.
+  useWallClockTimer(stage === 'actions', WAIT_MS, () => setStage('screenshot'))
 
   const onCopy = async () => {
     setError('')
@@ -189,7 +206,9 @@ function OfferFlow({
       {offer.requires_review && (
         <Card>
           <CardContent className="p-4">
-            <div className="font-semibold text-sm mb-1">{t('offer.flow.reviewTitle')}</div>
+            <div className="flex items-center gap-2 font-semibold text-sm mb-1">
+              <MessageSquare className="size-4 text-brand-teal shrink-0" /> {t('offer.flow.reviewTitle')}
+            </div>
             <p className="text-sm text-muted-foreground whitespace-pre-wrap">
               {offer.review_instruction || t('offer.stepReview')}
             </p>
@@ -197,32 +216,34 @@ function OfferFlow({
         </Card>
       )}
 
+      {/* Instruction is shown immediately (during the verification wait too). */}
+      {(offer.instruction_text || offer.instruction_media_url) && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="font-semibold text-sm mb-2">{t('offer.flow.instruction')}</div>
+            {offer.instruction_media_url && (
+              <img
+                src={offer.instruction_media_url}
+                alt=""
+                className="w-full rounded-xl mb-2 object-cover max-h-72"
+              />
+            )}
+            {offer.instruction_text && (
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{offer.instruction_text}</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Screenshot upload form appears only after the 60s verification wait. */}
       {stage === 'actions' ? (
         <Card>
           <CardContent className="p-4 flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" /> {t('offer.flow.preparing')}
+            <Loader2 className="size-4 animate-spin shrink-0" /> {t('offer.flow.preparing')}
           </CardContent>
         </Card>
       ) : (
         <>
-          {(offer.instruction_text || offer.instruction_media_url) && (
-            <Card>
-              <CardContent className="p-4">
-                <div className="font-semibold text-sm mb-2">{t('offer.flow.instruction')}</div>
-                {offer.instruction_media_url && (
-                  <img
-                    src={offer.instruction_media_url}
-                    alt=""
-                    className="w-full rounded-xl mb-2 object-cover max-h-72"
-                  />
-                )}
-                {offer.instruction_text && (
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{offer.instruction_text}</p>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
           <div className="text-sm font-semibold">{t('offer.flow.screenshotTitle')}</div>
           {execution ? <OfferWork execution={execution} /> : <Spinner />}
         </>
