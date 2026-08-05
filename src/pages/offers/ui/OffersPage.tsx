@@ -51,10 +51,8 @@ export function OffersPage() {
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <div className="font-semibold truncate">
-                          {o.keyword || o.application_name}
-                        </div>
-                        <div className="text-xs text-muted-foreground uppercase">{o.platform}</div>
+                        <div className="font-semibold truncate">{o.application_name}</div>
+                        {o.keyword && <div className="text-xs text-muted-foreground truncate">{o.keyword}</div>}
                       </div>
                       <CoinAmount value={o.price} className="text-brand-teal font-bold" />
                       <ChevronRight className="size-5 text-muted-foreground shrink-0" />
