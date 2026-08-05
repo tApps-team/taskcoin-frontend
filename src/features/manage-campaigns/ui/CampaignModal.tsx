@@ -19,16 +19,23 @@ interface KeywordRow {
 
 const STARS = [1, 2, 3, 4, 5]
 
-// YYYY-MM-DD for a Date (used as daily_schedule keys).
-const toKey = (d: Date) => d.toISOString().slice(0, 10)
+// daily_schedule keys are Moscow (UTC+3) calendar dates, matching the backend.
+const MSK_FMT = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow' }) // YYYY-MM-DD
+const mskToday = () => MSK_FMT.format(new Date())
+// Add days to a YYYY-MM-DD key (noon UTC avoids any boundary drift).
+const addDaysKey = (key: string, n: number) => {
+  const d = new Date(`${key}T12:00:00Z`)
+  d.setUTCDate(d.getUTCDate() + n)
+  return d.toISOString().slice(0, 10)
+}
 const fmtDay = (key: string) => key.split('-').reverse().join('-') // dd-mm-yyyy
 
 function nextDays(n: number): string[] {
   const out: string[] = []
-  const d = new Date()
+  let key = mskToday()
   for (let i = 0; i < n; i++) {
-    out.push(toKey(d))
-    d.setDate(d.getDate() + 1)
+    out.push(key)
+    key = addDaysKey(key, 1)
   }
   return out
 }
@@ -122,9 +129,8 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
   const addDay = () =>
     setSchedule((s) => {
       const keys = Object.keys(s).sort()
-      const last = keys.length ? new Date(keys[keys.length - 1]) : new Date()
-      last.setDate(last.getDate() + 1)
-      return { ...s, [toKey(last)]: 0 }
+      const next = keys.length ? addDaysKey(keys[keys.length - 1], 1) : mskToday()
+      return { ...s, [next]: 0 }
     })
 
   const onInstructionImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
