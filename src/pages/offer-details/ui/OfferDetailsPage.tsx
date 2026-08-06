@@ -10,9 +10,11 @@ import { getErrorMessage } from '@/shared/lib/errors'
 import { storeHomeUrl } from '@/shared/lib/store'
 import { Button, Card, CardContent, CoinAmount, Spinner, StatusBadge } from '@/shared/ui'
 
-const WAIT_MS = 60000
+const WAIT_MS = 30000
 
-type Stage = 'copy' | 'store' | 'installing' | 'actions' | 'screenshot'
+type Stage = 'copy' | 'store' | 'installing' | 'doactions' | 'checking' | 'screenshot'
+
+const TIMED_STAGES: Stage[] = ['installing', 'doactions', 'checking']
 
 // --- Ceremony state persistence ---------------------------------------------
 // The step-by-step flow (copy → store → wait → screenshot) lives in-memory, so
@@ -152,7 +154,7 @@ function OfferFlow({
   // Move to a stage and persist it (+ a fresh deadline for timed waits).
   const go = useCallback(
     (next: Stage) => {
-      const dl = next === 'installing' || next === 'actions' ? Date.now() + WAIT_MS : null
+      const dl = TIMED_STAGES.includes(next) ? Date.now() + WAIT_MS : null
       setStageRaw(next)
       setDeadline(dl)
       saveFlow(campaignId, { stage: next, deadline: dl })
@@ -161,9 +163,12 @@ function OfferFlow({
   )
 
   // Single timer for whichever wait stage is active; advances via `go`.
-  useDeadlineTimer(stage === 'installing' || stage === 'actions' ? deadline : null, () => {
-    if (stage === 'installing') go(hasActions ? 'actions' : 'screenshot')
-    else if (stage === 'actions') go('screenshot')
+  // With actions: installing → doactions (perform rating/review) → checking
+  // (instruction + verifying) → screenshot. Without actions: installing → screenshot.
+  useDeadlineTimer(TIMED_STAGES.includes(stage) ? deadline : null, () => {
+    if (stage === 'installing') go(hasActions ? 'doactions' : 'screenshot')
+    else if (stage === 'doactions') go('checking')
+    else if (stage === 'checking') go('screenshot')
   })
 
   const onCopy = async () => {
@@ -232,9 +237,33 @@ function OfferFlow({
     )
   }
 
-  // ---- Work stage (rating/review reminders + instruction + screenshot) ----
+  // ---- Work stage ----
+  // With actions: "А теперь" + rating/review cards, then a 30s "perform the
+  // actions" wait (no instruction yet), then instruction appears with a 30s
+  // "verifying" wait, then the screenshot form. Without actions: instruction +
+  // form right away.
+  const instructionCard = (offer.instruction_text || offer.instruction_media_url) && (
+    <Card>
+      <CardContent className="p-4">
+        <div className="font-semibold text-sm mb-2">{t('offer.flow.instruction')}</div>
+        {offer.instruction_media_url && (
+          <img
+            src={offer.instruction_media_url}
+            alt=""
+            className="w-full rounded-xl mb-2 object-cover max-h-72"
+          />
+        )}
+        {offer.instruction_text && (
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{offer.instruction_text}</p>
+        )}
+      </CardContent>
+    </Card>
+  )
+
   return (
     <div className="space-y-4">
+      {hasActions && <div className="text-2xl font-bold">{t('offer.flow.now')}</div>}
+
       {offer.requires_rating && (
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
@@ -263,36 +292,28 @@ function OfferFlow({
         </Card>
       )}
 
-      {/* Instruction is shown immediately (during the verification wait too). */}
-      {(offer.instruction_text || offer.instruction_media_url) && (
-        <Card>
-          <CardContent className="p-4">
-            <div className="font-semibold text-sm mb-2">{t('offer.flow.instruction')}</div>
-            {offer.instruction_media_url && (
-              <img
-                src={offer.instruction_media_url}
-                alt=""
-                className="w-full rounded-xl mb-2 object-cover max-h-72"
-              />
-            )}
-            {offer.instruction_text && (
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{offer.instruction_text}</p>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Screenshot upload form appears only after the 60s verification wait. */}
-      {stage === 'actions' ? (
+      {stage === 'doactions' ? (
+        // Perform the rating/review actions first — instruction stays hidden.
         <Card>
           <CardContent className="p-4 flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin shrink-0" /> {t('offer.flow.preparing')}
+            <Loader2 className="size-4 animate-spin shrink-0" /> {t('offer.flow.doActions')}
           </CardContent>
         </Card>
       ) : (
         <>
-          <div className="text-sm font-semibold">{t('offer.flow.screenshotTitle')}</div>
-          {execution ? <OfferWork execution={execution} /> : <Spinner />}
+          {instructionCard}
+          {stage === 'checking' ? (
+            <Card>
+              <CardContent className="p-4 flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="size-4 animate-spin shrink-0" /> {t('offer.flow.preparing')}
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              <div className="text-sm font-semibold">{t('offer.flow.screenshotTitle')}</div>
+              {execution ? <OfferWork execution={execution} /> : <Spinner />}
+            </>
+          )}
         </>
       )}
     </div>
