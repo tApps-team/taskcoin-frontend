@@ -58,10 +58,15 @@ export interface Campaign {
   requires_rating: boolean
   requires_review: boolean
   rating_weights: Record<string, number>
-  review_instruction: string | null
   use_standard_instruction: boolean
   instruction_text: string | null
   instruction_media_url: string | null
+  use_standard_review_instruction: boolean
+  review_instruction: string | null
+  review_instruction_media_url: string | null
+  use_standard_rating_instruction: boolean
+  rating_instruction_text: string | null
+  rating_instruction_media_url: string | null
   allowed_countries: string[]
   status: CampaignStatus
   total_target: number | null
@@ -87,14 +92,20 @@ export interface OfferDetail extends Offer {
   requires_open: boolean
   requires_rating: boolean
   requires_review: boolean
-  review_instruction: string | null
   instruction_text: string | null
   instruction_media_url: string | null
+  review_instruction_text: string | null
+  review_instruction_media_url: string | null
+  rating_instruction_text: string | null
+  rating_instruction_media_url: string | null
 }
 
 // ---- Executions ----
+export type ScreenshotKind = 'main' | 'review' | 'rating'
+
 export interface Screenshot {
   id: string
+  kind: ScreenshotKind
   file_path: string
   uploaded_at: string
 }

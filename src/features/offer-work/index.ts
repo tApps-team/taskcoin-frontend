@@ -1,1 +1,1 @@
-export { OfferWork } from './ui/OfferWork'
+export { ScreenshotSlot } from './ui/ScreenshotSlot'

@@ -40,16 +40,27 @@ export function ExecutionCard({ execution }: { execution: AdminExecution }) {
         </div>
 
         {s.screenshots.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            {s.screenshots.map((sc) => (
-              <img
-                key={sc.id}
-                src={sc.file_path}
-                alt=""
-                onClick={() => setLightbox(sc.file_path)}
-                className="w-20 h-20 object-cover rounded-xl border border-white/10 cursor-pointer hover:border-brand-violet transition-colors"
-              />
-            ))}
+          <div className="space-y-2 mb-3">
+            {(['review', 'rating', 'main'] as const).map((kind) => {
+              const shots = s.screenshots.filter((sc) => (sc.kind || 'main') === kind)
+              if (shots.length === 0) return null
+              return (
+                <div key={kind}>
+                  <div className="text-xs text-muted-foreground mb-1">{t(`admin.executions.kind.${kind}`)}</div>
+                  <div className="flex flex-wrap gap-2">
+                    {shots.map((sc) => (
+                      <img
+                        key={sc.id}
+                        src={sc.file_path}
+                        alt=""
+                        onClick={() => setLightbox(sc.file_path)}
+                        className="w-20 h-20 object-cover rounded-xl border border-white/10 cursor-pointer hover:border-brand-violet transition-colors"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
           </div>
         )}
 

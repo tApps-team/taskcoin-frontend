@@ -7,7 +7,10 @@ import {
   useAdminUpdateCampaignMutation,
   type Campaign,
 } from '@/entities/campaign'
-import { useGetStandardInstructionQuery } from '@/entities/standard-instruction'
+import {
+  useGetStandardInstructionQuery,
+  type StandardInstruction,
+} from '@/entities/standard-instruction'
 import { getErrorMessage } from '@/shared/lib/errors'
 import { Button, Input, Label, Modal, SimpleSelect, Textarea } from '@/shared/ui'
 import { PercentSliders } from './PercentSliders'
@@ -58,6 +61,67 @@ function Radio({ label, checked, onChange }: { label: string; checked: boolean; 
   )
 }
 
+// One instruction slot (main / review / rating): standard-or-unique toggle,
+// standard preview (chosen by platform outside), or a unique image + text editor.
+function InstructionBlock({
+  title,
+  useStandard,
+  onStandard,
+  preview,
+  media,
+  onMedia,
+  onUpload,
+  uploading,
+  text,
+  onText,
+}: {
+  title: string
+  useStandard: boolean
+  onStandard: (v: boolean) => void
+  preview: StandardInstruction | undefined
+  media: string | null
+  onMedia: (url: string | null) => void
+  onUpload: (e: React.ChangeEvent<HTMLInputElement>, setter: (url: string) => void) => void
+  uploading: boolean
+  text: string
+  onText: (v: string) => void
+}) {
+  const { t } = useTranslation()
+  return (
+    <div className="space-y-2">
+      <div className="font-semibold text-sm">{title}</div>
+      <Radio label={t('admin.campaigns.instructionStandard')} checked={useStandard} onChange={() => onStandard(true)} />
+      <Radio label={t('admin.campaigns.instructionUnique')} checked={!useStandard} onChange={() => onStandard(false)} />
+      {useStandard ? (
+        <div className="glass-soft rounded-xl p-3">
+          {preview?.media_url && (
+            <img src={preview.media_url} alt="" className="w-full rounded-lg mb-2 object-cover max-h-48" />
+          )}
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+            {preview?.text || t('admin.campaigns.instructionStandardEmpty')}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            {media && <img src={media} alt="" className="size-16 rounded-xl object-cover" />}
+            <label className="text-sm text-brand-teal cursor-pointer">
+              {uploading ? t('common.loading') : t('admin.campaigns.instructionImage')}
+              <input type="file" accept="image/*" hidden onChange={(e) => onUpload(e, onMedia)} />
+            </label>
+            {media && (
+              <button type="button" className="text-xs text-destructive" onClick={() => onMedia(null)}>
+                {t('common.delete')}
+              </button>
+            )}
+          </div>
+          <Textarea value={text} onChange={(e) => onText(e.target.value)} placeholder={t('admin.campaigns.instructionText')} />
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | null; onClose: () => void }) {
   const { t } = useTranslation()
   const { data: apps } = useAdminGetApplicationsQuery()
@@ -81,10 +145,18 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
     const w = campaign?.rating_weights ?? {}
     return Object.fromEntries(STARS.map((s) => [String(s), w[String(s)] ?? 0]))
   })
-  const [reviewInstruction, setReviewInstruction] = useState(campaign?.review_instruction || '')
+  // Main-screen screenshot instruction
   const [useStandard, setUseStandard] = useState(campaign?.use_standard_instruction ?? true)
   const [instructionText, setInstructionText] = useState(campaign?.instruction_text || '')
   const [instructionMedia, setInstructionMedia] = useState<string | null>(campaign?.instruction_media_url || null)
+  // Review screenshot instruction (reviewInstruction = unique text)
+  const [useStandardReview, setUseStandardReview] = useState(campaign?.use_standard_review_instruction ?? true)
+  const [reviewInstruction, setReviewInstruction] = useState(campaign?.review_instruction || '')
+  const [reviewMedia, setReviewMedia] = useState<string | null>(campaign?.review_instruction_media_url || null)
+  // Rating screenshot instruction
+  const [useStandardRating, setUseStandardRating] = useState(campaign?.use_standard_rating_instruction ?? true)
+  const [ratingInstructionText, setRatingInstructionText] = useState(campaign?.rating_instruction_text || '')
+  const [ratingMedia, setRatingMedia] = useState<string | null>(campaign?.rating_instruction_media_url || null)
   const [countries, setCountries] = useState((campaign?.allowed_countries || []).join(', '))
   const [status, setStatus] = useState(campaign?.status || 'active')
   const [keywords, setKeywords] = useState<KeywordRow[]>(
@@ -133,19 +205,28 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
       return { ...s, [next]: 0 }
     })
 
-  const onInstructionImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Upload one image and hand the resulting URL to the given setter.
+  const uploadOne = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: (url: string) => void,
+  ) => {
     const file = e.target.files?.[0]
     if (!file) return
     const form = new FormData()
     form.append('file', file)
     try {
       const res = await uploadImage(form).unwrap()
-      setInstructionMedia(res.url)
+      setter(res.url)
     } catch (err) {
       setError(getErrorMessage(err, t('common.error')))
     }
     e.target.value = ''
   }
+
+  // Standard instruction preview depends on the selected app's platform.
+  const platform = (apps || []).find((a) => a.id === applicationId)?.platform
+  const stdReview = platform === 'ios' ? standardInstruction?.review_ios : standardInstruction?.review_android
+  const stdRating = platform === 'ios' ? standardInstruction?.rating_ios : standardInstruction?.rating_android
 
   const save = async () => {
     setError('')
@@ -166,10 +247,15 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
       requires_rating: rating,
       requires_review: review,
       rating_weights: rating ? ratingWeights : {},
-      review_instruction: review ? reviewInstruction || null : null,
       use_standard_instruction: useStandard,
       instruction_text: useStandard ? null : instructionText || null,
       instruction_media_url: useStandard ? null : instructionMedia,
+      use_standard_review_instruction: useStandardReview,
+      review_instruction: review && !useStandardReview ? reviewInstruction || null : null,
+      review_instruction_media_url: review && !useStandardReview ? reviewMedia : null,
+      use_standard_rating_instruction: useStandardRating,
+      rating_instruction_text: rating && !useStandardRating ? ratingInstructionText || null : null,
+      rating_instruction_media_url: rating && !useStandardRating ? ratingMedia : null,
       allowed_countries: countries
         .split(',')
         .map((c) => c.trim().toUpperCase())
@@ -270,7 +356,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
             <>
               <Check label={t('admin.campaigns.requiresRating')} checked={requiresRating} onChange={setRequiresRating} />
               {requiresRating && (
-                <div className="pl-6 space-y-1.5">
+                <div className="pl-6 space-y-2">
                   <p className="text-xs text-muted-foreground">{t('admin.campaigns.ratingWeightsHint')}</p>
                   <PercentSliders
                     items={STARS.map((s) => ({
@@ -284,11 +370,36 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
                     values={ratingWeights}
                     onChange={setRatingWeights}
                   />
+                  <InstructionBlock
+                    title={t('admin.campaigns.ratingInstructionTitle')}
+                    useStandard={useStandardRating}
+                    onStandard={setUseStandardRating}
+                    preview={stdRating}
+                    media={ratingMedia}
+                    onMedia={setRatingMedia}
+                    onUpload={uploadOne}
+                    uploading={uploadingInstruction}
+                    text={ratingInstructionText}
+                    onText={setRatingInstructionText}
+                  />
                 </div>
               )}
               <Check label={t('admin.campaigns.requiresReview')} checked={requiresReview} onChange={setRequiresReview} />
               {requiresReview && (
-                <Textarea value={reviewInstruction} onChange={(e) => setReviewInstruction(e.target.value)} placeholder={t('admin.campaigns.reviewHint')} />
+                <div className="pl-6">
+                  <InstructionBlock
+                    title={t('admin.campaigns.reviewInstructionTitle')}
+                    useStandard={useStandardReview}
+                    onStandard={setUseStandardReview}
+                    preview={stdReview}
+                    media={reviewMedia}
+                    onMedia={setReviewMedia}
+                    onUpload={uploadOne}
+                    uploading={uploadingInstruction}
+                    text={reviewInstruction}
+                    onText={setReviewInstruction}
+                  />
+                </div>
               )}
             </>
           )}
@@ -325,37 +436,20 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
           )}
         </div>
 
-        {/* Result instruction: standard vs unique */}
-        <div className="space-y-2 border-t border-white/10 pt-3">
-          <div className="font-semibold text-sm uppercase">{t('admin.campaigns.instructionResult')}</div>
-          <Radio label={t('admin.campaigns.instructionStandard')} checked={useStandard} onChange={() => setUseStandard(true)} />
-          <Radio label={t('admin.campaigns.instructionUnique')} checked={!useStandard} onChange={() => setUseStandard(false)} />
-          {useStandard ? (
-            <div className="glass-soft rounded-xl p-3">
-              {standardInstruction?.media_url && (
-                <img src={standardInstruction.media_url} alt="" className="w-full rounded-lg mb-2 object-cover max-h-48" />
-              )}
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                {standardInstruction?.text || t('admin.campaigns.instructionStandardEmpty')}
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                {instructionMedia && <img src={instructionMedia} alt="" className="size-16 rounded-xl object-cover" />}
-                <label className="text-sm text-brand-teal cursor-pointer">
-                  {uploadingInstruction ? t('common.loading') : t('admin.campaigns.instructionImage')}
-                  <input type="file" accept="image/*" hidden onChange={onInstructionImage} />
-                </label>
-                {instructionMedia && (
-                  <button type="button" className="text-xs text-destructive" onClick={() => setInstructionMedia(null)}>
-                    {t('common.delete')}
-                  </button>
-                )}
-              </div>
-              <Textarea value={instructionText} onChange={(e) => setInstructionText(e.target.value)} placeholder={t('admin.campaigns.instructionText')} />
-            </div>
-          )}
+        {/* Main-screen screenshot instruction: standard vs unique */}
+        <div className="border-t border-white/10 pt-3">
+          <InstructionBlock
+            title={t('admin.campaigns.instructionMainTitle')}
+            useStandard={useStandard}
+            onStandard={setUseStandard}
+            preview={standardInstruction?.main}
+            media={instructionMedia}
+            onMedia={setInstructionMedia}
+            onUpload={uploadOne}
+            uploading={uploadingInstruction}
+            text={instructionText}
+            onText={setInstructionText}
+          />
         </div>
 
         <div>

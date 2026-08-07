@@ -1,12 +1,23 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAdminUploadImageMutation } from '@/entities/application'
 import {
   useGetStandardInstructionQuery,
   useUpdateStandardInstructionMutation,
+  type StandardInstruction,
+  type StandardInstructionKey,
+  type StandardInstructions,
 } from '@/entities/standard-instruction'
 import { getErrorMessage } from '@/shared/lib/errors'
-import { Button, Label, Modal, Spinner, Textarea } from '@/shared/ui'
+import { Button, Modal, Spinner, Textarea } from '@/shared/ui'
+
+const SLOTS: StandardInstructionKey[] = [
+  'main',
+  'review_ios',
+  'review_android',
+  'rating_ios',
+  'rating_android',
+]
 
 export function StandardInstructionModal({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation()
@@ -14,22 +25,25 @@ export function StandardInstructionModal({ onClose }: { onClose: () => void }) {
   const [uploadImage, { isLoading: uploading }] = useAdminUploadImageMutation()
   const [update, { isLoading: saving }] = useUpdateStandardInstructionMutation()
 
-  const [media, setMedia] = useState<string | null | undefined>(undefined)
-  const [text, setText] = useState<string | undefined>(undefined)
+  const [draft, setDraft] = useState<StandardInstructions | null>(null)
   const [error, setError] = useState('')
 
-  // Fall back to fetched values until the admin edits a field.
-  const mediaVal = media !== undefined ? media : data?.media_url ?? null
-  const textVal = text !== undefined ? text : data?.text ?? ''
+  // Seed the working copy once the five instructions load.
+  useEffect(() => {
+    if (data && !draft) setDraft(data)
+  }, [data, draft])
 
-  const onImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const setField = (key: StandardInstructionKey, patch: Partial<StandardInstruction>) =>
+    setDraft((d) => (d ? { ...d, [key]: { ...d[key], ...patch } } : d))
+
+  const onImage = async (key: StandardInstructionKey, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     const form = new FormData()
     form.append('file', file)
     try {
       const res = await uploadImage(form).unwrap()
-      setMedia(res.url)
+      setField(key, { media_url: res.url })
     } catch (err) {
       setError(getErrorMessage(err, t('common.error')))
     }
@@ -37,9 +51,10 @@ export function StandardInstructionModal({ onClose }: { onClose: () => void }) {
   }
 
   const save = async () => {
+    if (!draft) return
     setError('')
     try {
-      await update({ media_url: mediaVal, text: textVal || null }).unwrap()
+      await update(draft).unwrap()
       onClose()
     } catch (err) {
       setError(getErrorMessage(err, t('common.error')))
@@ -48,30 +63,42 @@ export function StandardInstructionModal({ onClose }: { onClose: () => void }) {
 
   return (
     <Modal title={t('admin.standardInstruction.title')} onClose={onClose}>
-      {isLoading ? (
+      {isLoading || !draft ? (
         <Spinner />
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <p className="text-xs text-muted-foreground">{t('admin.standardInstruction.hint')}</p>
-          <div>
-            <Label>{t('admin.standardInstruction.image')}</Label>
-            <div className="flex items-center gap-3">
-              {mediaVal && <img src={mediaVal} alt="" className="size-16 rounded-xl object-cover" />}
-              <label className="text-sm text-brand-teal cursor-pointer">
-                {uploading ? t('common.loading') : t('admin.campaigns.instructionImage')}
-                <input type="file" accept="image/*" hidden onChange={onImage} />
-              </label>
-              {mediaVal && (
-                <button type="button" className="text-xs text-destructive" onClick={() => setMedia(null)}>
-                  {t('common.delete')}
-                </button>
-              )}
-            </div>
-          </div>
-          <div>
-            <Label>{t('admin.standardInstruction.text')}</Label>
-            <Textarea value={textVal} onChange={(e) => setText(e.target.value)} />
-          </div>
+          {SLOTS.map((key) => {
+            const item = draft[key]
+            return (
+              <div key={key} className="space-y-2 border-t border-white/10 pt-3">
+                <div className="font-semibold text-sm">{t(`admin.standardInstruction.slots.${key}`)}</div>
+                <div className="flex items-center gap-3">
+                  {item.media_url && (
+                    <img src={item.media_url} alt="" className="size-16 rounded-xl object-cover" />
+                  )}
+                  <label className="text-sm text-brand-teal cursor-pointer">
+                    {uploading ? t('common.loading') : t('admin.campaigns.instructionImage')}
+                    <input type="file" accept="image/*" hidden onChange={(e) => onImage(key, e)} />
+                  </label>
+                  {item.media_url && (
+                    <button
+                      type="button"
+                      className="text-xs text-destructive"
+                      onClick={() => setField(key, { media_url: null })}
+                    >
+                      {t('common.delete')}
+                    </button>
+                  )}
+                </div>
+                <Textarea
+                  value={item.text ?? ''}
+                  onChange={(e) => setField(key, { text: e.target.value })}
+                  placeholder={t('admin.standardInstruction.text')}
+                />
+              </div>
+            )
+          })}
           {error && <p className="text-destructive text-sm">{error}</p>}
           <Button className="w-full" disabled={saving} onClick={save}>
             {t('common.save')}

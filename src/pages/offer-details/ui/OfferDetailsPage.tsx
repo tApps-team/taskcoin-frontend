@@ -1,30 +1,31 @@
-import { ArrowLeft, Check, Copy, ExternalLink, Loader2, MessageSquare, Smartphone, Star } from 'lucide-react'
+import { ArrowLeft, Check, Copy, ExternalLink, Loader2, MessageSquare, Send, Smartphone, Star } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
-import { useGetMyExecutionsQuery, type Execution } from '@/entities/execution'
+import { useGetMyExecutionsQuery, useSubmitExecutionMutation, type Execution } from '@/entities/execution'
 import { useGetOfferQuery, useStartOfferMutation } from '@/entities/offer'
-import { OfferWork } from '@/features/offer-work'
-import type { OfferDetail } from '@/shared/api/types'
+import { ScreenshotSlot } from '@/features/offer-work'
+import type { OfferDetail, ScreenshotKind } from '@/shared/api/types'
 import { getErrorMessage } from '@/shared/lib/errors'
 import { storeHomeUrl } from '@/shared/lib/store'
+import { useCountdown } from '@/shared/lib/useCountdown'
 import { Button, Card, CardContent, CoinAmount, Spinner, StatusBadge } from '@/shared/ui'
 
-const WAIT_MS = 30000
+const INSTALL_MS = 30000 // ceremony "launch the app" wait
+const GATE_MS = 15000 // per-slot "do the action, then upload" wait
 
-type Stage = 'copy' | 'store' | 'installing' | 'doactions' | 'checking' | 'screenshot'
+type Stage = 'copy' | 'store' | 'installing' | 'work'
 
-const TIMED_STAGES: Stage[] = ['installing', 'doactions', 'checking']
-
-// --- Ceremony state persistence ---------------------------------------------
-// The step-by-step flow (copy → store → wait → screenshot) lives in-memory, so
-// leaving the page used to reset it — a user who took the task (clicked "copy")
-// and came back via "Активные" jumped straight to the final screenshot form.
-// We persist the current stage + the running timer deadline per campaign so the
-// flow resumes exactly where the user left off.
+// --- Flow state persistence -------------------------------------------------
+// The staged flow (copy → store → install → per-slot uploads) is driven partly
+// in-memory. We persist the current stage, the install wait deadline, and each
+// slot's 15s reveal deadline per campaign so leaving/returning resumes exactly
+// where the user left off. Which slots are already uploaded is derived from the
+// execution's screenshots (server-side), so upload progress always survives.
 interface FlowState {
   stage: Stage
-  deadline: number | null // wall-clock ms for the running installing/actions wait
+  deadline: number | null // wall-clock ms for the install wait
+  gates: Record<string, number> // per-slot 15s reveal deadlines (kind → ms)
 }
 
 const flowKey = (campaignId: string) => `taskcoin-offer-flow-${campaignId}`
@@ -33,7 +34,8 @@ function loadFlow(campaignId: string): FlowState | null {
   try {
     const raw = localStorage.getItem(flowKey(campaignId))
     const parsed = raw ? JSON.parse(raw) : null
-    return parsed && typeof parsed.stage === 'string' ? parsed : null
+    if (!parsed || typeof parsed.stage !== 'string') return null
+    return { stage: parsed.stage, deadline: parsed.deadline ?? null, gates: parsed.gates ?? {} }
   } catch {
     return null
   }
@@ -137,39 +139,51 @@ function OfferFlow({
 }) {
   const { t } = useTranslation()
   const [start] = useStartOfferMutation()
+  const [submit, { isLoading: submitting }] = useSubmitExecutionMutation()
+  const { expired } = useCountdown(execution?.deadline_at ?? new Date().toISOString())
   const hasActions = offer.requires_rating || offer.requires_review
 
-  // Resume the saved ceremony if the task is already taken; otherwise start
-  // fresh. A taken task without saved state (e.g. an older session) resumes at
-  // the "go to store" step rather than jumping to the final form.
-  const [stage, setStageRaw] = useState<Stage>(() =>
-    execution ? (loadFlow(campaignId)?.stage ?? 'store') : 'copy',
-  )
-  const [deadline, setDeadline] = useState<number | null>(() =>
-    execution ? (loadFlow(campaignId)?.deadline ?? null) : null,
-  )
+  // Whole flow state in one object so every change persists atomically.
+  const [flow, setFlow] = useState<FlowState>(() => {
+    if (!execution) return { stage: 'copy', deadline: null, gates: {} }
+    const saved = loadFlow(campaignId)
+    if (saved) return saved
+    // Taken in a previous session with no saved flow: resume by progress.
+    return { stage: execution.screenshots.length ? 'work' : 'store', deadline: null, gates: {} }
+  })
   const [copied, setCopied] = useState(() => !!execution)
   const [error, setError] = useState('')
 
-  // Move to a stage and persist it (+ a fresh deadline for timed waits).
-  const go = useCallback(
-    (next: Stage) => {
-      const dl = TIMED_STAGES.includes(next) ? Date.now() + WAIT_MS : null
-      setStageRaw(next)
-      setDeadline(dl)
-      saveFlow(campaignId, { stage: next, deadline: dl })
-    },
+  const update = useCallback(
+    (patch: Partial<FlowState>) =>
+      setFlow((f) => {
+        const next = { ...f, ...patch }
+        saveFlow(campaignId, next)
+        return next
+      }),
     [campaignId],
   )
 
-  // Single timer for whichever wait stage is active; advances via `go`.
-  // With actions: installing → doactions (perform rating/review) → checking
-  // (instruction + verifying) → screenshot. Without actions: installing → screenshot.
-  useDeadlineTimer(TIMED_STAGES.includes(stage) ? deadline : null, () => {
-    if (stage === 'installing') go(hasActions ? 'doactions' : 'screenshot')
-    else if (stage === 'doactions') go('checking')
-    else if (stage === 'checking') go('screenshot')
-  })
+  const go = useCallback(
+    (next: Stage) =>
+      update({ stage: next, deadline: next === 'installing' ? Date.now() + INSTALL_MS : null }),
+    [update],
+  )
+
+  // Start a slot's 15s reveal timer once (idempotent).
+  const armGate = useCallback(
+    (kind: string) =>
+      setFlow((f) => {
+        if (f.gates[kind]) return f
+        const next = { ...f, gates: { ...f.gates, [kind]: Date.now() + GATE_MS } }
+        saveFlow(campaignId, next)
+        return next
+      }),
+    [campaignId],
+  )
+
+  // Install wait → move to the per-slot work stage.
+  useDeadlineTimer(flow.stage === 'installing' ? flow.deadline : null, () => go('work'))
 
   const onCopy = async () => {
     setError('')
@@ -184,11 +198,21 @@ function OfferFlow({
     }
   }
 
+  const onSubmit = async () => {
+    if (!execution) return
+    setError('')
+    try {
+      await submit(execution.id).unwrap()
+    } catch (e) {
+      setError(getErrorMessage(e, t('common.error')))
+    }
+  }
+
   // ---- Ceremony (steps 1–3) ----
-  if (stage === 'copy' || stage === 'store' || stage === 'installing') {
+  if (flow.stage === 'copy' || flow.stage === 'store' || flow.stage === 'installing') {
+    const stage = flow.stage
     const step2State: StepState = stage === 'copy' ? 'locked' : stage === 'store' ? 'active' : 'done'
-    const step3State: StepState =
-      stage === 'installing' ? 'active' : stage === 'copy' || stage === 'store' ? 'locked' : 'done'
+    const step3State: StepState = stage === 'installing' ? 'active' : 'locked'
 
     return (
       <Card>
@@ -203,11 +227,7 @@ function OfferFlow({
             {offer.keyword && <div className="mt-2 text-sm font-mono text-muted-foreground">{offer.keyword}</div>}
           </Step>
 
-          <Step
-            index={2}
-            state={step2State}
-            title={t('offer.flow.step2', { store: storeName(offer.platform) })}
-          >
+          <Step index={2} state={step2State} title={t('offer.flow.step2', { store: storeName(offer.platform) })}>
             {offer.icon_url && (
               <img src={offer.icon_url} alt="" className="size-12 rounded-xl object-cover mb-2" />
             )}
@@ -237,84 +257,162 @@ function OfferFlow({
     )
   }
 
-  // ---- Work stage ----
-  // With actions: "А теперь" + rating/review cards, then a 30s "perform the
-  // actions" wait (no instruction yet), then instruction appears with a 30s
-  // "verifying" wait, then the screenshot form. Without actions: instruction +
-  // form right away.
-  const instructionCard = (offer.instruction_text || offer.instruction_media_url) && (
-    <Card>
-      <CardContent className="p-4">
-        <div className="font-semibold text-sm mb-2">{t('offer.flow.instruction')}</div>
-        {offer.instruction_media_url && (
-          <img
-            src={offer.instruction_media_url}
-            alt=""
-            className="w-full rounded-xl mb-2 object-cover max-h-72"
-          />
-        )}
-        {offer.instruction_text && (
-          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{offer.instruction_text}</p>
-        )}
-      </CardContent>
-    </Card>
+  // ---- Work stage: sequential per-slot upload plan ----
+  return (
+    <WorkStage
+      offer={offer}
+      execution={execution}
+      gates={flow.gates}
+      armGate={armGate}
+      hasActions={hasActions}
+      submitting={submitting}
+      expired={expired}
+      onSubmit={onSubmit}
+      error={error}
+    />
   )
+}
+
+// The three upload slots in order. `main` is always present; review/rating are
+// added when the campaign requires them and precede the main-screen shot.
+function slotOrder(offer: OfferDetail): ScreenshotKind[] {
+  const steps: ScreenshotKind[] = []
+  if (offer.requires_review) steps.push('review')
+  if (offer.requires_rating) steps.push('rating')
+  steps.push('main')
+  return steps
+}
+
+function WorkStage({
+  offer,
+  execution,
+  gates,
+  armGate,
+  hasActions,
+  submitting,
+  expired,
+  onSubmit,
+  error,
+}: {
+  offer: OfferDetail
+  execution?: Execution
+  gates: Record<string, number>
+  armGate: (kind: string) => void
+  hasActions: boolean
+  submitting: boolean
+  expired: boolean
+  onSubmit: () => void
+  error: string
+}) {
+  const { t } = useTranslation()
+  const steps = slotOrder(offer)
+
+  const has = (kind: ScreenshotKind) => !!execution?.screenshots.some((s) => s.kind === kind)
+  const currentIndex = steps.findIndex((k) => !has(k))
+  const allDone = currentIndex === -1
+  const currentKind = allDone ? null : steps[currentIndex]
+
+  // A slot's upload input is gated behind a 15s "do the action" wait — except
+  // the main-screen shot on install-only tasks, which shows immediately.
+  const isGated = (kind: ScreenshotKind) => kind !== 'main' || hasActions
+  const gateOf = currentKind && isGated(currentKind) ? gates[currentKind] ?? null : null
+
+  // Re-render when the gate elapses so the upload input reveals.
+  const [, tick] = useState(0)
+  useDeadlineTimer(gateOf, () => tick((x) => x + 1))
+
+  // Arm the current slot's gate when it becomes active.
+  useEffect(() => {
+    if (currentKind && isGated(currentKind) && !gates[currentKind]) armGate(currentKind)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentKind])
+
+  const revealed = (kind: ScreenshotKind) =>
+    !isGated(kind) || (!!gates[kind] && Date.now() >= gates[kind])
+
+  const heading = (kind: ScreenshotKind) => {
+    if (kind === 'review')
+      return (
+        <div className="flex items-center gap-2 font-semibold text-sm">
+          <MessageSquare className="size-4 text-brand-teal shrink-0" /> {t('offer.flow.reviewTitle')}
+        </div>
+      )
+    if (kind === 'rating')
+      return (
+        <div className="flex items-center gap-2 font-semibold text-sm">
+          <span className="flex text-amber-400">
+            {Array.from({ length: execution?.assigned_rating ?? 0 }).map((_, i) => (
+              <Star key={i} className="size-4 fill-current" />
+            ))}
+          </span>
+          {t('offer.flow.rate', { rating: execution?.assigned_rating ?? '' })}
+        </div>
+      )
+    return <div className="font-semibold text-sm">{t('offer.flow.mainTitle')}</div>
+  }
+
+  const instruction = (kind: ScreenshotKind): { media: string | null; text: string | null } => {
+    if (kind === 'review')
+      return { media: offer.review_instruction_media_url, text: offer.review_instruction_text }
+    if (kind === 'rating')
+      return { media: offer.rating_instruction_media_url, text: offer.rating_instruction_text }
+    return { media: offer.instruction_media_url, text: offer.instruction_text }
+  }
+
+  const placeholder = (kind: ScreenshotKind) =>
+    kind === 'review'
+      ? t('offer.flow.uploadReview')
+      : kind === 'rating'
+        ? t('offer.flow.uploadRating')
+        : t('offer.flow.uploadMain')
 
   return (
     <div className="space-y-4">
-      {hasActions && <div className="text-2xl font-bold">{t('offer.flow.now')}</div>}
-
-      {offer.requires_rating && (
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="flex text-amber-400">
-              {Array.from({ length: execution?.assigned_rating ?? 0 }).map((_, i) => (
-                <Star key={i} className="size-4 fill-current" />
-              ))}
-            </div>
-            <span className="text-sm">
-              {t('offer.flow.rate', { rating: execution?.assigned_rating ?? '' })}
-            </span>
-          </CardContent>
-        </Card>
-      )}
-
-      {offer.requires_review && (
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2 font-semibold text-sm mb-1">
-              <MessageSquare className="size-4 text-brand-teal shrink-0" /> {t('offer.flow.reviewTitle')}
-            </div>
-            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-              {offer.review_instruction || t('offer.stepReview')}
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {stage === 'doactions' ? (
-        // Perform the rating/review actions first — instruction stays hidden.
-        <Card>
-          <CardContent className="p-4 flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin shrink-0" /> {t('offer.flow.doActions')}
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          {instructionCard}
-          {stage === 'checking' ? (
-            <Card>
-              <CardContent className="p-4 flex items-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="size-4 animate-spin shrink-0" /> {t('offer.flow.preparing')}
+      {steps
+        .filter((kind) => has(kind) || kind === currentKind)
+        .map((kind) => {
+          const done = has(kind)
+          const instr = instruction(kind)
+          return (
+            <Card key={kind}>
+              <CardContent className="p-4 space-y-3">
+                {heading(kind)}
+                {done ? (
+                  execution && <ScreenshotSlot execution={execution} kind={kind} placeholder={placeholder(kind)} />
+                ) : (
+                  <>
+                    {(instr.media || instr.text) && (
+                      <div>
+                        {instr.media && (
+                          <img src={instr.media} alt="" className="w-full rounded-xl mb-2 object-cover max-h-72" />
+                        )}
+                        {instr.text && (
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{instr.text}</p>
+                        )}
+                      </div>
+                    )}
+                    {revealed(kind) ? (
+                      execution && (
+                        <ScreenshotSlot execution={execution} kind={kind} placeholder={placeholder(kind)} />
+                      )
+                    ) : (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Loader2 className="size-4 animate-spin shrink-0" /> {t('offer.flow.doTaskReturn')}
+                      </div>
+                    )}
+                  </>
+                )}
               </CardContent>
             </Card>
-          ) : (
-            <>
-              <div className="text-sm font-semibold">{t('offer.flow.screenshotTitle')}</div>
-              {execution ? <OfferWork execution={execution} /> : <Spinner />}
-            </>
-          )}
-        </>
+          )
+        })}
+
+      {error && <p className="text-destructive text-sm">{error}</p>}
+
+      {allDone && (
+        <Button variant="teal" className="w-full" disabled={submitting || expired} onClick={onSubmit}>
+          <Send className="size-4" /> {t('offer.submit')}
+        </Button>
       )}
     </div>
   )
