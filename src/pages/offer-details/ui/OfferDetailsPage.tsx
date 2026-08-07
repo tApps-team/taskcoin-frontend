@@ -384,7 +384,7 @@ function WorkStage({
                     {(instr.media || instr.text) && (
                       <div>
                         {instr.media && (
-                          <img src={instr.media} alt="" className="w-full rounded-xl mb-2 object-cover max-h-72" />
+                          <img src={instr.media} alt="" className="w-full rounded-xl mb-2 object-contain max-h-96" />
                         )}
                         {instr.text && (
                           <p className="text-sm text-muted-foreground whitespace-pre-wrap">{instr.text}</p>

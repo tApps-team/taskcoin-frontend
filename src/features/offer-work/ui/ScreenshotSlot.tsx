@@ -61,8 +61,8 @@ export function ScreenshotSlot({
           </button>
         </div>
       ) : (
-        <label className="flex items-center justify-center gap-2 border border-dashed border-white/20 rounded-xl py-3 cursor-pointer hover:bg-white/5 transition-colors">
-          <Upload className="size-4" />
+        <label className="flex items-center justify-center gap-3 border border-dashed border-white/20 rounded-xl px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors">
+          <Upload className="size-4 shrink-0" />
           <span className="text-sm">{placeholder}</span>
           <input type="file" accept="image/*" hidden onChange={onUpload} disabled={uploading} />
         </label>
