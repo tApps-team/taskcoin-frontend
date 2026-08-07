@@ -1,4 +1,4 @@
-import { Trash2, Upload } from 'lucide-react'
+import { Loader2, Trash2, Upload } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -59,6 +59,10 @@ export function ScreenshotSlot({
           >
             <Trash2 className="size-3" />
           </button>
+        </div>
+      ) : uploading ? (
+        <div className="flex items-center justify-center gap-3 border border-dashed border-white/20 rounded-xl px-4 py-3 text-sm text-muted-foreground">
+          <Loader2 className="size-4 shrink-0 animate-spin" /> {t('offer.uploading')}
         </div>
       ) : (
         <label className="flex items-center justify-center gap-3 border border-dashed border-white/20 rounded-xl px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors">

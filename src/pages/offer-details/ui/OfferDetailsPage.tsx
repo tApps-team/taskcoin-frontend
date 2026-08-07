@@ -1,3 +1,4 @@
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowLeft, Check, Copy, ExternalLink, Loader2, MessageSquare, Send, Smartphone, Star } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -9,7 +10,7 @@ import type { OfferDetail, ScreenshotKind } from '@/shared/api/types'
 import { getErrorMessage } from '@/shared/lib/errors'
 import { storeHomeUrl } from '@/shared/lib/store'
 import { useCountdown } from '@/shared/lib/useCountdown'
-import { Button, Card, CardContent, CoinAmount, Spinner, StatusBadge } from '@/shared/ui'
+import { Button, Card, CardContent, CoinAmount, Confetti, Spinner, StatusBadge } from '@/shared/ui'
 
 const INSTALL_MS = 30000 // ceremony "launch the app" wait
 const GATE_MS = 15000 // per-slot "do the action, then upload" wait
@@ -305,6 +306,7 @@ function WorkStage({
   error: string
 }) {
   const { t } = useTranslation()
+  const reduce = useReducedMotion()
   const steps = slotOrder(offer)
 
   const has = (kind: ScreenshotKind) => !!execution?.screenshots.some((s) => s.kind === kind)
@@ -326,6 +328,18 @@ function WorkStage({
     if (currentKind && isGated(currentKind) && !gates[currentKind]) armGate(currentKind)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentKind])
+
+  // Celebrate reaching the final "submit" step — but only on a fresh transition
+  // to done, not when re-opening an already-completed task.
+  const initiallyDone = useRef(allDone)
+  const [confetti, setConfetti] = useState(false)
+  useEffect(() => {
+    if (allDone && !initiallyDone.current && !reduce) {
+      setConfetti(true)
+      const id = setTimeout(() => setConfetti(false), 2600)
+      return () => clearTimeout(id)
+    }
+  }, [allDone, reduce])
 
   const revealed = (kind: ScreenshotKind) =>
     !isGated(kind) || (!!gates[kind] && Date.now() >= gates[kind])
@@ -368,51 +382,69 @@ function WorkStage({
 
   return (
     <div className="space-y-4">
-      {steps
-        .filter((kind) => has(kind) || kind === currentKind)
-        .map((kind) => {
-          const done = has(kind)
-          const instr = instruction(kind)
-          return (
-            <Card key={kind}>
-              <CardContent className="p-4 space-y-3">
-                {heading(kind)}
-                {done ? (
-                  execution && <ScreenshotSlot execution={execution} kind={kind} placeholder={placeholder(kind)} />
-                ) : (
-                  <>
-                    {(instr.media || instr.text) && (
-                      <div>
-                        {instr.media && (
-                          <img src={instr.media} alt="" className="w-full rounded-xl mb-2 object-contain max-h-96" />
-                        )}
-                        {instr.text && (
-                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{instr.text}</p>
-                        )}
-                      </div>
-                    )}
-                    {revealed(kind) ? (
-                      execution && (
-                        <ScreenshotSlot execution={execution} kind={kind} placeholder={placeholder(kind)} />
-                      )
+      {confetti && <Confetti />}
+
+      <AnimatePresence mode="popLayout">
+        {steps
+          .filter((kind) => has(kind) || kind === currentKind)
+          .map((kind) => {
+            const done = has(kind)
+            const instr = instruction(kind)
+            return (
+              <motion.div
+                key={kind}
+                layout={!reduce}
+                initial={reduce ? false : { opacity: 0, y: 16, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <Card>
+                  <CardContent className="p-4 space-y-3">
+                    {heading(kind)}
+                    {done ? (
+                      execution && <ScreenshotSlot execution={execution} kind={kind} placeholder={placeholder(kind)} />
                     ) : (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Loader2 className="size-4 animate-spin shrink-0" /> {t('offer.flow.doTaskReturn')}
-                      </div>
+                      <>
+                        {(instr.media || instr.text) && (
+                          <div>
+                            {instr.media && (
+                              <img src={instr.media} alt="" className="w-full rounded-xl mb-2 object-contain max-h-96" />
+                            )}
+                            {instr.text && (
+                              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{instr.text}</p>
+                            )}
+                          </div>
+                        )}
+                        {revealed(kind) ? (
+                          execution && (
+                            <ScreenshotSlot execution={execution} kind={kind} placeholder={placeholder(kind)} />
+                          )
+                        ) : (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Loader2 className="size-4 animate-spin shrink-0" /> {t('offer.flow.doTaskReturn')}
+                          </div>
+                        )}
+                      </>
                     )}
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          )
-        })}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )
+          })}
+      </AnimatePresence>
 
       {error && <p className="text-destructive text-sm">{error}</p>}
 
       {allDone && (
-        <Button variant="teal" className="w-full" disabled={submitting || expired} onClick={onSubmit}>
-          <Send className="size-4" /> {t('offer.submit')}
-        </Button>
+        <motion.div
+          initial={reduce ? false : { opacity: 0, scale: 0.8, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={reduce ? undefined : { type: 'spring', stiffness: 500, damping: 13 }}
+        >
+          <Button variant="teal" className="w-full" disabled={submitting || expired} onClick={onSubmit}>
+            <Send className="size-4" /> {t('offer.submit')}
+          </Button>
+        </motion.div>
       )}
     </div>
   )
