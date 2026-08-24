@@ -232,20 +232,24 @@ function OfferFlow({
             {offer.icon_url && (
               <img src={offer.icon_url} alt="" className="size-12 rounded-xl object-cover mb-2" />
             )}
-            {stage === 'store' ? (
+            {stage === 'copy' ? (
+              <Button variant="teal" disabled>
+                <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.platform) })}
+              </Button>
+            ) : (
+              // Always a real link: the first tap advances to the install step,
+              // later taps just re-open the store (without resetting the timer).
               <Button asChild variant="teal">
                 <a
                   href={storeHomeUrl(offer.platform)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => go('installing')}
+                  onClick={() => {
+                    if (stage === 'store') go('installing')
+                  }}
                 >
                   <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.platform) })}
                 </a>
-              </Button>
-            ) : (
-              <Button variant="teal" disabled>
-                <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.platform) })}
               </Button>
             )}
           </Step>
