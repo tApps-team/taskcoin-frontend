@@ -2,7 +2,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowLeft, Check, Copy, ExternalLink, Loader2, MessageSquare, Send, Smartphone, Star } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { useGetMyExecutionsQuery, useSubmitExecutionMutation, type Execution } from '@/entities/execution'
 import { useGetOfferQuery, useStartOfferMutation } from '@/entities/offer'
 import { ScreenshotSlot } from '@/features/offer-work'
@@ -78,6 +78,10 @@ function useDeadlineTimer(deadline: number | null, onDone: () => void) {
 export function OfferDetailsPage() {
   const { t } = useTranslation()
   const { id = '' } = useParams()
+  const location = useLocation()
+  // Return to wherever the user opened this task from (feed or active), set as
+  // navigation state by the linking page; default to the tasks feed.
+  const backTo = (location.state as { from?: string } | null)?.from ?? '/app'
   const { data: offer, isLoading } = useGetOfferQuery(id)
   const { data: mine, isLoading: mineLoading } = useGetMyExecutionsQuery({ limit: 100 })
 
@@ -90,7 +94,7 @@ export function OfferDetailsPage() {
 
   return (
     <div>
-      <Link to="/app/active" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-teal">
+      <Link to={backTo} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-teal">
         <ArrowLeft className="size-4" /> {t('common.back')}
       </Link>
 

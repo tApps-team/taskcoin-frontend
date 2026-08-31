@@ -53,7 +53,7 @@ export function ActivePage() {
                 variants={reduce ? undefined : listItem}
                 exit={reduce ? undefined : 'exit'}
               >
-                <Link to={`/app/offers/${s.campaign_id}`}>
+                <Link to={`/app/offers/${s.campaign_id}`} state={{ from: '/app/active' }}>
                   <div className="glass-soft glass-hover rounded-2xl p-4 flex items-center gap-3">
                     {s.icon_url ? (
                       <img src={s.icon_url} alt="" className="size-12 rounded-xl object-cover shrink-0" />

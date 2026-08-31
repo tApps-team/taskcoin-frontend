@@ -40,7 +40,7 @@ export function OffersPage() {
                 variants={reduce ? undefined : listItem}
                 exit={reduce ? undefined : 'exit'}
               >
-                <Link to={`/app/offers/${o.campaign_id}`}>
+                <Link to={`/app/offers/${o.campaign_id}`} state={{ from: '/app' }}>
                   <Card className="hover:border-brand-violet/40 transition-colors">
                     <CardContent className="p-4 flex items-center gap-3">
                       {o.icon_url ? (
