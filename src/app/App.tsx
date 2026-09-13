@@ -43,6 +43,9 @@ const AdminCampaignDetailsPage = lazy(() =>
 const AdminExecutionsPage = lazy(() =>
   import('@/pages/admin-executions').then((m) => ({ default: m.AdminExecutionsPage })),
 )
+const AdminTicketsPage = lazy(() =>
+  import('@/pages/admin-tickets').then((m) => ({ default: m.AdminTicketsPage })),
+)
 const AdminNewsPage = lazy(() =>
   import('@/pages/admin-news').then((m) => ({ default: m.AdminNewsPage })),
 )
@@ -86,6 +89,7 @@ export function App() {
             <Route path="campaigns" element={<AdminCampaignsPage />} />
             <Route path="campaigns/:id" element={<AdminCampaignDetailsPage />} />
             <Route path="executions" element={<AdminExecutionsPage />} />
+            <Route path="tickets" element={<AdminTicketsPage />} />
             <Route path="news" element={<AdminNewsPage />} />
             <Route path="gift-codes" element={<AdminGiftCodesPage />} />
             <Route path="withdrawals" element={<AdminWithdrawalsPage />} />

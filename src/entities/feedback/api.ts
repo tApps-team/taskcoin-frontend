@@ -1,5 +1,7 @@
 import { baseApi } from '@/shared/api'
 import type {
+  AdminTicket,
+  AdminTicketListItem,
   Ticket,
   TicketAttachment,
   TicketListItem,
@@ -58,6 +60,36 @@ export const feedbackApi = baseApi.injectEndpoints({
     uploadFeedbackMedia: b.mutation<TicketAttachment, FormData>({
       query: (body) => ({ url: '/feedback/upload', method: 'POST', body }),
     }),
+
+    // --- Admin (CRM) ---
+    adminGetTickets: b.query<AdminTicketListItem[], void>({
+      query: () => '/admin/tickets',
+      providesTags: ['AdminTickets'],
+    }),
+    adminGetTicket: b.query<AdminTicket, string>({
+      query: (id) => `/admin/tickets/${id}`,
+      providesTags: (_r, _e, id) => [{ type: 'AdminTicket', id }],
+    }),
+    adminReplyTicket: b.mutation<TicketMessage, AddMessageArg>({
+      query: ({ ticketId, body, attachments }) => ({
+        url: `/admin/tickets/${ticketId}/messages`,
+        method: 'POST',
+        body: { body, attachments },
+      }),
+      async onQueryStarted({ ticketId }, { dispatch, queryFulfilled }) {
+        try {
+          const { data: msg } = await queryFulfilled
+          dispatch(
+            feedbackApi.util.updateQueryData('adminGetTicket', ticketId, (draft) => {
+              if (!draft.messages.some((m) => m.id === msg.id)) draft.messages.push(msg)
+            }),
+          )
+          dispatch(feedbackApi.util.invalidateTags(['AdminTickets']))
+        } catch {
+          /* ignore */
+        }
+      },
+    }),
   }),
 })
 
@@ -67,4 +99,7 @@ export const {
   useCreateTicketMutation,
   useAddTicketMessageMutation,
   useUploadFeedbackMediaMutation,
+  useAdminGetTicketsQuery,
+  useAdminGetTicketQuery,
+  useAdminReplyTicketMutation,
 } = feedbackApi

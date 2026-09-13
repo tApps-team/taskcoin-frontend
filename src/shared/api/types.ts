@@ -247,6 +247,20 @@ export interface Ticket extends TicketListItem {
   messages: TicketMessage[]
 }
 
+interface TicketUser {
+  id: string
+  email: string
+  full_name: string | null
+}
+
+export interface AdminTicketListItem extends TicketListItem {
+  user: TicketUser
+}
+
+export interface AdminTicket extends Ticket {
+  user: TicketUser
+}
+
 export interface NewsArticle {
   id: string
   title: string

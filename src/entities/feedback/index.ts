@@ -5,4 +5,7 @@ export {
   useCreateTicketMutation,
   useAddTicketMessageMutation,
   useUploadFeedbackMediaMutation,
+  useAdminGetTicketsQuery,
+  useAdminGetTicketQuery,
+  useAdminReplyTicketMutation,
 } from './api'

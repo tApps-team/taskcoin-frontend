@@ -167,6 +167,7 @@
       "applications": "Приложения",
       "campaigns": "Кампании",
       "executions": "Проверка",
+      "tickets": "Обращения",
       "news": "Новости",
       "giftCodes": "Гифт-коды",
       "withdrawals": "Выводы",
@@ -326,6 +327,10 @@
       "published": "Опубликовано",
       "empty": "Статей пока нет",
       "confirmDelete": "Удалить статью?"
+    },
+    "tickets": {
+      "title": "Обращения",
+      "empty": "Обращений пока нет"
     },
     "settings": {
       "title": "Настройки",

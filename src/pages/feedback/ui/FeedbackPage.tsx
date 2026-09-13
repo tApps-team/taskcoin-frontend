@@ -7,19 +7,17 @@ import {
   useGetTicketQuery,
   useGetTicketsQuery,
 } from '@/entities/feedback'
-import type { TicketAttachment, TicketMessage, TicketType, TipTapDoc } from '@/shared/api/types'
+import { ChatComposer, MessageBubble } from '@/features/feedback-chat'
+import type { TicketAttachment, TicketType, TipTapDoc } from '@/shared/api/types'
 import { formatDate } from '@/shared/lib/format'
 import { useFeedbackSocket } from '@/shared/lib/useFeedbackSocket'
 import { Button, Card, CardContent, EmptyState, Spinner } from '@/shared/ui'
-import { RichTextContent } from '@/shared/ui/rich-text'
-import { ChatComposer } from './ChatComposer'
 
 const TYPES: TicketType[] = ['question', 'cooperation', 'complaint', 'suggestion', 'other']
 
 type View = { mode: 'list' } | { mode: 'new' } | { mode: 'thread'; id: string }
 
 export function FeedbackPage() {
-  const { t } = useTranslation()
   const [view, setView] = useState<View>({ mode: 'list' })
 
   if (view.mode === 'new') return <NewTicket onClose={() => setView({ mode: 'list' })} onCreated={(id) => setView({ mode: 'thread', id })} />
@@ -138,7 +136,7 @@ function Thread({ id, onBack }: { id: string; onBack: () => void }) {
           </div>
           <div className="flex-1 space-y-3 mb-3">
             {data.messages.map((m) => (
-              <MessageBubble key={m.id} message={m} />
+              <MessageBubble key={m.id} message={m} mine={m.sender === 'user'} />
             ))}
             <div ref={bottomRef} />
           </div>
@@ -149,35 +147,3 @@ function Thread({ id, onBack }: { id: string; onBack: () => void }) {
   )
 }
 
-function MessageBubble({ message }: { message: TicketMessage }) {
-  const { t } = useTranslation()
-  const isAdmin = message.sender === 'admin'
-  const images = message.attachments.filter((a) => a.kind === 'image')
-  const files = message.attachments.filter((a) => a.kind === 'file')
-  const hasBody = !!(message.body as { content?: unknown[] })?.content?.length
-
-  return (
-    <div className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}>
-      <div className={`max-w-[85%] rounded-2xl px-3 py-2 ${isAdmin ? 'bg-white/8' : 'bg-brand-violet/20'}`}>
-        <div className="text-[11px] text-muted-foreground mb-1">
-          {isAdmin ? message.admin_name || t('feedback.support') : t('feedback.you')} · {formatDate(message.created_at)}
-        </div>
-        {hasBody && <RichTextContent content={message.body} className="text-sm" />}
-        {images.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2">
-            {images.map((a, i) => (
-              <a key={i} href={a.url} target="_blank" rel="noreferrer">
-                <img src={a.url} alt="" className="w-28 h-28 object-cover rounded-lg border border-white/10" />
-              </a>
-            ))}
-          </div>
-        )}
-        {files.map((a, i) => (
-          <a key={i} href={a.url} target="_blank" rel="noreferrer" className="block text-sm text-brand-teal mt-1 underline">
-            📎 {a.name}
-          </a>
-        ))}
-      </div>
-    </div>
-  )
-}

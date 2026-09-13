@@ -30,12 +30,13 @@ export function useFeedbackSocket(active: boolean) {
             message: TicketMessage
           }
           if (data.type !== 'ticket_message' || !data.ticket_id) return
-          dispatch(
-            feedbackApi.util.updateQueryData('getTicket', data.ticket_id, (draft) => {
-              if (!draft.messages.some((m) => m.id === data.message.id)) draft.messages.push(data.message)
-            }),
-          )
-          dispatch(feedbackApi.util.invalidateTags(['FeedbackTickets']))
+          // Patch both the user-side and the CRM caches (whichever is mounted).
+          const push = (draft: { messages: TicketMessage[] }) => {
+            if (!draft.messages.some((m) => m.id === data.message.id)) draft.messages.push(data.message)
+          }
+          dispatch(feedbackApi.util.updateQueryData('getTicket', data.ticket_id, push))
+          dispatch(feedbackApi.util.updateQueryData('adminGetTicket', data.ticket_id, push))
+          dispatch(feedbackApi.util.invalidateTags(['FeedbackTickets', 'AdminTickets']))
         } catch {
           /* ignore malformed frames */
         }
