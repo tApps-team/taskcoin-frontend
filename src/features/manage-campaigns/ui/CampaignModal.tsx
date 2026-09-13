@@ -19,6 +19,8 @@ import { PercentSliders } from './PercentSliders'
 interface KeywordRow {
   keyword: string
   percent: number
+  position: number | null
+  autoPosition?: number | null
 }
 
 const STARS = [1, 2, 3, 4, 5]
@@ -161,7 +163,12 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
   const [countries, setCountries] = useState((campaign?.allowed_countries || []).join(', '))
   const [status, setStatus] = useState(campaign?.status || 'active')
   const [keywords, setKeywords] = useState<KeywordRow[]>(
-    campaign?.keywords.map((k) => ({ keyword: k.keyword, percent: k.percent })) || [],
+    campaign?.keywords.map((k) => ({
+      keyword: k.keyword,
+      percent: k.percent,
+      position: k.position,
+      autoPosition: k.auto_position,
+    })) || [],
   )
   const [error, setError] = useState('')
 
@@ -170,7 +177,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
 
   const addKeyword = () =>
     setKeywords((rows) => {
-      const next = [...rows, { keyword: '', percent: 0 }]
+      const next = [...rows, { keyword: '', percent: 0, position: null }]
       const even = Math.floor(100 / next.length)
       return next.map((r, i) => ({ ...r, percent: i === next.length - 1 ? 100 - even * (next.length - 1) : even }))
     })
@@ -262,7 +269,9 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
         .map((c) => c.trim().toUpperCase())
         .filter(Boolean),
       status,
-      keywords: keywords.filter((k) => k.keyword.trim()),
+      keywords: keywords
+        .filter((k) => k.keyword.trim())
+        .map((k) => ({ keyword: k.keyword, percent: k.percent, position: k.position })),
     }
     try {
       if (campaign) await update({ id: campaign.id, body }).unwrap()
@@ -418,16 +427,33 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
             <p className="text-xs text-muted-foreground">{t('admin.campaigns.keywordsPercentHint')}</p>
           )}
           {keywords.map((k, i) => (
-            <div key={i} className="flex gap-2">
-              <Input className="flex-1" value={k.keyword} onChange={(e) => setKw(i, { keyword: e.target.value })} placeholder={t('admin.campaigns.keyword')} />
-              <div className="w-14 shrink-0 flex items-center justify-center text-sm font-mono text-muted-foreground">
-                {keywords.length === 1 ? 100 : k.percent}%
+            <div key={i} className="space-y-1">
+              <div className="flex gap-2">
+                <Input className="flex-1" value={k.keyword} onChange={(e) => setKw(i, { keyword: e.target.value })} placeholder={t('admin.campaigns.keyword')} />
+                <Input
+                  type="number"
+                  className="w-16 shrink-0"
+                  value={k.position ?? ''}
+                  onChange={(e) => setKw(i, { position: e.target.value ? Number(e.target.value) : null })}
+                  placeholder={t('admin.campaigns.positionShort')}
+                />
+                <div className="w-12 shrink-0 flex items-center justify-center text-sm font-mono text-muted-foreground">
+                  {keywords.length === 1 ? 100 : k.percent}%
+                </div>
+                <Button size="icon" variant="destructive" onClick={() => removeKeyword(i)}>
+                  <X className="size-4" />
+                </Button>
               </div>
-              <Button size="icon" variant="destructive" onClick={() => removeKeyword(i)}>
-                <X className="size-4" />
-              </Button>
+              {k.autoPosition != null && (
+                <p className="text-xs text-muted-foreground pl-1">
+                  {t('admin.campaigns.autoPosition', { n: k.autoPosition })}
+                </p>
+              )}
             </div>
           ))}
+          {keywords.length > 0 && (
+            <p className="text-xs text-muted-foreground">{t('admin.campaigns.positionHint')}</p>
+          )}
           {keywords.length > 1 && (
             <PercentSliders
               items={keywords.map((k, i) => ({ key: String(i), label: k.keyword || `${t('admin.campaigns.keyword')} ${i + 1}` }))}

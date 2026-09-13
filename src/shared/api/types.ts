@@ -46,6 +46,9 @@ export interface Keyword {
   id: string
   keyword: string
   percent: number
+  position: number | null
+  auto_position: number | null
+  auto_position_at: string | null
 }
 
 export interface Campaign {
@@ -92,6 +95,7 @@ export interface Offer {
 }
 
 export interface OfferDetail extends Offer {
+  keyword_position: number | null
   requires_open: boolean
   requires_rating: boolean
   requires_review: boolean

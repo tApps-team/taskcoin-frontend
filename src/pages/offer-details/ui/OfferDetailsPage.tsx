@@ -232,6 +232,11 @@ function OfferFlow({
             {offer.icon_url && (
               <img src={offer.icon_url} alt="" className="size-12 rounded-xl object-cover mb-2" />
             )}
+            {offer.keyword_position != null && (
+              <div className="mb-2 text-sm text-brand-teal font-medium">
+                {t('offer.flow.position', { n: offer.keyword_position })}
+              </div>
+            )}
             {stage === 'copy' ? (
               <Button variant="teal" disabled>
                 <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.store) })}
