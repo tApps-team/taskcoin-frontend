@@ -108,6 +108,12 @@ export function ApplicationModal({
             )}
             <Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('admin.apps.name')} />
           </div>
+          <Input
+            className="mt-2"
+            value={iconUrl || ''}
+            onChange={(e) => setIconUrl(e.target.value || null)}
+            placeholder={t('admin.apps.iconUrlPlaceholder')}
+          />
           <p className="text-xs text-muted-foreground mt-1">{t('admin.apps.iconAuto')}</p>
         </div>
         <div>
