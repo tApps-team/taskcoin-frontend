@@ -2,7 +2,6 @@ import { Headset, LogOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import { useGetPublicSettingsQuery } from '@/entities/app-settings'
 import { loggedOut, useMeQuery, useUpdateProfileMutation } from '@/entities/session'
 import { baseApi } from '@/shared/api'
 import { useGetMyStatsQuery } from '@/entities/user'
@@ -38,7 +37,6 @@ export function ProfilePage() {
   const navigate = useNavigate()
   const { data: me, isLoading } = useMeQuery()
   const { data: stats } = useGetMyStatsQuery()
-  const { data: settings } = useGetPublicSettingsQuery()
   const [updateProfile] = useUpdateProfileMutation()
 
   if (isLoading || !me) return <Spinner />
@@ -101,20 +99,11 @@ export function ProfilePage() {
           <div className="flex-1 text-center sm:text-left">
             <div className="text-lg font-bold">{t('support.title')}</div>
             <p className="text-sm text-muted-foreground mt-0.5">{t('support.text')}</p>
-            <div className="mt-3 flex flex-col sm:flex-row gap-2">
-              <Button asChild variant="teal" className="w-full sm:w-auto">
-                <Link to="/app/feedback">
-                  <Headset className="size-4" /> {t('feedback.open')}
-                </Link>
-              </Button>
-              {settings?.support_telegram_link && (
-                <Button asChild variant="secondary" className="w-full sm:w-auto">
-                  <a href={settings.support_telegram_link} target="_blank" rel="noreferrer">
-                    <TelegramIcon /> {t('support.contact')}
-                  </a>
-                </Button>
-              )}
-            </div>
+            <Button asChild variant="teal" className="mt-3 w-full sm:w-auto">
+              <Link to="/app/feedback">
+                <Headset className="size-4" /> {t('feedback.open')}
+              </Link>
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -123,14 +112,6 @@ export function ProfilePage() {
         <LogOut /> {t('auth.logout')}
       </Button>
     </div>
-  )
-}
-
-function TelegramIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
-    </svg>
   )
 }
 
