@@ -234,7 +234,9 @@ function OfferFlow({
             )}
             {offer.keyword_position != null && (
               <div className="mb-2 text-sm text-brand-teal font-medium">
-                {t('offer.flow.position', { n: offer.keyword_position })}
+                {offer.keyword_country
+                  ? t('offer.flow.positionCountry', { n: offer.keyword_position, country: offer.keyword_country })
+                  : t('offer.flow.position', { n: offer.keyword_position })}
               </div>
             )}
             {stage === 'copy' ? (

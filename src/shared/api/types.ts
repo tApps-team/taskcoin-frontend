@@ -96,6 +96,7 @@ export interface Offer {
 
 export interface OfferDetail extends Offer {
   keyword_position: number | null
+  keyword_country: string | null
   requires_open: boolean
   requires_rating: boolean
   requires_review: boolean
