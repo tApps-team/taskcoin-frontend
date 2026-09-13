@@ -8,7 +8,7 @@ import { useGetOfferQuery, useStartOfferMutation } from '@/entities/offer'
 import { ScreenshotSlot } from '@/features/offer-work'
 import type { OfferDetail, ScreenshotKind } from '@/shared/api/types'
 import { getErrorMessage } from '@/shared/lib/errors'
-import { storeHomeUrl } from '@/shared/lib/store'
+import { storeHomeUrl, storeName } from '@/shared/lib/store'
 import { useCountdown } from '@/shared/lib/useCountdown'
 import { Button, Card, CardContent, CoinAmount, Confetti, Spinner, StatusBadge } from '@/shared/ui'
 
@@ -109,7 +109,7 @@ export function OfferDetailsPage() {
           )}
           <div className="min-w-0">
             <div className="font-bold text-lg truncate">{offer.application_name}</div>
-            <div className="text-xs text-muted-foreground uppercase">{offer.platform}</div>
+            <div className="text-xs text-muted-foreground">{storeName(offer.store)}</div>
           </div>
           <CoinAmount value={offer.price} className="ml-auto text-brand-teal font-bold text-lg" />
         </CardContent>
@@ -127,10 +127,6 @@ export function OfferDetailsPage() {
       )}
     </div>
   )
-}
-
-function storeName(platform: OfferDetail['platform']): string {
-  return platform === 'ios' ? 'App Store' : 'Play Market'
 }
 
 function OfferFlow({
@@ -232,27 +228,27 @@ function OfferFlow({
             {offer.keyword && <div className="mt-2 text-sm font-mono text-muted-foreground">{offer.keyword}</div>}
           </Step>
 
-          <Step index={2} state={step2State} title={t('offer.flow.step2', { store: storeName(offer.platform) })}>
+          <Step index={2} state={step2State} title={t('offer.flow.step2', { store: storeName(offer.store) })}>
             {offer.icon_url && (
               <img src={offer.icon_url} alt="" className="size-12 rounded-xl object-cover mb-2" />
             )}
             {stage === 'copy' ? (
               <Button variant="teal" disabled>
-                <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.platform) })}
+                <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.store) })}
               </Button>
             ) : (
               // Always a real link: the first tap advances to the install step,
               // later taps just re-open the store (without resetting the timer).
               <Button asChild variant="teal">
                 <a
-                  href={storeHomeUrl(offer.platform)}
+                  href={storeHomeUrl(offer.store)}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => {
                     if (stage === 'store') go('installing')
                   }}
                 >
-                  <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.platform) })}
+                  <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.store) })}
                 </a>
               </Button>
             )}

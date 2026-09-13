@@ -8,6 +8,8 @@ import {
   type Application,
 } from '@/entities/application'
 import { getErrorMessage } from '@/shared/lib/errors'
+import { STORE_OPTIONS, storePlatform } from '@/shared/lib/store'
+import type { Store } from '@/shared/api/types'
 import { Button, Input, Label, Modal, SimpleSelect, Textarea } from '@/shared/ui'
 
 export function ApplicationModal({
@@ -23,7 +25,7 @@ export function ApplicationModal({
   const [fetchMeta, { isLoading: fetching }] = useAdminFetchStoreMetaMutation()
 
   const [name, setName] = useState(application?.name || '')
-  const [platform, setPlatform] = useState(application?.platform || 'android')
+  const [store, setStore] = useState<Store>(application?.store || 'playmarket')
   const [storeUrl, setStoreUrl] = useState(application?.store_url || '')
   const [iconUrl, setIconUrl] = useState<string | null>(application?.icon_url || null)
   const [notes, setNotes] = useState(application?.notes || '')
@@ -37,6 +39,7 @@ export function ApplicationModal({
     if (!url) return
     try {
       const meta = await fetchMeta({ store_url: url }).unwrap()
+      if (meta.store) setStore(meta.store)
       if (meta.icon_url) setIconUrl(meta.icon_url)
       if (meta.name) setName(meta.name)
       if (!meta.icon_url && !meta.name) setMetaMsg(t('admin.apps.metaFail'))
@@ -49,7 +52,8 @@ export function ApplicationModal({
     setError('')
     const body = {
       name,
-      platform,
+      platform: storePlatform(store),
+      store,
       store_url: storeUrl,
       icon_url: iconUrl,
       notes: notes || null,
@@ -67,15 +71,12 @@ export function ApplicationModal({
     <Modal title={application ? t('admin.apps.edit') : t('admin.apps.create')} onClose={onClose}>
       <div className="space-y-3">
         <div>
-          <Label>{t('admin.apps.platform')}</Label>
+          <Label>{t('admin.apps.store')}</Label>
           <SimpleSelect
             className="w-full"
-            value={platform}
-            onValueChange={(v) => setPlatform(v as 'ios' | 'android')}
-            options={[
-              { value: 'android', label: 'Android' },
-              { value: 'ios', label: 'iOS' },
-            ]}
+            value={store}
+            onValueChange={(v) => setStore(v as Store)}
+            options={STORE_OPTIONS}
           />
         </div>
         <div>
@@ -85,7 +86,7 @@ export function ApplicationModal({
               value={storeUrl}
               onChange={(e) => setStoreUrl(e.target.value)}
               onBlur={pullMeta}
-              placeholder="https://apps.apple.com/... | https://play.google.com/..."
+              placeholder="https://apps.apple.com/... | play.google.com/... | rustore.ru/..."
             />
             <Button type="button" variant="secondary" disabled={fetching || !storeUrl.trim()} onClick={pullMeta}>
               {fetching ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}

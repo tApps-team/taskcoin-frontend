@@ -1,5 +1,6 @@
 export type Role = 'user' | 'super_admin'
 export type Platform = 'ios' | 'android'
+export type Store = 'appstore' | 'playmarket' | 'rustore'
 export type CampaignType = 'install' | 'install_review'
 export type CampaignStatus = 'draft' | 'active' | 'paused' | 'completed' | 'archived'
 export type ExecutionStatus =
@@ -34,6 +35,7 @@ export interface Application {
   id: string
   name: string
   platform: Platform
+  store: Store
   store_url: string
   icon_url: string | null
   notes: string | null
@@ -83,6 +85,7 @@ export interface Offer {
   application_name: string
   icon_url: string | null
   platform: Platform
+  store: Store
   keyword: string | null
   price: string
   type: CampaignType

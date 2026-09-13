@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useAdminGetCampaignQuery } from '@/entities/campaign'
 import { useAdminGetCampaignExecutionsQuery } from '@/entities/execution'
 import { ExecutionCard } from '@/features/review-execution'
+import { storeName } from '@/shared/lib/store'
 import {
   Card,
   CardContent,
@@ -60,7 +61,7 @@ export function AdminCampaignDetailsPage() {
         <TabsContent value="details">
           <Card>
             <CardContent className="p-5 space-y-2 text-sm">
-              <Row label={t('admin.campaigns.platform')} value={c.application.platform} />
+              <Row label={t('admin.campaigns.store')} value={storeName(c.application.store)} />
               <Row label={t('admin.campaigns.type')} value={c.type} />
               <Row label={t('admin.campaigns.hourlyLimit')} value={c.hourly_limit ? String(c.hourly_limit) : '∞'} />
               <Row

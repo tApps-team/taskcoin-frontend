@@ -7,6 +7,7 @@ import {
   type Application,
 } from '@/entities/application'
 import { ApplicationModal } from '@/features/manage-applications'
+import { storeName } from '@/shared/lib/store'
 import { Button, Card, CardContent, EmptyState, Spinner } from '@/shared/ui'
 
 export function AdminApplicationsPage() {
@@ -43,7 +44,7 @@ export function AdminApplicationsPage() {
                 )}
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold truncate">{a.name}</div>
-                  <div className="text-xs text-muted-foreground uppercase">{a.platform}</div>
+                  <div className="text-xs text-muted-foreground">{storeName(a.store)}</div>
                 </div>
                 <div className="flex gap-1.5">
                   <Button size="sm" variant="secondary" onClick={() => setEditing(a)}>

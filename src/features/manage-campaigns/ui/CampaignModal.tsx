@@ -13,6 +13,7 @@ import {
 } from '@/entities/standard-instruction'
 import { getErrorMessage } from '@/shared/lib/errors'
 import { Button, Input, Label, Modal, SimpleSelect, Textarea } from '@/shared/ui'
+import { storeName } from '@/shared/lib/store'
 import { PercentSliders } from './PercentSliders'
 
 interface KeywordRow {
@@ -282,7 +283,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
             value={applicationId}
             onValueChange={setApplicationId}
             placeholder={t('admin.campaigns.selectApp')}
-            options={(apps || []).map((a) => ({ value: a.id, label: `${a.name} (${a.platform})` }))}
+            options={(apps || []).map((a) => ({ value: a.id, label: `${a.name} (${storeName(a.store)})` }))}
           />
         </div>
 

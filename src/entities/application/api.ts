@@ -1,5 +1,12 @@
 import { baseApi } from '@/shared/api'
-import type { Application } from '@/shared/api/types'
+import type { Application, Platform, Store } from '@/shared/api/types'
+
+export interface StoreMeta {
+  name: string | null
+  icon_url: string | null
+  platform: Platform | null
+  store: Store | null
+}
 
 export const applicationApi = baseApi.injectEndpoints({
   endpoints: (b) => ({
@@ -22,7 +29,7 @@ export const applicationApi = baseApi.injectEndpoints({
     adminUploadImage: b.mutation<{ url: string }, FormData>({
       query: (body) => ({ url: '/uploads', method: 'POST', body }),
     }),
-    adminFetchStoreMeta: b.mutation<{ name: string | null; icon_url: string | null }, { store_url: string }>({
+    adminFetchStoreMeta: b.mutation<StoreMeta, { store_url: string }>({
       query: (body) => ({ url: '/admin/applications/fetch-meta', method: 'POST', body }),
     }),
   }),
