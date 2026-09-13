@@ -5,13 +5,25 @@ import { RichTextContent } from '@/shared/ui/rich-text'
 
 // A single chat bubble. `mine` decides side/color: on the user page the user's
 // own messages are "mine"; in the CRM the admin's messages are "mine".
-export function MessageBubble({ message, mine }: { message: TicketMessage; mine: boolean }) {
+// `userName` labels the user's messages in the CRM (defaults to "You" on the
+// user's own page).
+export function MessageBubble({
+  message,
+  mine,
+  userName,
+}: {
+  message: TicketMessage
+  mine: boolean
+  userName?: string
+}) {
   const { t } = useTranslation()
   const isAdmin = message.sender === 'admin'
   const images = message.attachments.filter((a) => a.kind === 'image')
   const files = message.attachments.filter((a) => a.kind === 'file')
   const hasBody = !!(message.body as { content?: unknown[] })?.content?.length
-  const author = isAdmin ? message.admin_name || t('feedback.support') : t('feedback.you')
+  const author = isAdmin
+    ? message.admin_name || t('feedback.support')
+    : userName || t('feedback.you')
 
   return (
     <div className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>

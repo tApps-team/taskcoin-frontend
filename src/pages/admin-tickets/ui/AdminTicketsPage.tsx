@@ -96,7 +96,12 @@ function AdminThread({ id, onBack }: { id: string; onBack: () => void }) {
           </div>
           <div className="flex-1 space-y-3 mb-3">
             {data.messages.map((m) => (
-              <MessageBubble key={m.id} message={m} mine={m.sender === 'admin'} />
+              <MessageBubble
+                key={m.id}
+                message={m}
+                mine={m.sender === 'admin'}
+                userName={data.user.full_name || data.user.email}
+              />
             ))}
             <div ref={bottomRef} />
           </div>
