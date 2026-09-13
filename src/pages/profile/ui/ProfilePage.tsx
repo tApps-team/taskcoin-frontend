@@ -1,7 +1,7 @@
 import { Headset, LogOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useGetPublicSettingsQuery } from '@/entities/app-settings'
 import { loggedOut, useMeQuery, useUpdateProfileMutation } from '@/entities/session'
 import { baseApi } from '@/shared/api'
@@ -89,28 +89,35 @@ export function ProfilePage() {
         </CardContent>
       </Card>
 
-      {settings?.support_telegram_link && (
-        <Card className="mb-6 relative overflow-hidden">
-          <div className="pointer-events-none absolute -right-10 -top-12 size-44 rounded-full bg-gradient-to-br from-brand-violet/30 to-brand-teal/20 blur-3xl" />
-          <CardContent className="p-5 relative flex flex-col sm:flex-row items-center gap-4">
-            <div className="relative shrink-0">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-brand-violet/60 to-brand-teal/50 blur-2xl" />
-              <div className="relative size-20 rounded-3xl bg-gradient-to-br from-brand-violet to-brand-teal flex items-center justify-center shadow-glow">
-                <Headset className="size-10 text-white" />
-              </div>
+      <Card className="mb-6 relative overflow-hidden">
+        <div className="pointer-events-none absolute -right-10 -top-12 size-44 rounded-full bg-gradient-to-br from-brand-violet/30 to-brand-teal/20 blur-3xl" />
+        <CardContent className="p-5 relative flex flex-col sm:flex-row items-center gap-4">
+          <div className="relative shrink-0">
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-brand-violet/60 to-brand-teal/50 blur-2xl" />
+            <div className="relative size-20 rounded-3xl bg-gradient-to-br from-brand-violet to-brand-teal flex items-center justify-center shadow-glow">
+              <Headset className="size-10 text-white" />
             </div>
-            <div className="flex-1 text-center sm:text-left">
-              <div className="text-lg font-bold">{t('support.title')}</div>
-              <p className="text-sm text-muted-foreground mt-0.5">{t('support.text')}</p>
-              <Button asChild variant="teal" className="mt-3 w-full sm:w-auto">
-                <a href={settings.support_telegram_link} target="_blank" rel="noreferrer">
-                  <TelegramIcon /> {t('support.contact')}
-                </a>
+          </div>
+          <div className="flex-1 text-center sm:text-left">
+            <div className="text-lg font-bold">{t('support.title')}</div>
+            <p className="text-sm text-muted-foreground mt-0.5">{t('support.text')}</p>
+            <div className="mt-3 flex flex-col sm:flex-row gap-2">
+              <Button asChild variant="teal" className="w-full sm:w-auto">
+                <Link to="/app/feedback">
+                  <Headset className="size-4" /> {t('feedback.open')}
+                </Link>
               </Button>
+              {settings?.support_telegram_link && (
+                <Button asChild variant="secondary" className="w-full sm:w-auto">
+                  <a href={settings.support_telegram_link} target="_blank" rel="noreferrer">
+                    <TelegramIcon /> {t('support.contact')}
+                  </a>
+                </Button>
+              )}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        </CardContent>
+      </Card>
 
       <Button variant="secondary" className="w-full" onClick={onLogout}>
         <LogOut /> {t('auth.logout')}

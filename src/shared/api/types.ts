@@ -216,6 +216,37 @@ export interface DashboardStats {
 
 export type TipTapDoc = Record<string, unknown>
 
+// ---- Feedback tickets ----
+export type TicketType = 'cooperation' | 'question' | 'complaint' | 'suggestion' | 'other'
+export type TicketStatus = 'open' | 'closed'
+
+export interface TicketAttachment {
+  kind: 'image' | 'file'
+  url: string
+  name: string
+}
+
+export interface TicketMessage {
+  id: string
+  sender: 'user' | 'admin'
+  body: TipTapDoc
+  attachments: TicketAttachment[]
+  admin_name: string | null
+  created_at: string
+}
+
+export interface TicketListItem {
+  id: string
+  type: TicketType
+  status: TicketStatus
+  created_at: string
+  last_message_at: string
+}
+
+export interface Ticket extends TicketListItem {
+  messages: TicketMessage[]
+}
+
 export interface NewsArticle {
   id: string
   title: string

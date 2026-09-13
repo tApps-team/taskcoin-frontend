@@ -16,6 +16,9 @@ import { AppLayout } from '@/widgets/app-layout'
 const NewsArticlePage = lazy(() =>
   import('@/pages/news-article').then((m) => ({ default: m.NewsArticlePage })),
 )
+const FeedbackPage = lazy(() =>
+  import('@/pages/feedback').then((m) => ({ default: m.FeedbackPage })),
+)
 const AdminLoginPage = lazy(() =>
   import('@/pages/admin-login').then((m) => ({ default: m.AdminLoginPage })),
 )
@@ -69,6 +72,7 @@ export function App() {
             <Route path="active" element={<ActivePage />} />
             <Route path="history" element={<HistoryPage />} />
             <Route path="withdraw" element={<WithdrawPage />} />
+            <Route path="feedback" element={<FeedbackPage />} />
             <Route path="profile" element={<ProfilePage />} />
           </Route>
         </Route>

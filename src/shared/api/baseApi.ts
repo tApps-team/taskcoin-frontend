@@ -70,6 +70,8 @@ export const baseApi = createApi({
     'Dashboard',
     'News',
     'StandardInstruction',
+    'FeedbackTickets',
+    'FeedbackTicket',
   ],
   endpoints: () => ({}),
 })
