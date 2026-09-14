@@ -2,6 +2,7 @@ import { Headset, LogOut } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
+import { useGetUserUnreadQuery } from '@/entities/feedback'
 import { loggedOut, useMeQuery, useUpdateProfileMutation } from '@/entities/session'
 import { baseApi } from '@/shared/api'
 import { useGetMyStatsQuery } from '@/entities/user'
@@ -13,6 +14,7 @@ import {
   Card,
   CardContent,
   CoinAmount,
+  NavBadge,
   SimpleSelect,
   Spinner,
 } from '@/shared/ui'
@@ -37,6 +39,7 @@ export function ProfilePage() {
   const navigate = useNavigate()
   const { data: me, isLoading } = useMeQuery()
   const { data: stats } = useGetMyStatsQuery()
+  const { data: unread } = useGetUserUnreadQuery(undefined, { pollingInterval: 30000 })
   const [updateProfile] = useUpdateProfileMutation()
 
   if (isLoading || !me) return <Spinner />
@@ -99,9 +102,10 @@ export function ProfilePage() {
           <div className="flex-1 text-center sm:text-left">
             <div className="text-lg font-bold">{t('support.title')}</div>
             <p className="text-sm text-muted-foreground mt-0.5">{t('support.text')}</p>
-            <Button asChild variant="teal" className="mt-3 w-full sm:w-auto">
+            <Button asChild variant="teal" className="relative mt-3 w-full sm:w-auto">
               <Link to="/app/feedback">
                 <Headset className="size-4" /> {t('feedback.open')}
+                <NavBadge count={unread?.count} />
               </Link>
             </Button>
           </div>

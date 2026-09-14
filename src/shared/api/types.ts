@@ -242,6 +242,7 @@ export interface TicketListItem {
   status: TicketStatus
   created_at: string
   last_message_at: string
+  unread: number
 }
 
 export interface Ticket extends TicketListItem {

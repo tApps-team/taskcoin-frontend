@@ -10,7 +10,7 @@ import { ChatComposer, MessageBubble } from '@/features/feedback-chat'
 import type { TicketAttachment, TicketType, TipTapDoc } from '@/shared/api/types'
 import { formatDate } from '@/shared/lib/format'
 import { useFeedbackSocket } from '@/shared/lib/useFeedbackSocket'
-import { Card, CardContent, EmptyState, Spinner } from '@/shared/ui'
+import { Card, CardContent, EmptyState, Spinner, UnreadPill } from '@/shared/ui'
 
 export function AdminTicketsPage() {
   const [openId, setOpenId] = useState<string | null>(null)
@@ -41,12 +41,15 @@ function AdminList({ onOpen }: { onOpen: (id: string) => void }) {
             <button key={tk.id} type="button" className="w-full text-left" onClick={() => onOpen(tk.id)}>
               <Card className="hover:border-brand-violet/40 transition-colors">
                 <CardContent className="p-4 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="font-semibold truncate">
-                      {typeLabel(t, tk.type)} · {tk.user.full_name || tk.user.email}
-                    </div>
-                    <div className="text-xs text-muted-foreground truncate">
-                      {tk.user.email} · {formatDate(tk.last_message_at)}
+                  <div className="min-w-0 flex items-center gap-2">
+                    <UnreadPill count={tk.unread} />
+                    <div className="min-w-0">
+                      <div className={`truncate ${tk.unread ? 'font-bold' : 'font-semibold'}`}>
+                        {typeLabel(t, tk.type)} · {tk.user.full_name || tk.user.email}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {tk.user.email} · {formatDate(tk.last_message_at)}
+                      </div>
                     </div>
                   </div>
                   <span

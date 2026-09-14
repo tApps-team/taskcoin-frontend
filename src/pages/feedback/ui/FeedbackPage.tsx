@@ -11,7 +11,7 @@ import { ChatComposer, MessageBubble } from '@/features/feedback-chat'
 import type { TicketAttachment, TicketType, TipTapDoc } from '@/shared/api/types'
 import { formatDate } from '@/shared/lib/format'
 import { useFeedbackSocket } from '@/shared/lib/useFeedbackSocket'
-import { Button, Card, CardContent, EmptyState, Spinner } from '@/shared/ui'
+import { Button, Card, CardContent, EmptyState, Spinner, UnreadPill } from '@/shared/ui'
 
 const TYPES: TicketType[] = ['question', 'cooperation', 'complaint', 'suggestion', 'other']
 
@@ -51,11 +51,14 @@ function TicketsList({ onNew, onOpen }: { onNew: () => void; onOpen: (id: string
             <button key={tk.id} type="button" className="w-full text-left" onClick={() => onOpen(tk.id)}>
               <Card className="hover:border-brand-violet/40 transition-colors">
                 <CardContent className="p-4 flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="font-semibold truncate">{typeLabel(t, tk.type)}</div>
-                    <div className="text-xs text-muted-foreground">{formatDate(tk.last_message_at)}</div>
+                  <div className="min-w-0 flex items-center gap-2">
+                    <UnreadPill count={tk.unread} />
+                    <div className="min-w-0">
+                      <div className={`truncate ${tk.unread ? 'font-bold' : 'font-semibold'}`}>{typeLabel(t, tk.type)}</div>
+                      <div className="text-xs text-muted-foreground">{formatDate(tk.last_message_at)}</div>
+                    </div>
                   </div>
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${tk.status === 'open' ? 'bg-brand-teal/15 text-brand-teal' : 'bg-white/10 text-muted-foreground'}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${tk.status === 'open' ? 'bg-brand-teal/15 text-brand-teal' : 'bg-white/10 text-muted-foreground'}`}>
                     {t(`feedback.status.${tk.status}`)}
                   </span>
                 </CardContent>
