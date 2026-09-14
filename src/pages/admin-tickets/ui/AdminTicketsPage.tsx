@@ -9,12 +9,10 @@ import {
 import { ChatComposer, MessageBubble } from '@/features/feedback-chat'
 import type { TicketAttachment, TicketType, TipTapDoc } from '@/shared/api/types'
 import { formatDate } from '@/shared/lib/format'
-import { useFeedbackSocket } from '@/shared/lib/useFeedbackSocket'
 import { Card, CardContent, EmptyState, Spinner, UnreadPill } from '@/shared/ui'
 
 export function AdminTicketsPage() {
   const [openId, setOpenId] = useState<string | null>(null)
-  useFeedbackSocket(true) // admin room: live updates for every ticket
 
   if (openId) return <AdminThread id={openId} onBack={() => setOpenId(null)} />
   return <AdminList onOpen={setOpenId} />

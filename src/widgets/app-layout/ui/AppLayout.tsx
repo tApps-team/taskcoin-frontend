@@ -10,6 +10,7 @@ import { baseApi } from '@/shared/api'
 import { haptic } from '@/shared/lib/haptics'
 import { pageTransition } from '@/shared/lib/motion'
 import { detectPlatform } from '@/shared/lib/platform'
+import { useFeedbackSocket } from '@/shared/lib/useFeedbackSocket'
 import { cn } from '@/shared/lib/utils'
 import { Button, CoinAmount, NavBadge } from '@/shared/ui'
 
@@ -38,6 +39,9 @@ export function AppLayout() {
   const location = useLocation()
   const { data: me } = useMeQuery()
   const { data: unread } = useGetUserUnreadQuery(undefined, { pollingInterval: 30000 })
+  // One socket for the whole session (the layout survives tab navigation), so
+  // badges/chats update live on every screen — not only inside an open thread.
+  useFeedbackSocket(true)
   const [updateProfile] = useUpdateProfileMutation()
   const badgeFor = (key: string) => (key === 'profile' ? unread?.count : undefined)
 

@@ -10,7 +10,6 @@ import {
 import { ChatComposer, MessageBubble } from '@/features/feedback-chat'
 import type { TicketAttachment, TicketType, TipTapDoc } from '@/shared/api/types'
 import { formatDate } from '@/shared/lib/format'
-import { useFeedbackSocket } from '@/shared/lib/useFeedbackSocket'
 import { Button, Card, CardContent, EmptyState, Spinner, UnreadPill } from '@/shared/ui'
 
 const TYPES: TicketType[] = ['question', 'cooperation', 'complaint', 'suggestion', 'other']
@@ -113,7 +112,6 @@ function Thread({ id, onBack }: { id: string; onBack: () => void }) {
   const { t } = useTranslation()
   const { data, isLoading } = useGetTicketQuery(id)
   const [addMessage, { isLoading: sending }] = useAddTicketMessageMutation()
-  useFeedbackSocket(true)
 
   const bottomRef = useRef<HTMLDivElement>(null)
   useEffect(() => {

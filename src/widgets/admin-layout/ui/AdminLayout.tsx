@@ -21,6 +21,7 @@ import { loggedOut, useMeQuery } from '@/entities/session'
 import { StandardInstructionModal } from '@/features/manage-standard-instruction'
 import { baseApi } from '@/shared/api'
 import { haptic } from '@/shared/lib/haptics'
+import { useFeedbackSocket } from '@/shared/lib/useFeedbackSocket'
 import { cn } from '@/shared/lib/utils'
 import { Button, NavBadge } from '@/shared/ui'
 
@@ -43,6 +44,9 @@ export function AdminLayout() {
   const navigate = useNavigate()
   const { data: me } = useMeQuery()
   const { data: badges } = useGetAdminBadgesQuery(undefined, { pollingInterval: 20000 })
+  // Admin-room socket kept open across the whole CRM (layout survives routing),
+  // so ticket/moderation badges update live on any page.
+  useFeedbackSocket(true)
   const [instructionOpen, setInstructionOpen] = useState(false)
   const badgeFor = (key: string) =>
     key === 'tickets' ? badges?.tickets : key === 'executions' ? badges?.executions : undefined
