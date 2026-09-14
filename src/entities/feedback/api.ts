@@ -31,6 +31,23 @@ export const feedbackApi = baseApi.injectEndpoints({
     getTicket: b.query<Ticket, string>({
       query: (id) => `/feedback/tickets/${id}`,
       providesTags: (_r, _e, id) => [{ type: 'FeedbackTicket', id }],
+      // Opening a thread marks it read on the server → refresh the badge.
+      async onQueryStarted(_id, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(feedbackApi.util.invalidateTags(['UserUnread']))
+        } catch {
+          /* ignore */
+        }
+      },
+    }),
+    getUserUnread: b.query<{ count: number }, void>({
+      query: () => '/feedback/unread',
+      providesTags: ['UserUnread'],
+    }),
+    getAdminBadges: b.query<{ tickets: number; executions: number }, void>({
+      query: () => '/admin/badges',
+      providesTags: ['AdminBadges'],
     }),
     createTicket: b.mutation<Ticket, CreateTicketArg>({
       query: (body) => ({ url: '/feedback/tickets', method: 'POST', body }),
@@ -51,7 +68,7 @@ export const feedbackApi = baseApi.injectEndpoints({
               if (!draft.messages.some((m) => m.id === msg.id)) draft.messages.push(msg)
             }),
           )
-          dispatch(feedbackApi.util.invalidateTags(['FeedbackTickets']))
+          dispatch(feedbackApi.util.invalidateTags(['FeedbackTickets', 'AdminBadges']))
         } catch {
           /* ignore */
         }
@@ -84,7 +101,7 @@ export const feedbackApi = baseApi.injectEndpoints({
               if (!draft.messages.some((m) => m.id === msg.id)) draft.messages.push(msg)
             }),
           )
-          dispatch(feedbackApi.util.invalidateTags(['AdminTickets']))
+          dispatch(feedbackApi.util.invalidateTags(['AdminTickets', 'AdminBadges']))
         } catch {
           /* ignore */
         }
@@ -102,4 +119,6 @@ export const {
   useAdminGetTicketsQuery,
   useAdminGetTicketQuery,
   useAdminReplyTicketMutation,
+  useGetUserUnreadQuery,
+  useGetAdminBadgesQuery,
 } = feedbackApi

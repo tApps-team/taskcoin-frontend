@@ -8,4 +8,6 @@ export {
   useAdminGetTicketsQuery,
   useAdminGetTicketQuery,
   useAdminReplyTicketMutation,
+  useGetUserUnreadQuery,
+  useGetAdminBadgesQuery,
 } from './api'

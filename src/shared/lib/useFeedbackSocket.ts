@@ -36,7 +36,14 @@ export function useFeedbackSocket(active: boolean) {
           }
           dispatch(feedbackApi.util.updateQueryData('getTicket', data.ticket_id, push))
           dispatch(feedbackApi.util.updateQueryData('adminGetTicket', data.ticket_id, push))
-          dispatch(feedbackApi.util.invalidateTags(['FeedbackTickets', 'AdminTickets']))
+          dispatch(
+            feedbackApi.util.invalidateTags([
+              'FeedbackTickets',
+              'AdminTickets',
+              'UserUnread',
+              'AdminBadges',
+            ]),
+          )
         } catch {
           /* ignore malformed frames */
         }

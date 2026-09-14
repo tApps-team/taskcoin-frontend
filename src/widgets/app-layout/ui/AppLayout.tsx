@@ -4,13 +4,14 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useGetUserUnreadQuery } from '@/entities/feedback'
 import { loggedOut, useMeQuery, useUpdateProfileMutation } from '@/entities/session'
 import { baseApi } from '@/shared/api'
 import { haptic } from '@/shared/lib/haptics'
 import { pageTransition } from '@/shared/lib/motion'
 import { detectPlatform } from '@/shared/lib/platform'
 import { cn } from '@/shared/lib/utils'
-import { Button, CoinAmount } from '@/shared/ui'
+import { Button, CoinAmount, NavBadge } from '@/shared/ui'
 
 const tabs = [
   { to: '/app', key: 'tasks', Icon: ClipboardList, end: true },
@@ -36,7 +37,9 @@ export function AppLayout() {
   const reduce = useReducedMotion()
   const location = useLocation()
   const { data: me } = useMeQuery()
+  const { data: unread } = useGetUserUnreadQuery(undefined, { pollingInterval: 30000 })
   const [updateProfile] = useUpdateProfileMutation()
+  const badgeFor = (key: string) => (key === 'profile' ? unread?.count : undefined)
 
   // Keep the stored OS in sync with the actual device: backfills users who
   // registered on desktop and updates it if they switch phones. Only writes
@@ -80,7 +83,10 @@ export function AppLayout() {
                 )
               }
             >
-              <Icon className="size-5" />
+              <span className="relative">
+                <Icon className="size-5" />
+                <NavBadge count={badgeFor(key)} />
+              </span>
               {t(`nav.${key}`)}
             </NavLink>
           ))}
@@ -132,7 +138,10 @@ export function AppLayout() {
               )
             }
           >
-            <Icon className="size-5" />
+            <span className="relative">
+              <Icon className="size-5" />
+              <NavBadge count={badgeFor(key)} />
+            </span>
             {t(`nav.${key}`)}
           </NavLink>
         ))}

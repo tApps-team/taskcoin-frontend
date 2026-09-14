@@ -16,12 +16,13 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useGetAdminBadgesQuery } from '@/entities/feedback'
 import { loggedOut, useMeQuery } from '@/entities/session'
 import { StandardInstructionModal } from '@/features/manage-standard-instruction'
 import { baseApi } from '@/shared/api'
 import { haptic } from '@/shared/lib/haptics'
 import { cn } from '@/shared/lib/utils'
-import { Button } from '@/shared/ui'
+import { Button, NavBadge } from '@/shared/ui'
 
 const links = [
   { to: '/admin/dashboard', key: 'dashboard', Icon: LayoutDashboard },
@@ -41,7 +42,10 @@ export function AdminLayout() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { data: me } = useMeQuery()
+  const { data: badges } = useGetAdminBadgesQuery(undefined, { pollingInterval: 20000 })
   const [instructionOpen, setInstructionOpen] = useState(false)
+  const badgeFor = (key: string) =>
+    key === 'tickets' ? badges?.tickets : key === 'executions' ? badges?.executions : undefined
 
   const onLogout = () => {
     dispatch(loggedOut())
@@ -68,7 +72,10 @@ export function AdminLayout() {
                 )
               }
             >
-              <Icon className="size-4" />
+              <span className="relative">
+                <Icon className="size-4" />
+                <NavBadge count={badgeFor(key)} />
+              </span>
               {t(`admin.nav.${key}`)}
             </NavLink>
           ))}

@@ -85,7 +85,7 @@ export const executionApi = baseApi.injectEndpoints({
     }),
     adminApprove: b.mutation<AdminExecution, string>({
       query: (id) => ({ url: `/admin/executions/${id}/approve`, method: 'POST' }),
-      invalidatesTags: ['AdminExecutions', 'Dashboard', 'Campaigns'],
+      invalidatesTags: ['AdminExecutions', 'Dashboard', 'Campaigns', 'AdminBadges'],
     }),
     adminReject: b.mutation<AdminExecution, { id: string; comment: string }>({
       query: ({ id, comment }) => ({
@@ -93,7 +93,7 @@ export const executionApi = baseApi.injectEndpoints({
         method: 'POST',
         body: { comment },
       }),
-      invalidatesTags: ['AdminExecutions', 'Dashboard'],
+      invalidatesTags: ['AdminExecutions', 'Dashboard', 'AdminBadges'],
     }),
   }),
 })
