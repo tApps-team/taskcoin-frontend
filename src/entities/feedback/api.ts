@@ -86,6 +86,15 @@ export const feedbackApi = baseApi.injectEndpoints({
     adminGetTicket: b.query<AdminTicket, string>({
       query: (id) => `/admin/tickets/${id}`,
       providesTags: (_r, _e, id) => [{ type: 'AdminTicket', id }],
+      // Opening a thread marks it read for admins → refresh the badge.
+      async onQueryStarted(_id, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(feedbackApi.util.invalidateTags(['AdminBadges']))
+        } catch {
+          /* ignore */
+        }
+      },
     }),
     adminReplyTicket: b.mutation<TicketMessage, AddMessageArg>({
       query: ({ ticketId, body, attachments }) => ({
