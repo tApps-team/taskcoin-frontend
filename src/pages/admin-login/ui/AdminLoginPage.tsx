@@ -10,7 +10,7 @@ export function AdminLoginPage() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [adminLogin, { isLoading }] = useAdminLoginMutation()
-  const [email, setEmail] = useState('admin@taskcoin.local')
+  const [email, setEmail] = useState('admin@craftmoney.local')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 

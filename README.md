@@ -1,4 +1,4 @@
-# TaskCoin — Frontend (React + Vite)
+# CraftMoney — Frontend (React + Vite)
 
 Один React-проект с двумя разделами:
 - **`/app/*`** — кабинет пользователя (тёмная тема в стиле AdCoin, mobile-first)
@@ -60,10 +60,10 @@ Vite проксирует `/api` и `/uploads` на backend (`:8000`), поэт�
 
 ## Вход
 - **Пользователь (dev):** на `/login` выберите тестового пользователя
-  (`user1@taskcoin.local` и т.д.) — вход без Google.
+  (`user1@craftmoney.local` и т.д.) — вход без Google.
 - **Google (позже):** кнопка на `/login` — заглушка. Когда включите Google
   (см. ниже), она заменяется на реальную GIS-кнопку, вызывающую `POST /api/auth/google`.
-- **Админ:** `/admin/login` — `admin@taskcoin.local` / `admin12345`.
+- **Админ:** `/admin/login` — `admin@craftmoney.local` / `admin12345`.
 
 ## Страницы
 Кабинет: список заданий (фильтр/сортировка/поиск), детали задания (взять в работу,

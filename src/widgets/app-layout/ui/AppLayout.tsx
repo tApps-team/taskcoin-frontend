@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { ClipboardList, Coins, CreditCard, History, Hourglass, LogOut, User } from 'lucide-react'
+import { ClipboardList, CreditCard, History, Hourglass, LogOut, Pickaxe, User } from 'lucide-react'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
@@ -25,8 +25,8 @@ const tabs = [
 function Logo() {
   return (
     <div className="inline-flex items-center gap-1.5 text-xl font-bold tracking-tight">
-      <Coins className="size-6 text-brand-teal" />
-      <span className="text-gradient">TaskCoin</span>
+      <Pickaxe className="size-6 text-brand-teal" />
+      <span className="text-gradient">CraftMoney</span>
     </div>
   )
 }

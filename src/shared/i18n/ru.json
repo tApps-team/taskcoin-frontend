@@ -1,5 +1,5 @@
 {
-  "app": { "name": "TaskCoin", "currency": "₽" },
+  "app": { "name": "CraftMoney", "currency": "₽" },
   "nav": {
     "tasks": "Задания",
     "active": "Активные",
@@ -30,7 +30,7 @@
     "balance": "Баланс"
   },
   "auth": {
-    "loginTitle": "TaskCoin",
+    "loginTitle": "CraftMoney",
     "loginSubtitle": "Устанавливай приложения — зарабатывай ₽",
     "email": "Email",
     "password": "Пароль",
@@ -161,7 +161,7 @@
     "paid": "Выдано"
   },
   "admin": {
-    "title": "TaskCoin CRM",
+    "title": "CraftMoney CRM",
     "nav": {
       "dashboard": "Дашборд",
       "users": "Пользователи",
