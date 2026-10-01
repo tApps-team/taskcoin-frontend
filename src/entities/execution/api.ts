@@ -28,6 +28,15 @@ export const executionApi = baseApi.injectEndpoints({
       query: (params) => ({ url: '/executions/my', params: params || undefined }),
       providesTags: ['Executions'],
     }),
+    // Verdicts the user has not seen yet — drives the badge on the History tab.
+    getHistoryUnread: b.query<{ count: number }, void>({
+      query: () => '/executions/history/unread',
+      providesTags: ['HistoryUnread'],
+    }),
+    markHistoryRead: b.mutation<{ count: number }, void>({
+      query: () => ({ url: '/executions/history/read', method: 'POST' }),
+      invalidatesTags: ['HistoryUnread'],
+    }),
     // Upload/delete return the updated execution — patch the cached list from
     // the response instead of invalidating (which would force a slow full
     // refetch of /executions/my before the next step can appear).
@@ -100,6 +109,8 @@ export const executionApi = baseApi.injectEndpoints({
 
 export const {
   useGetMyExecutionsQuery,
+  useGetHistoryUnreadQuery,
+  useMarkHistoryReadMutation,
   useUploadScreenshotsMutation,
   useDeleteScreenshotMutation,
   useSubmitExecutionMutation,

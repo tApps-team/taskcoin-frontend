@@ -75,6 +75,7 @@ export const baseApi = createApi({
     'AdminTickets',
     'AdminTicket',
     'UserUnread',
+    'HistoryUnread',
     'AdminBadges',
   ],
   endpoints: () => ({}),

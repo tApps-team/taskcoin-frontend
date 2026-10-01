@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { useGetHistoryUnreadQuery } from '@/entities/execution'
 import { useGetUserUnreadQuery } from '@/entities/feedback'
 import { loggedOut, useMeQuery, useUpdateProfileMutation } from '@/entities/session'
 import { baseApi } from '@/shared/api'
@@ -39,11 +40,13 @@ export function AppLayout() {
   const location = useLocation()
   const { data: me } = useMeQuery()
   const { data: unread } = useGetUserUnreadQuery(undefined, { pollingInterval: 30000 })
+  const { data: historyUnread } = useGetHistoryUnreadQuery(undefined, { pollingInterval: 30000 })
   // One socket for the whole session (the layout survives tab navigation), so
   // badges/chats update live on every screen — not only inside an open thread.
   useFeedbackSocket(true)
   const [updateProfile] = useUpdateProfileMutation()
-  const badgeFor = (key: string) => (key === 'profile' ? unread?.count : undefined)
+  const badgeFor = (key: string) =>
+    key === 'profile' ? unread?.count : key === 'history' ? historyUnread?.count : undefined
 
   // Keep the stored OS in sync with the actual device: backfills users who
   // registered on desktop and updates it if they switch phones. Only writes

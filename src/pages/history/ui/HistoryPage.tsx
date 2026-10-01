@@ -1,7 +1,11 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useGetMyExecutionsQuery } from '@/entities/execution'
+import {
+  useGetHistoryUnreadQuery,
+  useGetMyExecutionsQuery,
+  useMarkHistoryReadMutation,
+} from '@/entities/execution'
 import { formatDate } from '@/shared/lib/format'
 import { listContainer, listItem } from '@/shared/lib/motion'
 import { Button, Card, CardContent, CoinAmount, EmptyState, ListRowSkeleton, StatusBadge } from '@/shared/ui'
@@ -13,6 +17,14 @@ export function HistoryPage() {
   const reduce = useReducedMotion()
   const [status, setStatus] = useState('')
   const { data, isLoading } = useGetMyExecutionsQuery({ status: status || undefined, limit: 100 })
+  const { data: unread } = useGetHistoryUnreadQuery()
+  const [markRead] = useMarkHistoryReadMutation()
+
+  // Being on this tab is the "read" event — on open, and again if a verdict
+  // arrives over the socket while the user is still looking at the list.
+  useEffect(() => {
+    if (unread && unread.count > 0) markRead()
+  }, [unread, markRead])
 
   const items = (data?.items || []).filter((s) =>
     status ? true : ['approved', 'rejected', 'expired'].includes(s.status),

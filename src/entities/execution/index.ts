@@ -1,5 +1,7 @@
 export {
   useGetMyExecutionsQuery,
+  useGetHistoryUnreadQuery,
+  useMarkHistoryReadMutation,
   useUploadScreenshotsMutation,
   useDeleteScreenshotMutation,
   useSubmitExecutionMutation,

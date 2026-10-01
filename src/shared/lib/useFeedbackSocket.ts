@@ -49,6 +49,12 @@ export function useFeedbackSocket(active: boolean) {
             dispatch(feedbackApi.util.invalidateTags(['AdminBadges', 'AdminExecutions']))
             return
           }
+          // A verdict on this user's task: History badge, the list itself and
+          // the balance (an approval credits the reward) all go stale at once.
+          if (data.type === 'execution_reviewed') {
+            dispatch(feedbackApi.util.invalidateTags(['HistoryUnread', 'Executions', 'Me']))
+            return
+          }
           if (data.type !== 'ticket_message' || !data.ticket_id) return
           // Patch both the user-side and the CRM caches (whichever is mounted).
           const push = (draft: { messages: TicketMessage[] }) => {
