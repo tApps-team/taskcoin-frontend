@@ -26,6 +26,13 @@ export function AdminWithdrawalsPage() {
                   </div>
                   <div className="text-sm text-muted-foreground">{w.user.email}</div>
                   <div className="text-xs text-muted-foreground">{formatDate(w.created_at)}</div>
+                  {/* Which card the user actually got — support asks this constantly. */}
+                  {w.card_number && (
+                    <div className="mt-1.5 font-mono text-xs select-all break-all">
+                      <span className="text-muted-foreground">{t('admin.withdrawals.card')}: </span>
+                      {w.card_number} <span className="text-muted-foreground">·</span> {w.card_code}
+                    </div>
+                  )}
                 </div>
                 <StatusBadge status={w.status} />
               </CardContent>

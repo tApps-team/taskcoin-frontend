@@ -160,6 +160,17 @@ export interface Denomination {
   available_count: number
 }
 
+export interface GiftCodeAdmin {
+  id: string
+  denomination_id: string
+  card_number: string
+  card_code: string
+  status: 'available' | 'issued'
+  created_at: string
+  issued_at: string | null
+  user: { id: string; email: string; full_name: string | null } | null
+}
+
 export interface DenominationPublic {
   id: string
   label: string
@@ -191,6 +202,9 @@ export interface AdminWithdrawal {
   admin_comment: string | null
   created_at: string
   processed_at: string | null
+  /** The card actually handed to the user (null until the payout happened). */
+  card_number: string | null
+  card_code: string | null
   user: { id: string; email: string; full_name: string | null }
 }
 

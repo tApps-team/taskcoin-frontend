@@ -1,4 +1,4 @@
-import { Plus, Trash2 } from 'lucide-react'
+import { KeyRound, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -7,8 +7,10 @@ import {
   useAdminDeleteDenominationMutation,
   useAdminGetDenominationsQuery,
 } from '@/entities/giftcode'
+import type { Denomination } from '@/shared/api/types'
 import { formatMoney } from '@/shared/lib/format'
 import { Button, Card, CardContent, Input, Label, Modal, SimpleSelect, Spinner } from '@/shared/ui'
+import { GiftCodesModal } from './GiftCodesModal'
 
 interface CodeRow {
   card_number: string
@@ -27,6 +29,7 @@ export function AdminGiftCodesPage() {
   const [label, setLabel] = useState('')
   const [price, setPrice] = useState('')
 
+  const [viewing, setViewing] = useState<Denomination | null>(null)
   const [codesOpen, setCodesOpen] = useState(false)
   const [codesDenom, setCodesDenom] = useState('')
   const [rows, setRows] = useState<CodeRow[]>([{ ...EMPTY_ROW }])
@@ -84,19 +87,25 @@ export function AdminGiftCodesPage() {
                 </div>
                 <div className="text-2xl font-bold text-brand-teal mt-2">{d.available_count}</div>
                 <div className="text-xs text-muted-foreground">{t('admin.gift.inStock')}</div>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  className="mt-3"
-                  onClick={() => confirm(t('admin.gift.confirmDelete')) && deleteDenom(d.id)}
-                >
-                  {t('common.delete')}
-                </Button>
+                <div className="flex gap-1.5 mt-3 flex-wrap">
+                  <Button size="sm" variant="secondary" onClick={() => setViewing(d)}>
+                    <KeyRound className="size-3.5" /> {t('admin.gift.viewCodes')}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => confirm(t('admin.gift.confirmDelete')) && deleteDenom(d.id)}
+                  >
+                    {t('common.delete')}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
+
+      {viewing && <GiftCodesModal denom={viewing} onClose={() => setViewing(null)} />}
 
       {denomOpen && (
         <Modal title={t('admin.gift.addDenomination')} onClose={() => setDenomOpen(false)}>

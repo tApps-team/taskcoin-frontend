@@ -1,11 +1,19 @@
 import { baseApi } from '@/shared/api'
-import type { Denomination } from '@/shared/api/types'
+import type { Denomination, GiftCodeAdmin, Paginated } from '@/shared/api/types'
 
 export const giftcodeApi = baseApi.injectEndpoints({
   endpoints: (b) => ({
     adminGetDenominations: b.query<Denomination[], void>({
       query: () => '/admin/gift/denominations',
       providesTags: ['Denominations'],
+    }),
+    // The stock itself: which codes are sitting unused and who got the rest.
+    adminGetGiftCodes: b.query<
+      Paginated<GiftCodeAdmin>,
+      { denomination_id?: string; status?: string; limit?: number; offset?: number }
+    >({
+      query: (params) => ({ url: '/admin/gift/codes', params }),
+      providesTags: ['GiftCodes'],
     }),
     adminCreateDenomination: b.mutation<Denomination, Record<string, unknown>>({
       query: (body) => ({ url: '/admin/gift/denominations', method: 'POST', body }),
@@ -24,13 +32,14 @@ export const giftcodeApi = baseApi.injectEndpoints({
       { denomination_id: string; codes: { card_number: string; card_code: string }[] }
     >({
       query: (body) => ({ url: '/admin/gift/codes', method: 'POST', body }),
-      invalidatesTags: ['Denominations', 'Dashboard'],
+      invalidatesTags: ['Denominations', 'GiftCodes', 'Dashboard'],
     }),
   }),
 })
 
 export const {
   useAdminGetDenominationsQuery,
+  useAdminGetGiftCodesQuery,
   useAdminCreateDenominationMutation,
   useAdminUpdateDenominationMutation,
   useAdminDeleteDenominationMutation,

@@ -318,7 +318,8 @@
     },
     "withdrawals": {
       "title": "История выводов",
-      "empty": "Выводов пока нет"
+      "empty": "Выводов пока нет",
+      "card": "Код"
     },
     "gift": {
       "title": "Гифт-коды",
@@ -334,7 +335,17 @@
       "upload": "Загрузить",
       "inStock": "в наличии",
       "confirmDelete": "Удалить номинал и все его коды?",
-      "parseError": "Заполните номинал и хотя бы одну строку кода"
+      "parseError": "Заполните номинал и хотя бы одну строку кода",
+      "viewCodes": "Коды",
+      "codesTitle": "Гифт-коды",
+      "codesEmpty": "Кодов нет",
+      "addedAt": "добавлен",
+      "codesTruncated": "Показано {{shown}} из {{total}}",
+      "status": {
+        "all": "Все",
+        "available": "В наличии",
+        "issued": "Выданы"
+      }
     },
     "news": {
       "pageTitle": "Новости",
