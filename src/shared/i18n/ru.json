@@ -342,6 +342,10 @@
       "addedAt": "добавлен",
       "codesTruncated": "Показано {{shown}} из {{total}}",
       "status": {
+        "available": "В наличии",
+        "issued": "Выдан"
+      },
+      "filter": {
         "all": "Все",
         "available": "В наличии",
         "issued": "Выданы"

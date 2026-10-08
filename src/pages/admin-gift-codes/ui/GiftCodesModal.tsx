@@ -28,7 +28,7 @@ export function GiftCodesModal({ denom, onClose }: { denom: Denomination; onClos
             variant={status === f ? 'default' : 'secondary'}
             onClick={() => setStatus(f)}
           >
-            {f ? t(`admin.gift.status.${f}`) : t('admin.gift.status.all')}
+            {t(`admin.gift.filter.${f || 'all'}`)}
           </Button>
         ))}
       </div>
