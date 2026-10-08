@@ -1,7 +1,7 @@
 import { ArrowLeft } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
-import { useAdminGetCampaignQuery } from '@/entities/campaign'
+import { CampaignWarning, useAdminGetCampaignQuery } from '@/entities/campaign'
 import { useAdminGetCampaignExecutionsQuery } from '@/entities/execution'
 import { ExecutionCard } from '@/features/review-execution'
 import { storeName } from '@/shared/lib/store'
@@ -39,6 +39,8 @@ export function AdminCampaignDetailsPage() {
           <StatusBadge status={c.status} />
         </div>
       </div>
+
+      <CampaignWarning availability={c.availability} />
 
       <Tabs defaultValue="executions">
         <TabsList className="mb-4">

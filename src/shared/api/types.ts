@@ -51,6 +51,12 @@ export interface Keyword {
   auto_position_at: string | null
 }
 
+export interface CampaignAvailability {
+  reason: 'scheduled_gap' | 'paused_today' | 'daily_limit' | 'hourly_limit'
+  limit: number | null
+  used: number
+}
+
 export interface Campaign {
   id: string
   type: CampaignType
@@ -80,6 +86,8 @@ export interface Campaign {
   application: Application
   keywords: Keyword[]
   today_count: number
+  /** Set when an active campaign still can't be taken by anyone right now. */
+  availability: CampaignAvailability | null
 }
 
 // ---- Offers (user feed) ----

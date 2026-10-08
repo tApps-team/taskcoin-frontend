@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import {
+  CampaignWarning,
   useAdminDeleteCampaignMutation,
   useAdminGetCampaignsQuery,
   useAdminSetCampaignStatusMutation,
@@ -66,6 +67,8 @@ export function AdminCampaignsPage() {
                     <CoinAmount value={c.price} className="text-brand-teal font-bold" />
                     <StatusBadge status={c.status} />
                   </div>
+
+                  <CampaignWarning availability={c.availability} />
 
                   <div className="text-sm text-muted-foreground mb-2">
                     {t('admin.campaigns.progress')}: {c.completed_count}

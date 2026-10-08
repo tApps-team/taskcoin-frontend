@@ -6,4 +6,5 @@ export {
   useAdminSetCampaignStatusMutation,
   useAdminDeleteCampaignMutation,
 } from './api'
-export type { Campaign, Keyword } from '@/shared/api/types'
+export { CampaignWarning } from './ui/CampaignWarning'
+export type { Campaign, CampaignAvailability, Keyword } from '@/shared/api/types'
