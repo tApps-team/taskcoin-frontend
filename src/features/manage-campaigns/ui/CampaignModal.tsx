@@ -141,6 +141,8 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
   const [dailyLimit, setDailyLimit] = useState(campaign?.daily_limit?.toString() || '')
   const [schedule, setSchedule] = useState<Record<string, number>>(() => campaign?.daily_schedule ?? {})
   const [totalTarget, setTotalTarget] = useState(campaign?.total_target?.toString() || '')
+  const [allowRepeat, setAllowRepeat] = useState(campaign?.allow_repeat ?? false)
+  const [repeatAfterDays, setRepeatAfterDays] = useState(campaign?.repeat_after_days?.toString() || '30')
   const [requiresOpen, setRequiresOpen] = useState(campaign?.requires_open ?? true)
   const [requiresRating, setRequiresRating] = useState(campaign?.requires_rating ?? false)
   const [requiresReview, setRequiresReview] = useState(campaign?.requires_review ?? false)
@@ -251,6 +253,8 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
       daily_limit: dailyMode === 'constant' && dailyLimit ? Number(dailyLimit) : null,
       daily_schedule: dailyMode === 'scheduled' ? schedule : {},
       total_target: totalTarget ? Number(totalTarget) : null,
+      allow_repeat: allowRepeat,
+      repeat_after_days: allowRepeat ? Number(repeatAfterDays) || 1 : null,
       requires_open: requiresOpen,
       requires_rating: rating,
       requires_review: review,
@@ -356,6 +360,30 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
         <div>
           <Label>{t('admin.campaigns.countries')}</Label>
           <Input value={countries} onChange={(e) => setCountries(e.target.value)} placeholder="RU, BY (пусто = все)" />
+        </div>
+
+        {/* Repeat installs: off = one approved task per user, forever. */}
+        <div className="space-y-2 border-t border-white/10 pt-3">
+          <Check
+            label={t('admin.campaigns.allowRepeat')}
+            checked={allowRepeat}
+            onChange={setAllowRepeat}
+          />
+          {allowRepeat ? (
+            <div className="pl-6 space-y-1">
+              <Label>{t('admin.campaigns.repeatAfterDays')}</Label>
+              <Input
+                type="number"
+                min={1}
+                value={repeatAfterDays}
+                onChange={(e) => setRepeatAfterDays(e.target.value)}
+                className="max-w-32"
+              />
+              <p className="text-xs text-muted-foreground">{t('admin.campaigns.repeatHint')}</p>
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground pl-6">{t('admin.campaigns.repeatOffHint')}</p>
+          )}
         </div>
 
         <div className="space-y-2 border-t border-white/10 pt-3">

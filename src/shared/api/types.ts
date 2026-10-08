@@ -81,6 +81,8 @@ export interface Campaign {
   allowed_countries: string[]
   status: CampaignStatus
   total_target: number | null
+  allow_repeat: boolean
+  repeat_after_days: number | null
   completed_count: number
   created_at: string
   application: Application

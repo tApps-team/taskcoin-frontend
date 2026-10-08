@@ -77,6 +77,14 @@ export function AdminCampaignDetailsPage() {
                 }
               />
               <Row label={t('admin.campaigns.totalTarget')} value={c.total_target ? String(c.total_target) : '∞'} />
+              <Row
+                label={t('admin.campaigns.allowRepeat')}
+                value={
+                  c.allow_repeat && c.repeat_after_days
+                    ? t('admin.campaigns.repeatValue', { days: c.repeat_after_days })
+                    : t('admin.campaigns.repeatOff')
+                }
+              />
               <Row label={t('admin.campaigns.progress')} value={`${c.completed_count} · ${t('admin.campaigns.today')}: ${c.today_count}`} />
               <Row label={t('admin.campaigns.countries')} value={c.allowed_countries.length ? c.allowed_countries.join(', ') : t('admin.campaigns.allCountries')} />
               <Row label={t('admin.campaigns.keywords')} value={c.keywords.map((k) => `${k.keyword} (${k.percent}%)`).join(', ') || '—'} />
