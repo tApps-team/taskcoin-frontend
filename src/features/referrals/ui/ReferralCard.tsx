@@ -72,7 +72,6 @@ export function ReferralCard() {
               </li>
             ))}
           </ul>
-          <p className="text-xs text-muted-foreground mt-2">{t('referrals.note')}</p>
         </div>
 
         {data.invited.length > 0 && (
