@@ -2,7 +2,7 @@ import { Wallet } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { setCredentials, useLoginMutation, useRegisterMutation } from '@/entities/session'
 import { getErrorMessage } from '@/shared/lib/errors'
 import { detectPlatform } from '@/shared/lib/platform'
@@ -17,7 +17,10 @@ export function LoginPage() {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const [mode, setMode] = useState<Mode>('login')
+  const [params] = useSearchParams()
+  // Arriving on an invite link means they came to sign up, not to sign in.
+  const referralCode = (params.get('ref') || '').trim().toUpperCase()
+  const [mode, setMode] = useState<Mode>(referralCode ? 'register' : 'login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
@@ -47,6 +50,7 @@ export function LoginPage() {
               password,
               full_name: name || undefined,
               platform: detectPlatform(),
+              referral_code: referralCode || undefined,
             }).unwrap()
       dispatch(setCredentials(res))
       navigate(res.user.role === 'super_admin' ? '/admin' : '/app')
@@ -74,6 +78,11 @@ export function LoginPage() {
           </div>
 
           <div className="space-y-3">
+            {referralCode && mode === 'register' && (
+              <div className="rounded-xl bg-brand-teal/10 ring-1 ring-brand-teal/25 px-3 py-2 text-xs text-brand-teal">
+                {t('auth.invitedBy', { code: referralCode })}
+              </div>
+            )}
             {mode === 'register' && (
               <Input
                 placeholder={t('auth.name')}

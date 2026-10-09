@@ -5,7 +5,7 @@ export const sessionApi = baseApi.injectEndpoints({
   endpoints: (b) => ({
     register: b.mutation<
       AuthResponse,
-      { email: string; password: string; full_name?: string; platform?: string }
+      { email: string; password: string; full_name?: string; platform?: string; referral_code?: string }
     >({
       query: (body) => ({ url: '/auth/register', method: 'POST', body }),
     }),

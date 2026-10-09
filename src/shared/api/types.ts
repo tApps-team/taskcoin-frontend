@@ -24,6 +24,42 @@ export interface User {
   created_at: string
 }
 
+/** CRM view of a user: the same row plus how their referrals are doing. */
+export interface AdminUser extends User {
+  referral_code: string | null
+  referrals_count: number
+  referral_earned: string
+}
+
+export interface ReferralTier {
+  threshold: string
+  bonus: string
+}
+
+export interface ReferralInvitee {
+  id: string
+  email: string
+  full_name: string | null
+  created_at: string
+  /** What the invitee earned on tasks. */
+  earned: string
+  /** What that has already paid their inviter. */
+  bonus_paid: string
+}
+
+export interface ReferralSummary {
+  code: string
+  link: string
+  invited_count: number
+  earned: string
+  tiers: ReferralTier[]
+  invited: ReferralInvitee[]
+}
+
+export interface AdminReferralSummary extends ReferralSummary {
+  invited_by: ReferralInvitee | null
+}
+
 export interface AuthResponse {
   access: string
   refresh: string

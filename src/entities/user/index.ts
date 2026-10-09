@@ -1,4 +1,4 @@
-export type { User, Role, UserStats } from '@/shared/api/types'
+export type { AdminUser, Role, User, UserStats } from '@/shared/api/types'
 export {
   userApi,
   useGetMyStatsQuery,

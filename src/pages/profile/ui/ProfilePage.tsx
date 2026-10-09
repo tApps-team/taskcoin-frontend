@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { useGetUserUnreadQuery } from '@/entities/feedback'
+import { ReferralCard } from '@/features/referrals'
 import { loggedOut, useMeQuery, useUpdateProfileMutation } from '@/entities/session'
 import { baseApi } from '@/shared/api'
 import { useGetMyStatsQuery } from '@/entities/user'
@@ -77,6 +78,8 @@ export function ProfilePage() {
         <Stat label={t('profile.completedInstalls')} value={stats?.completed_installs ?? 0} />
         <Stat label={t('profile.balance')} value={<CoinAmount value={me.balance} />} />
       </div>
+
+      <ReferralCard />
 
       <Card className="mb-6">
         <CardContent className="p-4">

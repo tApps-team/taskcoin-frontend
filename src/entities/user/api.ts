@@ -1,5 +1,5 @@
 import { baseApi } from '@/shared/api'
-import type { Paginated, User, UserStats } from '@/shared/api/types'
+import type { AdminUser, Paginated, User, UserStats } from '@/shared/api/types'
 
 export const userApi = baseApi.injectEndpoints({
   endpoints: (b) => ({
@@ -8,7 +8,7 @@ export const userApi = baseApi.injectEndpoints({
       providesTags: ['Stats'],
     }),
     adminGetUsers: b.query<
-      Paginated<User>,
+      Paginated<AdminUser>,
       { search?: string; limit?: number; offset?: number } | void
     >({
       query: (params) => ({ url: '/admin/users', params: params || undefined }),

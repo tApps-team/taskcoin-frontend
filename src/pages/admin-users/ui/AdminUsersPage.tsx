@@ -1,8 +1,10 @@
 import { ChevronLeft, ChevronRight, Coins, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAdminDeleteUserMutation, useAdminGetUsersQuery, type User } from '@/entities/user'
+import { useAdminDeleteUserMutation, useAdminGetUsersQuery, type AdminUser } from '@/entities/user'
+import { UserReferralsModal } from './UserReferralsModal'
 import { BalanceModal, CreateUserModal, EditUserModal } from '@/features/manage-users'
+import { formatMoney } from '@/shared/lib/format'
 import {
   Badge,
   Button,
@@ -27,8 +29,9 @@ export function AdminUsersPage() {
   const { data, isLoading } = useAdminGetUsersQuery({ search: search || undefined, limit: PAGE, offset })
 
   const [creating, setCreating] = useState(false)
-  const [editUser, setEditUser] = useState<User | null>(null)
-  const [balanceUser, setBalanceUser] = useState<User | null>(null)
+  const [editUser, setEditUser] = useState<AdminUser | null>(null)
+  const [balanceUser, setBalanceUser] = useState<AdminUser | null>(null)
+  const [refUser, setRefUser] = useState<AdminUser | null>(null)
   const [deleteUser] = useAdminDeleteUserMutation()
 
   return (
@@ -61,6 +64,7 @@ export function AdminUsersPage() {
                 <TableHead>{t('admin.users.name')}</TableHead>
                 <TableHead>{t('admin.users.role')}</TableHead>
                 <TableHead>{t('admin.users.balance')}</TableHead>
+                <TableHead>{t('admin.users.referrals')}</TableHead>
                 <TableHead></TableHead>
                 <TableHead>{t('common.actions')}</TableHead>
               </TableRow>
@@ -75,6 +79,12 @@ export function AdminUsersPage() {
                   </TableCell>
                   <TableCell>
                     <CoinAmount value={u.balance} className="text-brand-teal" />
+                  </TableCell>
+                  <TableCell>
+                    {/* Count · what those invites have paid them. */}
+                    <Button size="sm" variant="secondary" onClick={() => setRefUser(u)}>
+                      {u.referrals_count} · {formatMoney(u.referral_earned)}
+                    </Button>
                   </TableCell>
                   <TableCell>{u.is_blocked && <Badge variant="destructive">blocked</Badge>}</TableCell>
                   <TableCell>
@@ -116,6 +126,8 @@ export function AdminUsersPage() {
       )}
 
       {creating && <CreateUserModal onClose={() => setCreating(false)} />}
+      {refUser && <UserReferralsModal user={refUser} onClose={() => setRefUser(null)} />}
+
       {editUser && <EditUserModal user={editUser} onClose={() => setEditUser(null)} />}
       {balanceUser && <BalanceModal user={balanceUser} onClose={() => setBalanceUser(null)} />}
     </div>
