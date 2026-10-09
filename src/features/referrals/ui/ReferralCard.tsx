@@ -59,19 +59,16 @@ export function ReferralCard() {
           </div>
         </div>
 
-        <div className="mt-4">
-          <div className="text-sm font-medium mb-2">{t('referrals.howItWorks')}</div>
-          <ul className="space-y-1.5">
-            {data.tiers.map((tier) => (
-              <li key={tier.threshold} className="text-sm text-muted-foreground flex gap-2">
-                <span className="text-brand-teal">→</span>
-                {t('referrals.tier', {
-                  threshold: formatMoney(tier.threshold),
-                  bonus: formatMoney(tier.bonus),
-                })}
-              </li>
-            ))}
-          </ul>
+        <div className="mt-4 rounded-2xl bg-white/5 p-3">
+          <div className="text-sm">
+            {t('referrals.howItWorks', { percent: Number(data.percent) })}
+          </div>
+          <div className="text-xs text-muted-foreground mt-1">
+            {/* Same 500 ₽ example the CRM shows next to the setting. */}
+            {t('referrals.example', {
+              bonus: formatMoney(Math.round(500 * Number(data.percent)) / 100),
+            })}
+          </div>
         </div>
 
         {data.invited.length > 0 && (

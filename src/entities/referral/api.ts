@@ -1,5 +1,5 @@
 import { baseApi } from '@/shared/api'
-import type { AdminReferralSummary, ReferralSummary, ReferralTier } from '@/shared/api/types'
+import type { AdminReferralSummary, ReferralSummary } from '@/shared/api/types'
 
 export const referralApi = baseApi.injectEndpoints({
   endpoints: (b) => ({
@@ -11,13 +11,13 @@ export const referralApi = baseApi.injectEndpoints({
       query: (userId) => `/admin/users/${userId}/referrals`,
       providesTags: ['Referrals'],
     }),
-    adminGetReferralTiers: b.query<ReferralTier[], void>({
-      query: () => '/admin/referral-tiers',
+    adminGetReferralPercent: b.query<{ percent: string }, void>({
+      query: () => '/admin/referral-percent',
       providesTags: ['ReferralTiers'],
     }),
-    adminUpdateReferralTiers: b.mutation<ReferralTier[], { tiers: ReferralTier[] }>({
-      query: (body) => ({ url: '/admin/referral-tiers', method: 'PUT', body }),
-      // The user-facing card shows these too, so refresh both.
+    adminUpdateReferralPercent: b.mutation<{ percent: string }, { percent: string }>({
+      query: (body) => ({ url: '/admin/referral-percent', method: 'PUT', body }),
+      // The user-facing card shows it too, so refresh both.
       invalidatesTags: ['ReferralTiers', 'Referrals'],
     }),
   }),
@@ -26,6 +26,6 @@ export const referralApi = baseApi.injectEndpoints({
 export const {
   useGetMyReferralsQuery,
   useAdminGetUserReferralsQuery,
-  useAdminGetReferralTiersQuery,
-  useAdminUpdateReferralTiersMutation,
+  useAdminGetReferralPercentQuery,
+  useAdminUpdateReferralPercentMutation,
 } = referralApi

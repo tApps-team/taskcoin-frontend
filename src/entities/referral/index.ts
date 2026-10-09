@@ -1,7 +1,7 @@
 export {
   useGetMyReferralsQuery,
   useAdminGetUserReferralsQuery,
-  useAdminGetReferralTiersQuery,
-  useAdminUpdateReferralTiersMutation,
+  useAdminGetReferralPercentQuery,
+  useAdminUpdateReferralPercentMutation,
 } from './api'
-export type { AdminReferralSummary, ReferralSummary, ReferralTier } from '@/shared/api/types'
+export type { AdminReferralSummary, ReferralSummary } from '@/shared/api/types'

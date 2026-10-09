@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAdminGetSettingsQuery, useAdminUpdateSettingsMutation } from '@/entities/app-settings'
 import { Button, Card, CardContent, Input, Label, Spinner } from '@/shared/ui'
-import { ReferralTiersCard } from './ReferralTiersCard'
+import { ReferralPercentCard } from './ReferralPercentCard'
 
 export function AdminSettingsPage() {
   const { t } = useTranslation()
@@ -51,7 +51,7 @@ export function AdminSettingsPage() {
         </CardContent>
       </Card>
 
-      <ReferralTiersCard />
+      <ReferralPercentCard />
     </div>
   )
 }

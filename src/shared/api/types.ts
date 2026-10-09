@@ -31,11 +31,6 @@ export interface AdminUser extends User {
   referral_earned: string
 }
 
-export interface ReferralTier {
-  threshold: string
-  bonus: string
-}
-
 export interface ReferralInvitee {
   id: string
   email: string
@@ -52,7 +47,8 @@ export interface ReferralSummary {
   link: string
   invited_count: number
   earned: string
-  tiers: ReferralTier[]
+  /** Share of an invitee's task reward that goes to the inviter, in percent. */
+  percent: string
   invited: ReferralInvitee[]
 }
 
