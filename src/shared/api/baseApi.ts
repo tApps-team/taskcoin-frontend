@@ -77,6 +77,7 @@ export const baseApi = createApi({
     'UserUnread',
     'HistoryUnread',
     'Referrals',
+    'ReferralTiers',
     'AdminBadges',
   ],
   endpoints: () => ({}),

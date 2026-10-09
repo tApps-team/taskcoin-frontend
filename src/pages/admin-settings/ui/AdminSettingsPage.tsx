@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAdminGetSettingsQuery, useAdminUpdateSettingsMutation } from '@/entities/app-settings'
 import { Button, Card, CardContent, Input, Label, Spinner } from '@/shared/ui'
+import { ReferralTiersCard } from './ReferralTiersCard'
 
 export function AdminSettingsPage() {
   const { t } = useTranslation()
@@ -49,6 +50,8 @@ export function AdminSettingsPage() {
           </form>
         </CardContent>
       </Card>
+
+      <ReferralTiersCard />
     </div>
   )
 }
