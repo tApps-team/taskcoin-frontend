@@ -55,6 +55,12 @@ export function useFeedbackSocket(active: boolean) {
             dispatch(feedbackApi.util.invalidateTags(['HistoryUnread', 'Executions', 'Me']))
             return
           }
+          // A phone payout finished: it either reached the carrier or was
+          // declined and refunded, so both the balance and the list move.
+          if (data.type === 'withdrawal_settled') {
+            dispatch(feedbackApi.util.invalidateTags(['Withdrawals', 'Me', 'AdminWithdrawals']))
+            return
+          }
           if (data.type !== 'ticket_message' || !data.ticket_id) return
           // Patch both the user-side and the CRM caches (whichever is mounted).
           const push = (draft: { messages: TicketMessage[] }) => {

@@ -10,6 +10,9 @@ export type ExecutionStatus =
   | 'rejected'
   | 'expired'
 export type WithdrawalStatus = 'pending' | 'paid' | 'rejected'
+export type WithdrawalMethod = 'gift_code' | 'phone'
+/** Carriers Capitalist can top up. The value is the provider's own channel name. */
+export type MobileOperator = 'MTS' | 'BEELINE' | 'MEGAFON' | 'TELE2' | 'YOTA' | 'TMOBILE'
 
 export interface User {
   id: string
@@ -210,11 +213,20 @@ export interface DenominationPublic {
   available: boolean
 }
 
+export interface PhonePayoutOptions {
+  /** false hides the whole option — an unconfigured deploy reports this. */
+  enabled: boolean
+  min_amount: string
+  max_amount: string
+  operators: MobileOperator[]
+}
+
 export interface Withdrawal {
   id: string
   user_id: string
   amount: string
   currency: string
+  method: WithdrawalMethod
   denomination_label: string | null
   status: WithdrawalStatus
   admin_comment: string | null
@@ -222,6 +234,9 @@ export interface Withdrawal {
   processed_at: string | null
   card_number: string | null
   card_code: string | null
+  phone: string | null
+  operator: MobileOperator | null
+  failure_reason: string | null
 }
 
 export interface AdminWithdrawal {
@@ -229,6 +244,7 @@ export interface AdminWithdrawal {
   user_id: string
   amount: string
   currency: string
+  method: WithdrawalMethod
   denomination_label: string | null
   status: WithdrawalStatus
   admin_comment: string | null
@@ -237,7 +253,22 @@ export interface AdminWithdrawal {
   /** The card actually handed to the user (null until the payout happened). */
   card_number: string | null
   card_code: string | null
+  /** Phone payouts: destination and what the provider reports about it. */
+  phone: string | null
+  operator: MobileOperator | null
+  provider_ref: string | null
+  provider_state: string | null
+  provider_fee: string | null
+  failure_reason: string | null
+  submit_attempts: number
   user: { id: string; email: string; full_name: string | null }
+}
+
+/** Our float at the payment provider, as the CRM shows it. */
+export interface PayoutBalance {
+  enabled: boolean
+  accounts: { number: string; currency: string; name: string; balance: number }[]
+  error: string | null
 }
 
 // ---- Misc ----

@@ -2,7 +2,10 @@ import { baseApi } from '@/shared/api'
 import type {
   AdminWithdrawal,
   DenominationPublic,
+  MobileOperator,
   Paginated,
+  PayoutBalance,
+  PhonePayoutOptions,
   Withdrawal,
 } from '@/shared/api/types'
 
@@ -12,6 +15,10 @@ export const withdrawalApi = baseApi.injectEndpoints({
       query: () => '/withdrawals/denominations',
       providesTags: ['Denominations'],
     }),
+    getPhonePayoutOptions: b.query<PhonePayoutOptions, void>({
+      query: () => '/withdrawals/phone/options',
+      providesTags: ['PayoutOptions'],
+    }),
     getMyWithdrawals: b.query<Paginated<Withdrawal>, void>({
       query: () => '/withdrawals/my',
       providesTags: ['Withdrawals'],
@@ -19,6 +26,13 @@ export const withdrawalApi = baseApi.injectEndpoints({
     createWithdrawal: b.mutation<Withdrawal, { denomination_id: string }>({
       query: (body) => ({ url: '/withdrawals', method: 'POST', body }),
       invalidatesTags: ['Withdrawals', 'Me', 'Stats', 'Denominations'],
+    }),
+    createPhoneWithdrawal: b.mutation<
+      Withdrawal,
+      { amount: string; phone: string; operator: MobileOperator }
+    >({
+      query: (body) => ({ url: '/withdrawals/phone', method: 'POST', body }),
+      invalidatesTags: ['Withdrawals', 'Me', 'Stats'],
     }),
 
     // admin
@@ -29,12 +43,28 @@ export const withdrawalApi = baseApi.injectEndpoints({
       query: (params) => ({ url: '/admin/withdrawals', params: params || undefined }),
       providesTags: ['AdminWithdrawals'],
     }),
+    adminGetPayoutBalance: b.query<PayoutBalance, void>({
+      query: () => '/admin/payouts/balance',
+      providesTags: ['PayoutBalance'],
+    }),
+    adminCancelWithdrawal: b.mutation<AdminWithdrawal, { id: string; reason: string }>({
+      query: ({ id, reason }) => ({
+        url: `/admin/withdrawals/${id}/cancel`,
+        method: 'POST',
+        body: { reason },
+      }),
+      invalidatesTags: ['AdminWithdrawals', 'AdminUsers', 'Dashboard'],
+    }),
   }),
 })
 
 export const {
   useGetDenominationsQuery,
+  useGetPhonePayoutOptionsQuery,
   useGetMyWithdrawalsQuery,
   useCreateWithdrawalMutation,
+  useCreatePhoneWithdrawalMutation,
   useAdminGetWithdrawalsQuery,
+  useAdminGetPayoutBalanceQuery,
+  useAdminCancelWithdrawalMutation,
 } = withdrawalApi

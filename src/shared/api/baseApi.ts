@@ -77,6 +77,8 @@ export const baseApi = createApi({
     'UserUnread',
     'HistoryUnread',
     'Referrals',
+    'PayoutOptions',
+    'PayoutBalance',
     'ReferralTiers',
     'AdminBadges',
   ],
