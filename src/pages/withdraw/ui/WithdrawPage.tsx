@@ -58,6 +58,16 @@ function HistoryRow({ w }: { w: Withdrawal }) {
         {isPhone && w.operator && (
           <div className="text-xs text-muted-foreground mt-1">
             {OPERATOR_LABELS[w.operator] ?? w.operator}
+            {/* The debited figure is the headline above; this is what the
+                carrier received, so the fee is never a surprise after the
+                fact. Older rows have no split and simply omit it. */}
+            {w.payout_amount && (
+              <>
+                {' · '}
+                {formatMoney(Number(w.payout_amount))}{' '}
+                {t('withdraw.phone.arrivedOf', { total: formatMoney(Number(w.amount)) })}
+              </>
+            )}
           </div>
         )}
         {!isPhone && w.card_number && (

@@ -6,6 +6,7 @@ import type {
   Paginated,
   PayoutBalance,
   PhonePayoutOptions,
+  PhonePayoutQuote,
   Withdrawal,
 } from '@/shared/api/types'
 
@@ -18,6 +19,11 @@ export const withdrawalApi = baseApi.injectEndpoints({
     getPhonePayoutOptions: b.query<PhonePayoutOptions, void>({
       query: () => '/withdrawals/phone/options',
       providesTags: ['PayoutOptions'],
+    }),
+    // Not cached by tag: it is a pure function of the amount, and the only
+    // thing that could invalidate it is a tariff change that needs a redeploy.
+    getPhonePayoutQuote: b.query<PhonePayoutQuote, string>({
+      query: (amount) => ({ url: '/withdrawals/phone/quote', params: { amount } }),
     }),
     getMyWithdrawals: b.query<Paginated<Withdrawal>, void>({
       query: () => '/withdrawals/my',
@@ -61,6 +67,7 @@ export const withdrawalApi = baseApi.injectEndpoints({
 export const {
   useGetDenominationsQuery,
   useGetPhonePayoutOptionsQuery,
+  useGetPhonePayoutQuoteQuery,
   useGetMyWithdrawalsQuery,
   useCreateWithdrawalMutation,
   useCreatePhoneWithdrawalMutation,

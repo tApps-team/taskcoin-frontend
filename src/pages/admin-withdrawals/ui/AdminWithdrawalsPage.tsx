@@ -155,6 +155,16 @@ export function AdminWithdrawalsPage() {
                           {w.provider_state && <> · {w.provider_state}</>}
                           {w.provider_ref && <> · #{w.provider_ref}</>}
                         </div>
+                        {/* Two figures, not one: the row's headline amount
+                            is what the user was charged, this is what the
+                            carrier got. Without both, a Capitalist statement
+                            cannot be reconciled against a withdrawal. */}
+                        {w.payout_amount != null && (
+                          <div>
+                            {t('admin.withdrawals.sent')}:{' '}
+                            {formatMoney(Number(w.payout_amount))}
+                          </div>
+                        )}
                         {w.provider_fee != null && (
                           <div>
                             {t('admin.withdrawals.fee')}: {formatMoney(Number(w.provider_fee))}

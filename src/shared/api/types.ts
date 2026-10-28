@@ -216,9 +216,21 @@ export interface DenominationPublic {
 export interface PhonePayoutOptions {
   /** false hides the whole option — an unconfigured deploy reports this. */
   enabled: boolean
+  /** Limits on what the user types, i.e. what leaves the balance. */
   min_amount: string
   max_amount: string
+  /** The provider's cut, which the user covers. */
+  fee_percent: string
   operators: MobileOperator[]
+}
+
+/** One amount split by the backend. Never computed in the client: its
+ *  rounding and the server's would drift, and the figure shown would stop
+ *  matching the figure paid. */
+export interface PhonePayoutQuote {
+  amount: string
+  payout_amount: string
+  fee: string
 }
 
 export interface Withdrawal {
@@ -235,6 +247,8 @@ export interface Withdrawal {
   card_number: string | null
   card_code: string | null
   phone: string | null
+  /** What reached the phone: `amount` less the provider's fee. */
+  payout_amount: string | null
   operator: MobileOperator | null
   failure_reason: string | null
 }
@@ -255,6 +269,8 @@ export interface AdminWithdrawal {
   card_code: string | null
   /** Phone payouts: destination and what the provider reports about it. */
   phone: string | null
+  /** Transferred to the carrier; `amount` less the fee the user covered. */
+  payout_amount: string | null
   operator: MobileOperator | null
   provider_ref: string | null
   provider_state: string | null

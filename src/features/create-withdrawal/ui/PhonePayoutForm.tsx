@@ -5,6 +5,7 @@ import { useMeQuery } from '@/entities/session'
 import {
   useCreatePhoneWithdrawalMutation,
   useGetPhonePayoutOptionsQuery,
+  useGetPhonePayoutQuoteQuery,
 } from '@/entities/withdrawal'
 import type { MobileOperator } from '@/shared/api/types'
 import { getErrorMessage } from '@/shared/lib/errors'
@@ -53,6 +54,13 @@ export function PhonePayoutForm() {
   const [amount, setAmount] = useState('')
   const [error, setError] = useState('')
   const [queued, setQueued] = useState(false)
+  const [lastQuote, setLastQuote] = useState<{ amount: string; payout: string } | null>(null)
+
+  // Asked of the server rather than worked out here: the split has to be the
+  // one the payout will actually use, down to the kopeck.
+  const { data: quote } = useGetPhonePayoutQuoteQuery(amount, {
+    skip: !amount || Number(amount) <= 0,
+  })
 
   if (isLoading) return <Spinner />
   if (!options || !options.enabled) {
@@ -74,7 +82,15 @@ export function PhonePayoutForm() {
     if (!ready || !operator) return
     setError('')
     try {
-      await create({ amount: String(value), phone: digitsOf(phone), operator }).unwrap()
+      const created = await create({
+        amount: String(value),
+        phone: digitsOf(phone),
+        operator,
+      }).unwrap()
+      setLastQuote({
+        amount: created.amount,
+        payout: created.payout_amount ?? String(value),
+      })
       setQueued(true)
       setPhone('')
       setOperator(null)
@@ -91,6 +107,14 @@ export function PhonePayoutForm() {
           <div className="flex items-center gap-2 text-brand-teal font-bold text-lg">
             <Smartphone className="size-5" /> {t('withdraw.phone.queuedTitle')}
           </div>
+          {lastQuote && (
+            <p className="text-sm">
+              <span className="font-bold">{formatMoney(Number(lastQuote.payout))}</span>{' '}
+              <span className="text-muted-foreground">
+                {t('withdraw.phone.arrivedOf', { total: formatMoney(Number(lastQuote.amount)) })}
+              </span>
+            </p>
+          )}
           <p className="text-sm text-muted-foreground">{t('withdraw.phone.queuedHint')}</p>
           <Button variant="secondary" className="w-full" onClick={() => setQueued(false)}>
             {t('common.done')}
@@ -162,6 +186,32 @@ export function PhonePayoutForm() {
             max: formatMoney(Math.min(max, Math.max(maxAllowed, 0))),
           })}
         </p>
+
+        <p className="text-xs text-muted-foreground mt-1">
+          {t('withdraw.phone.feeNote', { percent: Number(options.fee_percent) })}
+        </p>
+
+        {/* Shown before the button, not after: the amount that reaches the
+            phone is lower than the amount typed, and finding that out from the
+            history afterwards would feel like a bait. */}
+        {quote && amountReady && (
+          <div className="mt-3 rounded-2xl glass-soft border border-white/10 p-3 space-y-1.5">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-sm text-muted-foreground">
+                {t('withdraw.phone.willArrive')}
+              </span>
+              <span className="text-lg font-bold text-brand-teal">
+                {formatMoney(Number(quote.payout_amount))}
+              </span>
+            </div>
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-xs text-muted-foreground">{t('withdraw.phone.feeLine')}</span>
+              <span className="text-xs text-muted-foreground">
+                −{formatMoney(Number(quote.fee))}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
 
       {error && <p className="text-destructive text-sm">{error}</p>}
