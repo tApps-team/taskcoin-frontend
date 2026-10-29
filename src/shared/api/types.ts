@@ -195,6 +195,35 @@ export interface Denomination {
   available_count: number
 }
 
+/** One distinct face value found in an imported plati.market table. The
+ *  mapping to our denominations is the admin's call: guessing it would hand a
+ *  user the wrong card for their money. */
+export interface GiftImportGroup {
+  value: string | null
+  currency: string | null
+  count: number
+  importable: number
+  denomination_id: string | null
+}
+
+export interface GiftImportProblem {
+  line: number
+  text: string
+  /** Stable code, phrased in the interface — see admin.gift.import.problem.* */
+  reason: string
+}
+
+export interface GiftImportResult {
+  dry_run: boolean
+  parsed: number
+  ready: number
+  imported: number
+  duplicates_in_db: number
+  groups: GiftImportGroup[]
+  problems: GiftImportProblem[]
+  problems_total: number
+}
+
 export interface GiftCodeAdmin {
   id: string
   denomination_id: string

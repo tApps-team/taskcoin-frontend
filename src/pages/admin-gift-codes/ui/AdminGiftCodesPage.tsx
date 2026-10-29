@@ -1,4 +1,4 @@
-import { KeyRound, Plus, Trash2 } from 'lucide-react'
+import { FileUp, KeyRound, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -11,6 +11,7 @@ import type { Denomination } from '@/shared/api/types'
 import { formatMoney } from '@/shared/lib/format'
 import { Button, Card, CardContent, Input, Label, Modal, SimpleSelect, Spinner } from '@/shared/ui'
 import { GiftCodesModal } from './GiftCodesModal'
+import { ImportCodesModal } from './ImportCodesModal'
 
 interface CodeRow {
   card_number: string
@@ -31,6 +32,7 @@ export function AdminGiftCodesPage() {
 
   const [viewing, setViewing] = useState<Denomination | null>(null)
   const [codesOpen, setCodesOpen] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
   const [codesDenom, setCodesDenom] = useState('')
   const [rows, setRows] = useState<CodeRow[]>([{ ...EMPTY_ROW }])
   const [msg, setMsg] = useState('')
@@ -64,7 +66,10 @@ export function AdminGiftCodesPage() {
     <div>
       <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <h1 className="text-2xl font-bold">{t('admin.gift.title')}</h1>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="secondary" onClick={() => setImportOpen(true)}>
+            <FileUp /> {t('admin.gift.import.button')}
+          </Button>
           <Button variant="secondary" onClick={() => setCodesOpen(true)}>
             <Plus /> {t('admin.gift.addCodes')}
           </Button>
@@ -106,6 +111,10 @@ export function AdminGiftCodesPage() {
       )}
 
       {viewing && <GiftCodesModal denom={viewing} onClose={() => setViewing(null)} />}
+
+      {importOpen && (
+        <ImportCodesModal denominations={data || []} onClose={() => setImportOpen(false)} />
+      )}
 
       {denomOpen && (
         <Modal title={t('admin.gift.addDenomination')} onClose={() => setDenomOpen(false)}>

@@ -5,5 +5,13 @@ export {
   useAdminUpdateDenominationMutation,
   useAdminDeleteDenominationMutation,
   useAdminAddGiftCodesMutation,
+  useAdminImportGiftCodesMutation,
 } from './api'
-export type { Denomination, DenominationPublic, GiftCodeAdmin } from '@/shared/api/types'
+export type {
+  Denomination,
+  DenominationPublic,
+  GiftCodeAdmin,
+  GiftImportGroup,
+  GiftImportProblem,
+  GiftImportResult,
+} from '@/shared/api/types'

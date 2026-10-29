@@ -1,5 +1,10 @@
 import { baseApi } from '@/shared/api'
-import type { Denomination, GiftCodeAdmin, Paginated } from '@/shared/api/types'
+import type {
+  Denomination,
+  GiftCodeAdmin,
+  GiftImportResult,
+  Paginated,
+} from '@/shared/api/types'
 
 export const giftcodeApi = baseApi.injectEndpoints({
   endpoints: (b) => ({
@@ -34,6 +39,17 @@ export const giftcodeApi = baseApi.injectEndpoints({
       query: (body) => ({ url: '/admin/gift/codes', method: 'POST', body }),
       invalidatesTags: ['Denominations', 'GiftCodes', 'Dashboard'],
     }),
+    // One call does both the preview and the import, so what the admin
+    // approved is what runs. A dry run invalidates nothing — it changed
+    // nothing.
+    adminImportGiftCodes: b.mutation<
+      GiftImportResult,
+      { text: string; mapping?: Record<string, string>; dry_run: boolean }
+    >({
+      query: (body) => ({ url: '/admin/gift/codes/import', method: 'POST', body }),
+      invalidatesTags: (_r, _e, arg) =>
+        arg.dry_run ? [] : ['Denominations', 'GiftCodes', 'Dashboard'],
+    }),
   }),
 })
 
@@ -44,4 +60,5 @@ export const {
   useAdminUpdateDenominationMutation,
   useAdminDeleteDenominationMutation,
   useAdminAddGiftCodesMutation,
+  useAdminImportGiftCodesMutation,
 } = giftcodeApi
