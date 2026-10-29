@@ -72,6 +72,9 @@ export function PhonePayoutForm() {
   const max = Number(options.max_amount)
   // Never offer more than the account holds, nor more than one payout allows.
   const maxAllowed = Math.min(max, Math.floor(balance))
+  // Below the minimum there is no range to speak of: printing one would read
+  // "from 231 to 116", which is not a limit but a contradiction.
+  const canAfford = maxAllowed >= min
   const value = Number(amount)
 
   const phoneReady = digitsOf(phone).length === 11
@@ -174,7 +177,7 @@ export function PhonePayoutForm() {
             type="button"
             variant="outline"
             className="shrink-0"
-            disabled={maxAllowed < min}
+            disabled={!canAfford}
             onClick={() => setAmount(String(maxAllowed))}
           >
             {t('withdraw.phone.all')}
