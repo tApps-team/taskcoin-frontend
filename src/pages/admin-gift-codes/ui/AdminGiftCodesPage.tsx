@@ -90,7 +90,7 @@ export function AdminGiftCodesPage() {
                   <div className="text-lg font-bold">{d.label}</div>
                   <div className="text-muted-foreground text-sm">{formatMoney(d.price_rub)}</div>
                 </div>
-                <div className="text-2xl font-bold text-brand-teal mt-2">{d.available_count}</div>
+                <div className="text-2xl font-bold text-brand-green mt-2">{d.available_count}</div>
                 <div className="text-xs text-muted-foreground">{t('admin.gift.inStock')}</div>
                 <div className="flex gap-1.5 mt-3 flex-wrap">
                   <Button size="sm" variant="secondary" onClick={() => setViewing(d)}>
@@ -183,7 +183,7 @@ export function AdminGiftCodesPage() {
                 <Plus className="size-4" /> {t('admin.gift.addRow')}
               </Button>
             </div>
-            {msg && <p className="text-sm text-brand-teal">{msg}</p>}
+            {msg && <p className="text-sm text-brand-green">{msg}</p>}
             <Button className="w-full" disabled={adding} onClick={saveCodes}>
               {t('admin.gift.upload')}
             </Button>

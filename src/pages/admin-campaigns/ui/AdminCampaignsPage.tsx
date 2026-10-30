@@ -70,11 +70,11 @@ export function AdminCampaignsPage() {
                     {c.application.icon_url && (
                       <img src={c.application.icon_url} alt="" className="size-10 rounded-xl object-cover" />
                     )}
-                    <Link to={`/admin/campaigns/${c.id}`} className="min-w-0 flex-1 hover:text-brand-teal">
+                    <Link to={`/admin/campaigns/${c.id}`} className="min-w-0 flex-1 hover:text-brand-green">
                       <div className="font-semibold truncate">{c.application.name}</div>
                       <StoreBadge store={c.application.store} />
                     </Link>
-                    <CoinAmount value={c.price} className="text-brand-teal font-bold" />
+                    <CoinAmount value={c.price} className="text-brand-green font-bold" />
                     <StatusBadge status={c.status} />
                   </div>
 
@@ -85,8 +85,8 @@ export function AdminCampaignsPage() {
                     {c.total_target ? ` / ${c.total_target}` : ''} · {t('admin.campaigns.today')}: {c.today_count}
                   </div>
                   {pct !== null && (
-                    <div className="h-2 rounded-full bg-white/10 mb-3 overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-brand-violet to-brand-teal" style={{ width: `${pct}%` }} />
+                    <div className="h-2 rounded-full bg-ink/[0.06] mb-3 overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-brand-green to-brand-grass" style={{ width: `${pct}%` }} />
                     </div>
                   )}
 

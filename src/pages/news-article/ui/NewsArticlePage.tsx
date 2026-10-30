@@ -25,7 +25,7 @@ export function NewsArticlePage() {
         </div>
       )}
 
-      <Link to="/app" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-teal mb-3">
+      <Link to="/app" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-green mb-3">
         <ArrowLeft className="size-4" /> {t('common.back')}
       </Link>
 

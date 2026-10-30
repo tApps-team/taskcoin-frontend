@@ -49,7 +49,7 @@ export function ScreenshotSlot({
           <img
             src={shot.file_path}
             alt=""
-            className="w-24 h-24 object-cover rounded-xl border border-white/10"
+            className="w-24 h-24 object-cover rounded-xl border border-ink/10"
           />
           <button
             type="button"
@@ -61,11 +61,11 @@ export function ScreenshotSlot({
           </button>
         </div>
       ) : uploading ? (
-        <div className="flex items-center justify-center gap-3 border border-dashed border-white/20 rounded-xl px-4 py-3 text-sm text-muted-foreground">
+        <div className="flex items-center justify-center gap-3 border border-dashed border-ink/15 rounded-xl px-4 py-3 text-sm text-muted-foreground">
           <Loader2 className="size-4 shrink-0 animate-spin" /> {t('offer.uploading')}
         </div>
       ) : (
-        <label className="flex items-center justify-center gap-3 border border-dashed border-white/20 rounded-xl px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors">
+        <label className="flex items-center justify-center gap-3 border border-dashed border-ink/15 rounded-xl px-4 py-3 cursor-pointer hover:bg-ink/[0.035] transition-colors">
           <Upload className="size-4 shrink-0" />
           <span className="text-sm">{placeholder}</span>
           <input type="file" accept="image/*" hidden onChange={onUpload} disabled={uploading} />

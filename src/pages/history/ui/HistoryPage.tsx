@@ -77,13 +77,13 @@ export function HistoryPage() {
                       <StatusBadge status={s.status} />
                     </div>
                     <div className="flex items-center justify-between mt-1 text-sm">
-                      <CoinAmount value={s.reward_snapshot} className="text-brand-teal" />
+                      <CoinAmount value={s.reward_snapshot} className="text-brand-green" />
                       <span className="text-muted-foreground">
                         {formatDate(s.reviewed_at || s.submitted_at || s.started_at)}
                       </span>
                     </div>
                     {s.status === 'rejected' && s.reviewer_comment && (
-                      <div className="mt-2 text-sm text-red-300 bg-destructive/10 rounded-xl px-3 py-2">
+                      <div className="mt-2 text-sm text-red-600 bg-destructive/10 rounded-xl px-3 py-2">
                         {t('history.rejectedReason')}: {s.reviewer_comment}
                       </div>
                     )}

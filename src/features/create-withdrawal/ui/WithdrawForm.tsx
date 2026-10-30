@@ -21,12 +21,12 @@ function CopyRow({ label, value }: { label: string; value: string }) {
         setCopied(true)
         setTimeout(() => setCopied(false), 1500)
       }}
-      className="w-full flex items-center justify-between gap-2 glass-soft rounded-xl px-3 py-2 hover:bg-white/5 transition-colors"
+      className="w-full flex items-center justify-between gap-2 glass-soft rounded-xl px-3 py-2 hover:bg-ink/[0.035] transition-colors"
     >
       <span className="text-xs text-muted-foreground">{label}</span>
       <span className="font-mono font-semibold flex items-center gap-2">
         {value}
-        {copied ? <Check className="size-3.5 text-brand-teal" /> : <Copy className="size-3.5" />}
+        {copied ? <Check className="size-3.5 text-brand-green" /> : <Copy className="size-3.5" />}
       </span>
     </button>
   )
@@ -57,9 +57,9 @@ export function WithdrawForm() {
 
   if (issued) {
     return (
-      <Card className="border-brand-teal/40">
+      <Card className="border-brand-green/40">
         <CardContent className="p-5 space-y-3">
-          <div className="text-lg font-bold text-brand-teal">
+          <div className="text-lg font-bold text-brand-green">
             {t('withdraw.issuedTitle')} {issued.denomination_label}
           </div>
           <p className="text-sm text-muted-foreground">{t('withdraw.issuedHint')}</p>
@@ -98,14 +98,14 @@ export function WithdrawForm() {
               className={cn(
                 'rounded-2xl p-4 text-center border transition-all',
                 selected === d.id
-                  ? 'border-brand-violet bg-brand-violet/10'
-                  : 'border-white/10 glass-soft',
+                  ? 'border-brand-green bg-brand-green/10'
+                  : 'border-ink/10 glass-soft',
                 disabled && 'opacity-40 cursor-not-allowed',
               )}
             >
               <div className="text-lg font-bold">{d.label}</div>
               <div className="text-xs text-muted-foreground">{formatMoney(price)}</div>
-              {!d.available && <div className="text-[10px] text-amber-300 mt-1">{t('withdraw.outOfStock')}</div>}
+              {!d.available && <div className="text-[10px] text-amber-700 mt-1">{t('withdraw.outOfStock')}</div>}
             </button>
           )
         })}
@@ -113,7 +113,7 @@ export function WithdrawForm() {
 
       {error && <p className="text-destructive text-sm">{error}</p>}
 
-      <Button variant="teal" className="w-full" disabled={!selected || creating} onClick={submit}>
+      <Button variant="action" className="w-full" disabled={!selected || creating} onClick={submit}>
         {t('withdraw.submit')}
       </Button>
     </div>

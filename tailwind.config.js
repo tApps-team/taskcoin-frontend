@@ -45,14 +45,30 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        // Liquid-glass brand accents (violet + teal neon)
+        // The palette of the promo landing, which is the source of truth for
+        // the brand. Light, warm, green — chosen to read as a serious money
+        // service rather than a game.
+        //
+        // Contrast matters here: `green` and `brown` clear 4.5:1 on white and
+        // are safe for text, while `grass`, `tint`, `sand` and `stone` do not
+        // and exist only as fills, borders and gradient partners.
         brand: {
-          violet: 'hsl(258 90% 66%)',
-          violetDark: 'hsl(258 80% 58%)',
-          purple: 'hsl(280 85% 68%)',
-          teal: 'hsl(174 72% 56%)',
-          cyan: 'hsl(190 90% 60%)',
+          green: '#367A26',
+          greenDeep: '#275C1B',
+          grass: '#67A83F',
+          tint: '#E9F1E3',
+          sand: '#F3E9DC',
+          beige: '#F4F2EE',
+          brown: '#7B5234',
+          stone: '#CFC9C0',
         },
+        // The one ink the whole interface is written in. Tinted overlays are
+        // built from it (bg-ink/5, border-ink/10) so nothing is pure black.
+        ink: '#1D1B18',
+      },
+      fontFamily: {
+        sans: ['Onest', 'Golos Text', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        hand: ['Caveat', 'Segoe Print', 'Bradley Hand', 'cursive'],
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -61,8 +77,12 @@ export default {
         xl2: 'calc(var(--radius) + 6px)',
       },
       boxShadow: {
-        glow: '0 10px 40px -10px hsl(258 90% 60% / 0.55)',
-        'glow-teal': '0 10px 40px -12px hsl(174 80% 50% / 0.45)',
+        // Soft lift instead of the old neon glow: on a light surface a glow
+        // reads as a smudge, while a shadow reads as depth.
+        card: '0 1px 2px rgba(29, 27, 24, .04), 0 8px 24px -12px rgba(29, 27, 24, .14)',
+        lift: '0 2px 6px rgba(29, 27, 24, .06), 0 18px 40px -20px rgba(29, 27, 24, .22)',
+        glow: '0 10px 28px -12px rgba(54, 122, 38, .45)',
+        'glow-teal': '0 10px 28px -12px rgba(54, 122, 38, .35)',
       },
       keyframes: {
         'accordion-down': {

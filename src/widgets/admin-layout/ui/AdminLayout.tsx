@@ -23,7 +23,7 @@ import { baseApi } from '@/shared/api'
 import { haptic } from '@/shared/lib/haptics'
 import { useFeedbackSocket } from '@/shared/lib/useFeedbackSocket'
 import { cn } from '@/shared/lib/utils'
-import { Button, NavBadge } from '@/shared/ui'
+import { Button, Logo, NavBadge } from '@/shared/ui'
 
 const links = [
   { to: '/admin/dashboard', key: 'dashboard', Icon: LayoutDashboard },
@@ -60,7 +60,10 @@ export function AdminLayout() {
   return (
     <div className="h-screen overflow-hidden flex p-3 gap-3">
       <aside className="w-60 rounded-3xl glass flex flex-col p-5 shrink-0 overflow-y-auto">
-        <div className="text-lg font-bold mb-8 text-gradient">{t('admin.title')}</div>
+        <div className="mb-8">
+          <Logo markClassName="size-8" />
+          <div className="text-xs text-muted-foreground mt-1">{t('admin.title')}</div>
+        </div>
         <nav className="space-y-1.5 flex-1">
           {links.map(({ to, key, Icon }) => (
             <NavLink
@@ -71,8 +74,8 @@ export function AdminLayout() {
                 cn(
                   'flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-medium transition-all',
                   isActive
-                    ? 'bg-gradient-to-r from-brand-violet/90 to-brand-violetDark/80 text-white shadow-glow'
-                    : 'text-muted-foreground hover:bg-white/5 hover:text-foreground',
+                    ? 'bg-gradient-to-r from-brand-green/90 to-brand-greenDeep/80 text-white shadow-glow'
+                    : 'text-muted-foreground hover:bg-ink/[0.035] hover:text-foreground',
                 )
               }
             >
@@ -89,7 +92,7 @@ export function AdminLayout() {
               haptic()
               setInstructionOpen(true)
             }}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground transition-all"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-medium text-muted-foreground hover:bg-ink/[0.035] hover:text-foreground transition-all"
           >
             <BookText className="size-4" />
             {t('admin.nav.standardInstruction')}

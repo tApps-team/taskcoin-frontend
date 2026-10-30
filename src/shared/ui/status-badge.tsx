@@ -4,18 +4,18 @@ import { Badge } from './badge'
 
 // Per-status accent colors layered on top of the shadcn Badge.
 const COLORS: Record<string, string> = {
-  draft: 'bg-white/5 text-muted-foreground',
-  active: 'bg-emerald-400/15 text-emerald-300',
-  paused: 'bg-amber-400/15 text-amber-300',
-  completed: 'bg-sky-400/15 text-sky-300',
-  archived: 'bg-white/5 text-muted-foreground',
-  in_progress: 'bg-brand-violet/20 text-brand-purple',
-  submitted: 'bg-brand-teal/15 text-brand-teal',
-  approved: 'bg-emerald-400/15 text-emerald-300',
-  rejected: 'bg-red-400/15 text-red-300',
-  expired: 'bg-white/5 text-muted-foreground',
-  pending: 'bg-amber-400/15 text-amber-300',
-  paid: 'bg-emerald-400/15 text-emerald-300',
+  draft: 'bg-ink/[0.035] text-muted-foreground',
+  active: 'bg-emerald-400/15 text-emerald-700',
+  paused: 'bg-amber-400/15 text-amber-700',
+  completed: 'bg-sky-400/15 text-sky-700',
+  archived: 'bg-ink/[0.035] text-muted-foreground',
+  in_progress: 'bg-brand-tint text-brand-greenDeep',
+  submitted: 'bg-brand-green/15 text-brand-green',
+  approved: 'bg-emerald-400/15 text-emerald-700',
+  rejected: 'bg-red-400/15 text-red-600',
+  expired: 'bg-ink/[0.035] text-muted-foreground',
+  pending: 'bg-amber-400/15 text-amber-700',
+  paid: 'bg-emerald-400/15 text-emerald-700',
 }
 
 export function StatusBadge({ status }: { status: string }) {

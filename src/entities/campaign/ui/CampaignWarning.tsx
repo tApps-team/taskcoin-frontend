@@ -18,8 +18,8 @@ export function CampaignWarning({ availability }: { availability: CampaignAvaila
     <div
       className={`flex items-start gap-2 rounded-xl px-3 py-2 text-xs mb-2 ${
         severe
-          ? 'bg-red-500/10 text-red-300 ring-1 ring-red-500/25'
-          : 'bg-amber-400/10 text-amber-200/90 ring-1 ring-amber-400/20'
+          ? 'bg-red-500/10 text-red-600 ring-1 ring-red-500/25'
+          : 'bg-amber-400/10 text-amber-800/90 ring-1 ring-amber-400/20'
       }`}
     >
       <Icon className="size-4 shrink-0 mt-px" />

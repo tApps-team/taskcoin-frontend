@@ -71,13 +71,13 @@ export function StandardInstructionModal({ onClose }: { onClose: () => void }) {
           {SLOTS.map((key) => {
             const item = draft[key]
             return (
-              <div key={key} className="space-y-2 border-t border-white/10 pt-3">
+              <div key={key} className="space-y-2 border-t border-ink/10 pt-3">
                 <div className="font-semibold text-sm">{t(`admin.standardInstruction.slots.${key}`)}</div>
                 <div className="flex items-center gap-3">
                   {item.media_url && (
                     <img src={item.media_url} alt="" className="size-16 rounded-xl object-cover" />
                   )}
-                  <label className="text-sm text-brand-teal cursor-pointer">
+                  <label className="text-sm text-brand-green cursor-pointer">
                     {uploading ? t('common.loading') : t('admin.campaigns.instructionImage')}
                     <input type="file" accept="image/*" hidden onChange={(e) => onImage(key, e)} />
                   </label>

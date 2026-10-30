@@ -40,7 +40,7 @@ export function GiftCodesModal({ denom, onClose }: { denom: Denomination; onClos
       ) : (
         <div className="space-y-2 max-h-[55vh] overflow-y-auto">
           {data.items.map((c) => (
-            <div key={c.id} className="rounded-xl bg-white/5 px-3 py-2">
+            <div key={c.id} className="rounded-xl bg-ink/[0.035] px-3 py-2">
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 {/* select-all so a click grabs the whole card number / code */}
                 <div className="font-mono text-sm select-all break-all">
@@ -49,8 +49,8 @@ export function GiftCodesModal({ denom, onClose }: { denom: Denomination; onClos
                 <span
                   className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${
                     c.status === 'available'
-                      ? 'bg-brand-teal/15 text-brand-teal'
-                      : 'bg-white/10 text-muted-foreground'
+                      ? 'bg-brand-green/15 text-brand-green'
+                      : 'bg-ink/[0.06] text-muted-foreground'
                   }`}
                 >
                   {t(`admin.gift.status.${c.status}`)}

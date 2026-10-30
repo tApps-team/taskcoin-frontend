@@ -94,7 +94,7 @@ export function ApplicationModal({
             </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-1">{t('admin.apps.storeUrlHint')}</p>
-          {metaMsg && <p className="text-xs text-amber-400 mt-1">{metaMsg}</p>}
+          {metaMsg && <p className="text-xs text-amber-600 mt-1">{metaMsg}</p>}
         </div>
         <div>
           <Label>{t('admin.apps.name')}</Label>
@@ -102,7 +102,7 @@ export function ApplicationModal({
             {iconUrl ? (
               <img src={iconUrl} alt="" className="size-12 rounded-xl object-cover shrink-0" />
             ) : (
-              <div className="size-12 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
+              <div className="size-12 rounded-xl bg-ink/[0.035] flex items-center justify-center shrink-0">
                 <Smartphone className="size-6 text-muted-foreground" />
               </div>
             )}

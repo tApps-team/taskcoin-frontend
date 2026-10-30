@@ -97,7 +97,7 @@ export function EditUserModal({ user, onClose }: { user: User; onClose: () => vo
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
-            className="accent-brand-violet size-4"
+            className="accent-brand-green size-4"
             checked={blocked}
             onChange={(e) => setBlocked(e.target.checked)}
           />

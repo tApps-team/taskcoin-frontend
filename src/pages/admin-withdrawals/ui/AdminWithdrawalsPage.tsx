@@ -44,10 +44,10 @@ function ProviderBalance() {
   return (
     <Card className="mb-4">
       <CardContent className="p-4 flex items-center gap-3 flex-wrap">
-        <Wallet className="size-5 text-brand-teal" />
+        <Wallet className="size-5 text-brand-green" />
         <span className="text-sm text-muted-foreground">{t('admin.withdrawals.providerBalance')}</span>
         {data.error ? (
-          <span className="text-sm text-red-300">{data.error}</span>
+          <span className="text-sm text-red-600">{data.error}</span>
         ) : data.accounts.length === 0 ? (
           <span className="text-sm text-muted-foreground">—</span>
         ) : (
@@ -91,7 +91,7 @@ function CancelControl({ w }: { w: AdminWithdrawal }) {
 
   return (
     <div className="w-full mt-2 rounded-2xl border border-amber-400/30 bg-amber-400/5 p-3 space-y-2">
-      <div className="flex items-start gap-2 text-xs text-amber-200">
+      <div className="flex items-start gap-2 text-xs text-amber-800">
         <AlertTriangle className="size-4 shrink-0 mt-0.5" />
         {/* Refunding a payout that did go through pays the user twice. */}
         <span>{t('admin.withdrawals.cancelWarning')}</span>
@@ -138,9 +138,9 @@ export function AdminWithdrawalsPage() {
                   <div className="min-w-0">
                     <div className="font-semibold inline-flex items-center gap-2">
                       {isPhone ? (
-                        <Smartphone className="size-4 text-brand-teal" />
+                        <Smartphone className="size-4 text-brand-green" />
                       ) : (
-                        <Gift className="size-4 text-brand-purple" />
+                        <Gift className="size-4 text-brand-brown" />
                       )}
                       {isPhone ? prettyPhone(w.phone) : w.denomination_label} ·{' '}
                       <CoinAmount value={w.amount} />
@@ -171,12 +171,12 @@ export function AdminWithdrawalsPage() {
                           </div>
                         )}
                         {w.status === 'pending' && w.submit_attempts > 1 && (
-                          <div className="text-amber-300">
+                          <div className="text-amber-700">
                             {t('admin.withdrawals.attempts', { count: w.submit_attempts })}
                           </div>
                         )}
                         {w.failure_reason && (
-                          <div className="text-red-300">{w.failure_reason}</div>
+                          <div className="text-red-600">{w.failure_reason}</div>
                         )}
                       </div>
                     )}

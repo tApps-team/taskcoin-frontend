@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { ClipboardList, CreditCard, History, Hourglass, LogOut, Pickaxe, User } from 'lucide-react'
+import { ClipboardList, CreditCard, History, Hourglass, LogOut, User } from 'lucide-react'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
@@ -13,7 +13,7 @@ import { pageTransition } from '@/shared/lib/motion'
 import { detectPlatform } from '@/shared/lib/platform'
 import { useFeedbackSocket } from '@/shared/lib/useFeedbackSocket'
 import { cn } from '@/shared/lib/utils'
-import { Button, CoinAmount, NavBadge } from '@/shared/ui'
+import { Button, CoinAmount, Logo, NavBadge } from '@/shared/ui'
 
 const tabs = [
   { to: '/app', key: 'tasks', Icon: ClipboardList, end: true },
@@ -22,15 +22,6 @@ const tabs = [
   { to: '/app/history', key: 'history', Icon: History, end: false },
   { to: '/app/profile', key: 'profile', Icon: User, end: false },
 ]
-
-function Logo() {
-  return (
-    <div className="inline-flex items-center gap-1.5 text-xl font-bold tracking-tight">
-      <Pickaxe className="size-6 text-brand-teal" />
-      <span className="text-gradient">CraftMoney</span>
-    </div>
-  )
-}
 
 export function AppLayout() {
   const { t } = useTranslation()
@@ -72,7 +63,7 @@ export function AppLayout() {
       {/* Sidebar (desktop) — fixed full height, only main scrolls */}
       <aside className="hidden md:flex md:flex-col shrink-0 w-64 m-3 mr-0 rounded-3xl glass p-5 md:overflow-y-auto">
         <div className="mb-8 px-1">
-          <Logo />
+          <Logo markClassName="size-8" />
         </div>
         <nav className="space-y-1.5 flex-1">
           {tabs.map(({ to, key, Icon, end }) => (
@@ -85,8 +76,8 @@ export function AppLayout() {
                 cn(
                   'flex items-center gap-3 px-3.5 py-3 rounded-2xl font-medium transition-all',
                   isActive
-                    ? 'bg-gradient-to-r from-brand-violet/90 to-brand-violetDark/80 text-white shadow-glow'
-                    : 'text-muted-foreground hover:bg-white/5 hover:text-foreground',
+                    ? 'bg-gradient-to-r from-brand-green/90 to-brand-greenDeep/80 text-white shadow-glow'
+                    : 'text-muted-foreground hover:bg-ink/[0.035] hover:text-foreground',
                 )
               }
             >
@@ -107,10 +98,10 @@ export function AppLayout() {
       <div className="flex-1 flex flex-col min-w-0 md:min-h-0 md:overflow-hidden">
         <header className="px-4 py-3 flex items-center justify-between shrink-0 md:m-3 md:mb-0 md:rounded-2xl md:glass">
           <div className="md:hidden">
-            <Logo />
+            <Logo markClassName="size-8" />
           </div>
           <div className="ml-auto text-right">
-            <CoinAmount value={balance} className="text-xl font-bold text-brand-teal drop-shadow" />
+            <CoinAmount value={balance} className="text-xl font-bold text-brand-green drop-shadow" />
           </div>
         </header>
 
@@ -129,7 +120,7 @@ export function AppLayout() {
 
       {/* Bottom tab bar (mobile) — edge-to-edge, padded for the home indicator */}
       <nav
-        className="md:hidden fixed inset-x-0 bottom-0 z-20 flex justify-around pt-2 glass border-t border-white/5"
+        className="md:hidden fixed inset-x-0 bottom-0 z-20 flex justify-around pt-2 glass border-t border-ink/5"
         style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
       >
         {tabs.map(({ to, key, Icon, end }) => (
@@ -141,7 +132,7 @@ export function AppLayout() {
             className={({ isActive }) =>
               cn(
                 'flex flex-col items-center gap-0.5 px-2 py-1 text-[11px] transition-colors',
-                isActive ? 'text-brand-purple' : 'text-muted-foreground',
+                isActive ? 'text-brand-green' : 'text-muted-foreground',
               )
             }
           >

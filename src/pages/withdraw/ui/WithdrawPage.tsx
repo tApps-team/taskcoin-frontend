@@ -40,9 +40,9 @@ function HistoryRow({ w }: { w: Withdrawal }) {
         <div className="flex items-center justify-between gap-3">
           <div className="font-semibold inline-flex items-center gap-2 min-w-0">
             {isPhone ? (
-              <Smartphone className="size-4 shrink-0 text-brand-teal" />
+              <Smartphone className="size-4 shrink-0 text-brand-green" />
             ) : (
-              <Gift className="size-4 shrink-0 text-brand-purple" />
+              <Gift className="size-4 shrink-0 text-brand-brown" />
             )}
             <span className="truncate">
               {isPhone ? prettyPhone(w.phone) : w.denomination_label}
@@ -76,7 +76,7 @@ function HistoryRow({ w }: { w: Withdrawal }) {
           </div>
         )}
         {w.status === 'rejected' && (
-          <div className="text-xs text-red-300 mt-1">
+          <div className="text-xs text-red-600 mt-1">
             {w.failure_reason || t('withdraw.phone.refunded')}
           </div>
         )}
@@ -106,7 +106,7 @@ export function WithdrawPage() {
         <CardContent className="p-5 flex items-center justify-between">
           <div>
             <div className="text-muted-foreground text-sm">{t('withdraw.balance')}</div>
-            <CoinAmount value={balance} className="text-brand-teal font-bold text-2xl" />
+            <CoinAmount value={balance} className="text-brand-green font-bold text-2xl" />
           </div>
           <div className="text-right">
             <div className="text-muted-foreground text-sm">{t('withdraw.min')}</div>
@@ -130,8 +130,8 @@ export function WithdrawPage() {
               className={cn(
                 'rounded-2xl py-3 border transition-all inline-flex items-center justify-center gap-2 text-sm font-medium',
                 method === key
-                  ? 'border-brand-violet bg-brand-violet/10'
-                  : 'border-white/10 glass-soft hover:bg-white/5',
+                  ? 'border-brand-green bg-brand-green/10'
+                  : 'border-ink/10 glass-soft hover:bg-ink/[0.035]',
               )}
             >
               <Icon className="size-4" />

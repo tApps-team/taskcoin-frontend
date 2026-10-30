@@ -62,9 +62,9 @@ export function ProfilePage() {
 
       <Card className="mb-4">
         <CardContent className="p-5 flex items-center gap-4">
-          <Avatar className="size-16 ring-2 ring-brand-violet/40">
+          <Avatar className="size-16 ring-2 ring-brand-green/40">
             {me.avatar_url && <AvatarImage src={me.avatar_url} alt="" />}
-            <AvatarFallback className="bg-gradient-to-br from-brand-violet to-brand-purple text-white text-2xl font-bold">
+            <AvatarFallback className="bg-gradient-to-br from-brand-green to-brand-grass text-white text-2xl font-bold">
               {(me.full_name || me.email)[0]?.toUpperCase()}
             </AvatarFallback>
           </Avatar>
@@ -90,7 +90,7 @@ export function ProfilePage() {
         <CardContent className="p-4">
           <div className="flex items-center justify-between mb-2">
             <div className="text-sm text-muted-foreground">{t('profile.country')}</div>
-            {saved && <div className="text-xs text-brand-teal">{t('common.saved')}</div>}
+            {saved && <div className="text-xs text-brand-green">{t('common.saved')}</div>}
           </div>
           <SimpleSelect
             className="w-full"
@@ -104,18 +104,18 @@ export function ProfilePage() {
       </Card>
 
       <Card className="mb-6 relative overflow-hidden">
-        <div className="pointer-events-none absolute -right-10 -top-12 size-44 rounded-full bg-gradient-to-br from-brand-violet/30 to-brand-teal/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-10 -top-12 size-44 rounded-full bg-gradient-to-br from-brand-green/30 to-brand-grass/20 blur-3xl" />
         <CardContent className="p-5 relative flex flex-col sm:flex-row items-center gap-4">
           <div className="relative shrink-0">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-brand-violet/60 to-brand-teal/50 blur-2xl" />
-            <div className="relative size-20 rounded-3xl bg-gradient-to-br from-brand-violet to-brand-teal flex items-center justify-center shadow-glow">
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-brand-green/60 to-brand-grass/50 blur-2xl" />
+            <div className="relative size-20 rounded-3xl bg-gradient-to-br from-brand-green to-brand-grass flex items-center justify-center shadow-glow">
               <Headset className="size-10 text-white" />
             </div>
           </div>
           <div className="flex-1 text-center sm:text-left">
             <div className="text-lg font-bold">{t('support.title')}</div>
             <p className="text-sm text-muted-foreground mt-0.5">{t('support.text')}</p>
-            <Button asChild variant="teal" className="relative mt-3 w-full sm:w-auto">
+            <Button asChild variant="action" className="relative mt-3 w-full sm:w-auto">
               <Link to="/app/feedback">
                 <Headset className="size-4" /> {t('feedback.open')}
                 <NavBadge count={unread?.count} />
@@ -136,7 +136,7 @@ function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <Card>
       <CardContent className="p-4 text-center">
-        <div className="text-brand-teal font-bold text-lg break-words flex justify-center">{value}</div>
+        <div className="text-brand-green font-bold text-lg break-words flex justify-center">{value}</div>
         <div className="text-xs text-muted-foreground mt-1">{label}</div>
       </CardContent>
     </Card>

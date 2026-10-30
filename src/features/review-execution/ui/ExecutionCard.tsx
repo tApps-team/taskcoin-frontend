@@ -54,7 +54,7 @@ export function ExecutionCard({ execution }: { execution: AdminExecution }) {
                         src={sc.file_path}
                         alt=""
                         onClick={() => setLightbox(sc.file_path)}
-                        className="w-20 h-20 object-cover rounded-xl border border-white/10 cursor-pointer hover:border-brand-violet transition-colors"
+                        className="w-20 h-20 object-cover rounded-xl border border-ink/10 cursor-pointer hover:border-brand-green transition-colors"
                       />
                     ))}
                   </div>
@@ -65,14 +65,14 @@ export function ExecutionCard({ execution }: { execution: AdminExecution }) {
         )}
 
         {s.status === 'rejected' && s.reviewer_comment && (
-          <div className="text-sm text-red-300 bg-destructive/10 rounded-xl px-3 py-2 mb-2">
+          <div className="text-sm text-red-600 bg-destructive/10 rounded-xl px-3 py-2 mb-2">
             {s.reviewer_comment}
           </div>
         )}
 
         {canReview && (
           <div className="flex gap-2">
-            <Button variant="teal" className="flex-1" disabled={approving} onClick={() => approve(s.id)}>
+            <Button variant="action" className="flex-1" disabled={approving} onClick={() => approve(s.id)}>
               <Check /> {t('admin.executions.approve')}
             </Button>
             <Button variant="destructive" className="flex-1" disabled={rejecting} onClick={() => setRejectOpen(true)}>

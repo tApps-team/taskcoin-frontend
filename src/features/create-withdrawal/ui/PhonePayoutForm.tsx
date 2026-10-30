@@ -105,9 +105,9 @@ export function PhonePayoutForm() {
 
   if (queued) {
     return (
-      <Card className="border-brand-teal/40">
+      <Card className="border-brand-green/40">
         <CardContent className="p-5 space-y-3">
-          <div className="flex items-center gap-2 text-brand-teal font-bold text-lg">
+          <div className="flex items-center gap-2 text-brand-green font-bold text-lg">
             <Smartphone className="size-5" /> {t('withdraw.phone.queuedTitle')}
           </div>
           {lastQuote && (
@@ -153,8 +153,8 @@ export function PhonePayoutForm() {
               className={cn(
                 'rounded-2xl py-2.5 text-sm border transition-all',
                 operator === op
-                  ? 'border-brand-violet bg-brand-violet/10'
-                  : 'border-white/10 glass-soft hover:bg-white/5',
+                  ? 'border-brand-green bg-brand-green/10'
+                  : 'border-ink/10 glass-soft hover:bg-ink/[0.035]',
               )}
             >
               {OPERATOR_LABELS[op] ?? op}
@@ -198,12 +198,12 @@ export function PhonePayoutForm() {
             phone is lower than the amount typed, and finding that out from the
             history afterwards would feel like a bait. */}
         {quote && amountReady && (
-          <div className="mt-3 rounded-2xl glass-soft border border-white/10 p-3 space-y-1.5">
+          <div className="mt-3 rounded-2xl glass-soft border border-ink/10 p-3 space-y-1.5">
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-sm text-muted-foreground">
                 {t('withdraw.phone.willArrive')}
               </span>
-              <span className="text-lg font-bold text-brand-teal">
+              <span className="text-lg font-bold text-brand-green">
                 {formatMoney(Number(quote.payout_amount))}
               </span>
             </div>
@@ -219,7 +219,7 @@ export function PhonePayoutForm() {
 
       {error && <p className="text-destructive text-sm">{error}</p>}
 
-      <Button variant="teal" className="w-full" disabled={!ready || creating} onClick={submit}>
+      <Button variant="action" className="w-full" disabled={!ready || creating} onClick={submit}>
         {t('withdraw.phone.submit')}
       </Button>
     </div>

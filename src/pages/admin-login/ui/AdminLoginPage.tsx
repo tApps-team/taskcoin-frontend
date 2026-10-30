@@ -55,7 +55,7 @@ export function AdminLoginPage() {
           </form>
 
           <div className="text-center mt-5">
-            <Link to="/login" className="text-sm text-muted-foreground hover:text-brand-teal">
+            <Link to="/login" className="text-sm text-muted-foreground hover:text-brand-green">
               ← {t('auth.loginTitle')}
             </Link>
           </div>

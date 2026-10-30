@@ -28,14 +28,14 @@ export function AdminCampaignDetailsPage() {
 
   return (
     <div>
-      <Link to="/admin/campaigns" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-teal">
+      <Link to="/admin/campaigns" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-green">
         <ArrowLeft className="size-4" /> {t('common.back')}
       </Link>
 
       <div className="flex items-center justify-between mt-2 mb-4 gap-3 flex-wrap">
         <h1 className="text-2xl font-bold">{c.application.name}</h1>
         <div className="flex items-center gap-3">
-          <CoinAmount value={c.price} className="text-brand-teal font-bold" />
+          <CoinAmount value={c.price} className="text-brand-green font-bold" />
           <StatusBadge status={c.status} />
         </div>
       </div>

@@ -94,7 +94,7 @@ export function OfferDetailsPage() {
 
   return (
     <div>
-      <Link to={backTo} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-teal">
+      <Link to={backTo} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-green">
         <ArrowLeft className="size-4" /> {t('common.back')}
       </Link>
 
@@ -103,7 +103,7 @@ export function OfferDetailsPage() {
           {offer.icon_url ? (
             <img src={offer.icon_url} alt="" className="size-16 rounded-2xl object-cover" />
           ) : (
-            <div className="size-16 rounded-2xl bg-white/5 flex items-center justify-center">
+            <div className="size-16 rounded-2xl bg-ink/[0.035] flex items-center justify-center">
               <Smartphone className="size-8 text-muted-foreground" />
             </div>
           )}
@@ -111,7 +111,7 @@ export function OfferDetailsPage() {
             <div className="font-bold text-lg truncate">{offer.application_name}</div>
             <div className="text-xs text-muted-foreground">{storeName(offer.store)}</div>
           </div>
-          <CoinAmount value={offer.price} className="ml-auto text-brand-teal font-bold text-lg" />
+          <CoinAmount value={offer.price} className="ml-auto text-brand-green font-bold text-lg" />
         </CardContent>
       </Card>
 
@@ -221,7 +221,7 @@ function OfferFlow({
           <div className="font-bold text-lg mb-4">{t('offer.flow.title')}</div>
 
           <Step index={1} state={stage === 'copy' ? 'active' : 'done'} title={t('offer.flow.step1')}>
-            <Button variant={stage === 'copy' ? 'teal' : 'secondary'} disabled={stage !== 'copy'} onClick={onCopy}>
+            <Button variant={stage === 'copy' ? 'action' : 'secondary'} disabled={stage !== 'copy'} onClick={onCopy}>
               {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
               {copied ? t('offer.flow.copied') : t('offer.flow.copy')}
             </Button>
@@ -233,20 +233,20 @@ function OfferFlow({
               <img src={offer.icon_url} alt="" className="size-12 rounded-xl object-cover mb-2" />
             )}
             {offer.keyword_position != null && (
-              <div className="mb-2 text-sm text-brand-teal font-medium">
+              <div className="mb-2 text-sm text-brand-green font-medium">
                 {offer.keyword_country
                   ? t('offer.flow.positionCountry', { n: offer.keyword_position, country: offer.keyword_country })
                   : t('offer.flow.position', { n: offer.keyword_position })}
               </div>
             )}
             {stage === 'copy' ? (
-              <Button variant="teal" disabled>
+              <Button variant="action" disabled>
                 <ExternalLink className="size-4" /> {t('offer.flow.goStore', { store: storeName(offer.store) })}
               </Button>
             ) : (
               // Always a real link: the first tap advances to the install step,
               // later taps just re-open the store (without resetting the timer).
-              <Button asChild variant="teal">
+              <Button asChild variant="action">
                 <a
                   href={storeHomeUrl(offer.store)}
                   target="_blank"
@@ -359,13 +359,13 @@ function WorkStage({
     if (kind === 'review')
       return (
         <div className="flex items-center gap-2 font-semibold text-sm">
-          <MessageSquare className="size-4 text-brand-teal shrink-0" /> {t('offer.flow.reviewTitle')}
+          <MessageSquare className="size-4 text-brand-green shrink-0" /> {t('offer.flow.reviewTitle')}
         </div>
       )
     if (kind === 'rating')
       return (
         <div className="flex items-center gap-2 font-semibold text-sm">
-          <span className="flex text-amber-400">
+          <span className="flex text-amber-600">
             {Array.from({ length: execution?.assigned_rating ?? 0 }).map((_, i) => (
               <Star key={i} className="size-4 fill-current" />
             ))}
@@ -452,7 +452,7 @@ function WorkStage({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={reduce ? undefined : { type: 'spring', stiffness: 500, damping: 13 }}
         >
-          <Button variant="teal" className="w-full" disabled={submitting || expired} onClick={onSubmit}>
+          <Button variant="action" className="w-full" disabled={submitting || expired} onClick={onSubmit}>
             <Send className="size-4" /> {t('offer.submit')}
           </Button>
         </motion.div>
@@ -483,12 +483,12 @@ function Step({
       <div className="flex flex-col items-center">
         <div
           className={`size-7 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
-            active || done ? 'bg-brand-violet text-white' : 'bg-white/10 text-muted-foreground'
+            active || done ? 'bg-brand-green text-white' : 'bg-ink/[0.06] text-muted-foreground'
           }`}
         >
           {done ? <Check className="size-4" /> : index}
         </div>
-        {!last && <div className="w-px flex-1 bg-white/10 my-1" />}
+        {!last && <div className="w-px flex-1 bg-ink/[0.06] my-1" />}
       </div>
       <div className="flex-1 min-w-0 pb-1">
         <div className={`text-sm mb-2 ${active ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>

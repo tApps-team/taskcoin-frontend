@@ -21,7 +21,7 @@ function Btn({
       onClick={onClick}
       className={cn(
         'size-8 rounded-lg flex items-center justify-center text-sm transition-colors',
-        active ? 'bg-brand-violet text-white' : 'bg-white/5 text-muted-foreground hover:bg-white/10',
+        active ? 'bg-brand-green text-white' : 'bg-ink/[0.035] text-muted-foreground hover:bg-ink/[0.06]',
       )}
     >
       {children}
@@ -72,7 +72,7 @@ export function RichTextEditor({
 
   return (
     <div className="glass-soft rounded-xl overflow-hidden">
-      <div className="flex flex-wrap gap-1 p-2 bg-white/5">
+      <div className="flex flex-wrap gap-1 p-2 bg-ink/[0.035]">
         <Btn active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()}>
           <Bold className="size-4" />
         </Btn>

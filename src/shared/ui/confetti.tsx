@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
 
-const COLORS = ['#7c5cff', '#2dd4bf', '#f59e0b', '#ef4444', '#22c55e', '#e879f9', '#38bdf8']
+const COLORS = ['#367A26', '#67A83F', '#C97A2B', '#D94F4F', '#7B5234', '#2F6F8F', '#E9C46A']
 
 // Self-contained full-screen confetti burst (no external libs). Mount it to
 // play once — the caller unmounts it after ~2.5s.

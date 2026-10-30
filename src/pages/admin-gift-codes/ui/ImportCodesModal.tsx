@@ -117,7 +117,7 @@ export function ImportCodesModal({
             <div className="text-sm">
               {t('admin.gift.import.parsed', { count: result.parsed })}
               {result.duplicates_in_db > 0 && (
-                <span className="text-amber-300">
+                <span className="text-amber-700">
                   {' · '}
                   {t('admin.gift.import.alreadyInStock', { count: result.duplicates_in_db })}
                 </span>
@@ -132,7 +132,7 @@ export function ImportCodesModal({
                 return (
                   <div
                     key={key}
-                    className="flex items-center justify-between gap-3 rounded-xl bg-white/5 px-3 py-2 flex-wrap"
+                    className="flex items-center justify-between gap-3 rounded-xl bg-ink/[0.035] px-3 py-2 flex-wrap"
                   >
                     <div className="text-sm">
                       <span className="font-semibold">
@@ -158,7 +158,7 @@ export function ImportCodesModal({
 
             {result.problems.length > 0 && (
               <div className="rounded-xl border border-amber-400/30 bg-amber-400/5 p-3">
-                <div className="flex items-center gap-2 text-amber-300 text-sm font-semibold mb-1.5">
+                <div className="flex items-center gap-2 text-amber-700 text-sm font-semibold mb-1.5">
                   <AlertTriangle className="size-4" />
                   {t('admin.gift.import.problems', { count: result.problems_total })}
                 </div>
@@ -179,12 +179,12 @@ export function ImportCodesModal({
             )}
 
             {result.imported > 0 ? (
-              <p className="text-brand-teal font-semibold text-sm">
+              <p className="text-brand-green font-semibold text-sm">
                 {t('admin.gift.import.done', { count: result.imported })}
               </p>
             ) : (
               <Button
-                variant="teal"
+                variant="action"
                 className="w-full"
                 disabled={result.ready === 0 || isLoading}
                 onClick={() => call(false, mapping)}

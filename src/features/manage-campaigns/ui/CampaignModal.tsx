@@ -83,7 +83,7 @@ function nextDays(n: number): string[] {
 function Check({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <label className="flex items-center gap-2 text-sm cursor-pointer">
-      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="size-4 accent-brand-violet" />
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="size-4 accent-brand-green" />
       {label}
     </label>
   )
@@ -92,7 +92,7 @@ function Check({ label, checked, onChange }: { label: string; checked: boolean; 
 function Radio({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
   return (
     <label className="flex items-center gap-2 text-sm cursor-pointer">
-      <input type="radio" checked={checked} onChange={onChange} className="size-4 accent-brand-violet" />
+      <input type="radio" checked={checked} onChange={onChange} className="size-4 accent-brand-green" />
       {label}
     </label>
   )
@@ -142,7 +142,7 @@ function InstructionBlock({
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             {media && <img src={media} alt="" className="size-16 rounded-xl object-cover" />}
-            <label className="text-sm text-brand-teal cursor-pointer">
+            <label className="text-sm text-brand-green cursor-pointer">
               {uploading ? t('common.loading') : t('admin.campaigns.instructionImage')}
               <input type="file" accept="image/*" hidden onChange={(e) => onUpload(e, onMedia)} />
             </label>
@@ -367,7 +367,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
               options={storeApps.map((a) => ({ value: a.id, label: a.name }))}
             />
             {store && storeApps.length === 0 && (
-              <p className="text-xs text-amber-400 mt-1">{t('admin.campaigns.noAppsInStore')}</p>
+              <p className="text-xs text-amber-600 mt-1">{t('admin.campaigns.noAppsInStore')}</p>
             )}
           </div>
         </div>
@@ -403,7 +403,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
         </div>
 
         {/* Daily limit: constant vs scheduled */}
-        <div className="space-y-2 border-t border-white/10 pt-3">
+        <div className="space-y-2 border-t border-ink/10 pt-3">
           <div className="font-semibold text-sm">{t('admin.campaigns.dailyLimit')}</div>
           <div className="flex gap-4">
             <Radio label={t('admin.campaigns.dailyConstant')} checked={dailyMode === 'constant'} onChange={() => setDailyMode('constant')} />
@@ -435,7 +435,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
         </div>
 
         {/* Repeat installs: off = one approved task per user, forever. */}
-        <div className="space-y-2 border-t border-white/10 pt-3">
+        <div className="space-y-2 border-t border-ink/10 pt-3">
           <Check
             label={t('admin.campaigns.allowRepeat')}
             checked={allowRepeat}
@@ -458,7 +458,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
           )}
         </div>
 
-        <div className="space-y-2 border-t border-white/10 pt-3">
+        <div className="space-y-2 border-t border-ink/10 pt-3">
           <div className="font-semibold text-sm">{t('admin.campaigns.actions')}</div>
           <Check label={t('admin.campaigns.requiresOpen')} checked={requiresOpen} onChange={setRequiresOpen} />
           {/* Rating/review actions apply only to "Установка + отзыв/оценка" campaigns. */}
@@ -469,7 +469,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
                 <div className="pl-6 space-y-2">
                   <p className="text-xs text-muted-foreground">{t('admin.campaigns.ratingWeightsHint')}</p>
                   {migratedStars.length > 0 && (
-                    <p className="text-xs text-amber-400">
+                    <p className="text-xs text-amber-600">
                       {t('admin.campaigns.ratingWeightsMigrated', { stars: migratedStars.join(', ') })}
                     </p>
                   )}
@@ -477,7 +477,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
                     items={STARS.map((s) => ({
                       key: String(s),
                       label: (
-                        <span className="flex items-center gap-1 text-amber-400">
+                        <span className="flex items-center gap-1 text-amber-600">
                           {s} <Star className="size-3.5 fill-current" />
                         </span>
                       ),
@@ -521,7 +521,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
         </div>
 
         {/* Keywords by percent */}
-        <div className="space-y-2 border-t border-white/10 pt-3">
+        <div className="space-y-2 border-t border-ink/10 pt-3">
           <div className="flex items-center justify-between">
             <div className="font-semibold text-sm">{t('admin.campaigns.keywords')}</div>
             <Button size="sm" variant="secondary" onClick={addKeyword}>
@@ -569,7 +569,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
         </div>
 
         {/* Main-screen screenshot instruction: standard vs unique */}
-        <div className="border-t border-white/10 pt-3">
+        <div className="border-t border-ink/10 pt-3">
           <InstructionBlock
             title={t('admin.campaigns.instructionMainTitle')}
             useStandard={useStandard}

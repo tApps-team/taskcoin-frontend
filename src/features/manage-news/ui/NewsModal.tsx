@@ -13,7 +13,7 @@ import { getErrorMessage } from '@/shared/lib/errors'
 import { Button, Input, Label, Modal } from '@/shared/ui'
 import { RichTextEditor } from './RichTextEditor'
 
-const PRESET_COLORS = ['#7c5cff', '#f4a640', '#8b7be8', '#4caf82', '#e8709a', '#3aa8c1']
+const PRESET_COLORS = ['#367A26', '#67A83F', '#7B5234', '#C97A2B', '#2F6F8F', '#A23F6B']
 
 export function NewsModal({ article, onClose }: { article?: NewsArticle | null; onClose: () => void }) {
   const { t } = useTranslation()
@@ -74,7 +74,7 @@ export function NewsModal({ article, onClose }: { article?: NewsArticle | null; 
           <Label>{t('admin.news.cover')}</Label>
           <div className="flex items-center gap-3">
             {coverUrl && <img src={coverUrl} alt="" className="h-14 rounded-xl object-cover" />}
-            <label className="text-sm text-brand-teal cursor-pointer">
+            <label className="text-sm text-brand-green cursor-pointer">
               {uploading ? t('common.loading') : t('admin.news.uploadCover')}
               <input type="file" accept="image/*" hidden onChange={onCover} />
             </label>
@@ -108,7 +108,7 @@ export function NewsModal({ article, onClose }: { article?: NewsArticle | null; 
             <Input type="date" value={publishedAt} onChange={(e) => setPublishedAt(e.target.value)} />
           </div>
           <label className="flex items-end gap-2 text-sm cursor-pointer pb-2">
-            <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} className="size-4 accent-brand-violet" />
+            <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} className="size-4 accent-brand-green" />
             {t('admin.news.published')}
           </label>
         </div>

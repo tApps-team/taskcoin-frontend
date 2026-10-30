@@ -10,17 +10,19 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          "text-white bg-gradient-to-b from-brand-violet to-brand-violetDark shadow-glow hover:brightness-110",
-        teal: "text-black bg-gradient-to-b from-brand-teal to-[hsl(174_72%_48%)] shadow-glow-teal hover:brightness-110",
+        // One green does the work, as on the landing: a solid fill that
+        // darkens on hover. The gradient-and-glow pair this replaces was built
+        // to glow against a dark page and only smudges on paper.
+        default: "text-white bg-brand-green hover:bg-brand-greenDeep shadow-glow",
+        action: "text-white bg-brand-green hover:bg-brand-greenDeep shadow-glow",
         destructive:
           "bg-destructive text-destructive-foreground shadow hover:bg-destructive/90",
         outline:
-          "bg-white/5 backdrop-blur hover:bg-white/10",
+          "bg-transparent shadow-[inset_0_0_0_1px_rgba(29,27,24,0.14)] hover:bg-ink/[0.04]",
         secondary:
-          "bg-white/5 backdrop-blur text-secondary-foreground hover:bg-white/10",
-        ghost: "hover:bg-white/5 text-foreground",
-        link: "text-brand-violet underline-offset-4 hover:underline",
+          "bg-ink/[0.05] text-secondary-foreground hover:bg-ink/[0.08]",
+        ghost: "hover:bg-ink/[0.035] text-foreground",
+        link: "text-brand-green underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -37,7 +39,7 @@ const buttonVariants = cva(
 )
 
 // Variants that count as "important" actions get a subtle haptic tap.
-const HAPTIC_VARIANTS = new Set([undefined, "default", "teal", "destructive"])
+const HAPTIC_VARIANTS = new Set([undefined, "default", "action", "destructive"])
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,

@@ -54,12 +54,12 @@ export function OffersPage() {
                 exit={reduce ? undefined : 'exit'}
               >
                 <Link to={`/app/offers/${o.campaign_id}`} state={{ from: '/app' }}>
-                  <Card className="hover:border-brand-violet/40 transition-colors">
+                  <Card className="hover:border-brand-green/40 transition-colors">
                     <CardContent className="p-4 flex items-center gap-3">
                       {o.icon_url ? (
                         <img src={o.icon_url} alt="" className="size-12 rounded-xl object-cover shrink-0" />
                       ) : (
-                        <div className="size-12 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
+                        <div className="size-12 rounded-xl bg-ink/[0.035] flex items-center justify-center shrink-0">
                           <Smartphone className="size-6 text-muted-foreground" />
                         </div>
                       )}
@@ -67,7 +67,7 @@ export function OffersPage() {
                         <div className="font-semibold truncate">{o.application_name}</div>
                         {o.keyword && <div className="text-xs text-muted-foreground truncate">{o.keyword}</div>}
                       </div>
-                      <CoinAmount value={o.price} className="text-brand-teal font-bold" />
+                      <CoinAmount value={o.price} className="text-brand-green font-bold" />
                       <ChevronRight className="size-5 text-muted-foreground shrink-0" />
                     </CardContent>
                   </Card>

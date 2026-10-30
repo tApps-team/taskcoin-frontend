@@ -25,9 +25,12 @@ export function NewsSlider() {
             style={
               n.cover_url
                 ? { backgroundImage: `url(${n.cover_url})` }
-                : { backgroundColor: n.accent || '#7c5cff' }
+                : { backgroundColor: n.accent || '#367A26' }
             }
           >
+            {/* The title is white over whatever cover was uploaded, so it needs
+                its own backing — a light photo would otherwise swallow it. */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
             <div className="relative z-10 font-bold text-white text-sm leading-tight line-clamp-2">
               {n.title}
             </div>
@@ -40,7 +43,7 @@ export function NewsSlider() {
         type="button"
         onClick={() => scrollBy(-1)}
         aria-label="prev"
-        className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 size-9 items-center justify-center rounded-full glass shadow-glow text-foreground hover:bg-white/10 transition-colors"
+        className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 size-9 items-center justify-center rounded-full glass shadow-glow text-foreground hover:bg-ink/[0.06] transition-colors"
       >
         <ChevronLeft className="size-5" />
       </button>
@@ -48,7 +51,7 @@ export function NewsSlider() {
         type="button"
         onClick={() => scrollBy(1)}
         aria-label="next"
-        className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 size-9 items-center justify-center rounded-full glass shadow-glow text-foreground hover:bg-white/10 transition-colors"
+        className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 size-9 items-center justify-center rounded-full glass shadow-glow text-foreground hover:bg-ink/[0.06] transition-colors"
       >
         <ChevronRight className="size-5" />
       </button>

@@ -32,34 +32,34 @@ export function ReferralCard() {
     <Card className="mb-6">
       <CardContent className="p-5">
         <div className="flex items-center gap-2 mb-1">
-          <Users className="size-5 text-brand-teal" />
+          <Users className="size-5 text-brand-green" />
           <h2 className="font-semibold">{t('referrals.title')}</h2>
         </div>
         <p className="text-sm text-muted-foreground mb-4">{t('referrals.subtitle')}</p>
 
         {/* The link itself — one tap to copy is the whole point of this block. */}
         <div className="flex gap-2 items-stretch flex-col sm:flex-row">
-          <div className="flex-1 min-w-0 rounded-2xl bg-white/5 px-3 py-2.5 font-mono text-sm select-all break-all">
+          <div className="flex-1 min-w-0 rounded-2xl bg-ink/[0.035] px-3 py-2.5 font-mono text-sm select-all break-all">
             {data.link}
           </div>
-          <Button variant="teal" onClick={copy} className="shrink-0">
+          <Button variant="action" onClick={copy} className="shrink-0">
             {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
             {copied ? t('referrals.copied') : t('referrals.copy')}
           </Button>
         </div>
 
         <div className="grid grid-cols-2 gap-3 mt-4">
-          <div className="rounded-2xl bg-white/5 p-3">
+          <div className="rounded-2xl bg-ink/[0.035] p-3">
             <div className="text-2xl font-bold">{data.invited_count}</div>
             <div className="text-xs text-muted-foreground">{t('referrals.invited')}</div>
           </div>
-          <div className="rounded-2xl bg-white/5 p-3">
-            <div className="text-2xl font-bold text-brand-teal">{formatMoney(data.earned)}</div>
+          <div className="rounded-2xl bg-ink/[0.035] p-3">
+            <div className="text-2xl font-bold text-brand-green">{formatMoney(data.earned)}</div>
             <div className="text-xs text-muted-foreground">{t('referrals.earned')}</div>
           </div>
         </div>
 
-        <div className="mt-4 rounded-2xl bg-white/5 p-3">
+        <div className="mt-4 rounded-2xl bg-ink/[0.035] p-3">
           <div className="text-sm">
             {t('referrals.howItWorks', { percent: Number(data.percent) })}
           </div>
@@ -78,14 +78,14 @@ export function ReferralCard() {
               {data.invited.map((inv) => (
                 <div
                   key={inv.id}
-                  className="rounded-2xl bg-white/5 px-3 py-2 flex items-center justify-between gap-3 flex-wrap"
+                  className="rounded-2xl bg-ink/[0.035] px-3 py-2 flex items-center justify-between gap-3 flex-wrap"
                 >
                   <div className="min-w-0">
                     <div className="text-sm truncate">{inv.email}</div>
                     <div className="text-xs text-muted-foreground">{formatDate(inv.created_at)}</div>
                   </div>
                   <div className="text-right shrink-0">
-                    <div className="text-sm text-brand-teal">+{formatMoney(inv.bonus_paid)}</div>
+                    <div className="text-sm text-brand-green">+{formatMoney(inv.bonus_paid)}</div>
                     <div className="text-xs text-muted-foreground">
                       {t('referrals.friendEarned', { amount: formatMoney(inv.earned) })}
                     </div>

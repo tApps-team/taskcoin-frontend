@@ -82,8 +82,8 @@ export function ReferralPercentCard() {
 
           <div className="flex items-center gap-3 pt-1">
             <Button disabled={saving}>{t('common.save')}</Button>
-            {saved && <span className="text-brand-teal text-sm">✓ {t('admin.settings.saved')}</span>}
-            {error && <span className="text-red-400 text-sm">{error}</span>}
+            {saved && <span className="text-brand-green text-sm">✓ {t('admin.settings.saved')}</span>}
+            {error && <span className="text-red-600 text-sm">{error}</span>}
           </div>
         </form>
       </CardContent>

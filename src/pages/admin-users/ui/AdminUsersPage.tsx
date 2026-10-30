@@ -78,7 +78,7 @@ export function AdminUsersPage() {
                     {u.role === 'super_admin' ? t('admin.users.roleAdmin') : t('admin.users.roleUser')}
                   </TableCell>
                   <TableCell>
-                    <CoinAmount value={u.balance} className="text-brand-teal" />
+                    <CoinAmount value={u.balance} className="text-brand-green" />
                   </TableCell>
                   <TableCell>
                     {/* Count · what those invites have paid them. */}

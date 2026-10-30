@@ -45,7 +45,7 @@ export function AdminSettingsPage() {
             </div>
             <div className="flex items-center gap-3">
               <Button disabled={saving}>{t('common.save')}</Button>
-              {saved && <span className="text-brand-teal text-sm">✓ {t('admin.settings.saved')}</span>}
+              {saved && <span className="text-brand-green text-sm">✓ {t('admin.settings.saved')}</span>}
             </div>
           </form>
         </CardContent>

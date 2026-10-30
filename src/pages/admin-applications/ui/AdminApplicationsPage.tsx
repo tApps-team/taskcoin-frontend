@@ -38,7 +38,7 @@ export function AdminApplicationsPage() {
                 {a.icon_url ? (
                   <img src={a.icon_url} alt="" className="size-12 rounded-xl object-cover shrink-0" />
                 ) : (
-                  <div className="size-12 rounded-xl bg-white/5 flex items-center justify-center shrink-0">
+                  <div className="size-12 rounded-xl bg-ink/[0.035] flex items-center justify-center shrink-0">
                     <Smartphone className="size-6 text-muted-foreground" />
                   </div>
                 )}

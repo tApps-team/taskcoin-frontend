@@ -12,13 +12,13 @@ export function DashboardPage() {
   if (isLoading || !data) return <Spinner />
 
   const cards: { label: string; value: string | number; Icon: LucideIcon; tint: string }[] = [
-    { label: t('admin.dashboard.users'), value: data.users_total, Icon: Users, tint: 'from-brand-violet to-brand-purple' },
-    { label: t('admin.dashboard.activeToday'), value: data.users_active_today, Icon: Activity, tint: 'from-brand-teal to-cyan-500' },
+    { label: t('admin.dashboard.users'), value: data.users_total, Icon: Users, tint: 'from-brand-green to-brand-grass' },
+    { label: t('admin.dashboard.activeToday'), value: data.users_active_today, Icon: Activity, tint: 'from-brand-grass to-cyan-500' },
     { label: t('admin.dashboard.blocked'), value: data.users_blocked, Icon: UserX, tint: 'from-red-500 to-rose-600' },
-    { label: t('admin.dashboard.activeCampaigns'), value: data.campaigns_active, Icon: Megaphone, tint: 'from-brand-violet to-brand-teal' },
+    { label: t('admin.dashboard.activeCampaigns'), value: data.campaigns_active, Icon: Megaphone, tint: 'from-brand-green to-brand-grass' },
     { label: t('admin.dashboard.installsToday'), value: data.installs_today, Icon: Download, tint: 'from-emerald-400 to-teal-500' },
     { label: t('admin.dashboard.pendingReview'), value: data.executions_pending, Icon: CheckSquare, tint: 'from-amber-400 to-orange-500' },
-    { label: t('admin.dashboard.totalBalance'), value: formatMoney(data.total_balance), Icon: Wallet, tint: 'from-brand-violet to-brand-purple' },
+    { label: t('admin.dashboard.totalBalance'), value: formatMoney(data.total_balance), Icon: Wallet, tint: 'from-brand-green to-brand-grass' },
     { label: t('admin.dashboard.aboveThreshold'), value: data.users_above_threshold, Icon: CreditCard, tint: 'from-sky-400 to-blue-500' },
   ]
 

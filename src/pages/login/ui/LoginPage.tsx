@@ -1,4 +1,3 @@
-import { Wallet } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
@@ -17,6 +16,7 @@ import {
   CardTitle,
   Input,
   Label,
+  LogoMark,
   SimpleSelect,
 } from '@/shared/ui'
 
@@ -92,8 +92,8 @@ export function LoginPage() {
     <div className="min-h-[var(--app-min-h)] flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center items-center">
-          <Wallet className="size-12 mb-1 text-brand-teal animate-float" />
-          <CardTitle className="text-2xl text-gradient">{t('auth.loginTitle')}</CardTitle>
+          <LogoMark className="size-14 mb-2 animate-float" />
+          <CardTitle className="text-2xl">{t('auth.loginTitle')}</CardTitle>
           <p className="text-muted-foreground">{t('auth.loginSubtitle')}</p>
         </CardHeader>
         <CardContent>
@@ -108,7 +108,7 @@ export function LoginPage() {
 
           <div className="space-y-3">
             {referralCode && mode === 'register' && (
-              <div className="rounded-xl bg-brand-teal/10 ring-1 ring-brand-teal/25 px-3 py-2 text-xs text-brand-teal">
+              <div className="rounded-xl bg-brand-green/10 ring-1 ring-brand-green/25 px-3 py-2 text-xs text-brand-green">
                 {t('auth.invitedBy', { code: referralCode })}
               </div>
             )}
@@ -157,7 +157,7 @@ export function LoginPage() {
               </p>
             </div>
             <Button
-              variant="teal"
+              variant="action"
               className="w-full"
               disabled={isLoading || !isValidEmail(email) || password.length < 6}
               onClick={submit}

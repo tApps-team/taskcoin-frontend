@@ -19,8 +19,8 @@ export function ChatComposer({
   const [attachments, setAttachments] = useState<TicketAttachment[]>([])
   const editor = useEditor({ extensions: tiptapExtensions, content: EMPTY_DOC })
 
-  const btn = 'p-1.5 rounded hover:bg-white/10 transition-colors'
-  const active = (v: boolean) => (v ? 'text-brand-teal' : 'text-muted-foreground')
+  const btn = 'p-1.5 rounded hover:bg-ink/[0.06] transition-colors'
+  const active = (v: boolean) => (v ? 'text-brand-green' : 'text-muted-foreground')
 
   const uploadOne = async (file: File): Promise<TicketAttachment | null> => {
     const fd = new FormData()
@@ -94,13 +94,13 @@ export function ChatComposer({
 
       <EditorContent
         editor={editor}
-        className="tiptap min-h-[60px] max-h-48 overflow-y-auto rounded-lg bg-white/5 px-3 py-2 text-sm"
+        className="tiptap min-h-[60px] max-h-48 overflow-y-auto rounded-lg bg-ink/[0.035] px-3 py-2 text-sm"
       />
 
       {attachments.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {attachments.map((a, i) => (
-            <span key={i} className="inline-flex items-center gap-1 text-xs bg-white/10 rounded-lg px-2 py-1">
+            <span key={i} className="inline-flex items-center gap-1 text-xs bg-ink/[0.06] rounded-lg px-2 py-1">
               📎 {a.name}
               <button type="button" onClick={() => setAttachments((p) => p.filter((_, idx) => idx !== i))}>
                 <X className="size-3" />
@@ -110,7 +110,7 @@ export function ChatComposer({
         </div>
       )}
 
-      <Button variant="teal" className="w-full" disabled={sending || uploading} onClick={send}>
+      <Button variant="action" className="w-full" disabled={sending || uploading} onClick={send}>
         <Send className="size-4" /> {t('feedback.send')}
       </Button>
     </div>

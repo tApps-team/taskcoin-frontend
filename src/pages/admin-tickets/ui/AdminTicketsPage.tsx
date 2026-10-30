@@ -37,7 +37,7 @@ function AdminList({ onOpen }: { onOpen: (id: string) => void }) {
         <div className="space-y-3">
           {data.map((tk) => (
             <button key={tk.id} type="button" className="w-full text-left" onClick={() => onOpen(tk.id)}>
-              <Card className="hover:border-brand-violet/40 transition-colors">
+              <Card className="hover:border-brand-green/40 transition-colors">
                 <CardContent className="p-4 flex items-center justify-between gap-3">
                   <div className="min-w-0 flex items-center gap-2">
                     <UnreadPill count={tk.unread} />
@@ -51,7 +51,7 @@ function AdminList({ onOpen }: { onOpen: (id: string) => void }) {
                     </div>
                   </div>
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${tk.status === 'open' ? 'bg-brand-teal/15 text-brand-teal' : 'bg-white/10 text-muted-foreground'}`}
+                    className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${tk.status === 'open' ? 'bg-brand-green/15 text-brand-green' : 'bg-ink/[0.06] text-muted-foreground'}`}
                   >
                     {t(`feedback.status.${tk.status}`)}
                   </span>
@@ -81,7 +81,7 @@ function AdminThread({ id, onBack }: { id: string; onBack: () => void }) {
 
   return (
     <div className="flex flex-col min-h-[70vh]">
-      <button type="button" onClick={onBack} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-teal mb-3">
+      <button type="button" onClick={onBack} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-brand-green mb-3">
         <ArrowLeft className="size-4" /> {t('common.back')}
       </button>
       {isLoading || !data ? (

@@ -74,7 +74,7 @@ export function PercentSliders({
               value={val}
               disabled={single}
               onChange={(e) => set(it.key, Number(e.target.value))}
-              className="flex-1 accent-brand-violet disabled:opacity-50"
+              className="flex-1 accent-brand-green disabled:opacity-50"
             />
             <div className="w-12 shrink-0 text-right text-sm font-mono">{val}%</div>
           </div>
