@@ -4,6 +4,10 @@ import react from '@vitejs/plugin-react'
 
 // Dev server proxies API and uploaded files to the FastAPI backend so the
 // frontend can use relative URLs (no CORS juggling in development).
+// Point it elsewhere with VITE_PROXY_TARGET to run the UI against a deployed
+// backend — useful for checking a redesign against real data.
+const proxyTarget = process.env.VITE_PROXY_TARGET || 'http://127.0.0.1:8000'
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -14,8 +18,8 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': { target: 'http://127.0.0.1:8000', changeOrigin: true },
-      '/uploads': { target: 'http://127.0.0.1:8000', changeOrigin: true },
+      '/api': { target: proxyTarget, changeOrigin: true },
+      '/uploads': { target: proxyTarget, changeOrigin: true },
     },
   },
   build: {
