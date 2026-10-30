@@ -286,32 +286,11 @@
 </section>
 
 
-<!-- 9. ОТЗЫВЫ: шаблон, тексты заменить реальными перед запуском -->
-<section class="sec reviews" aria-labelledby="rev-title">
-  <div class="wrap">
-    <div class="reviews__head">
-      <h2 class="rise" id="rev-title">Говорят те,<br>кто уже вывел</h2>
-      <p class="hand swipe rise" data-d="80">листайте <svg viewBox="0 0 40 18" aria-hidden="true"><path d="M2 11c8-6 20-8 33-3"/><path d="M29 3.5 35.5 8 29 13"/></svg></p>
-    </div>
-  </div>
-  <div class="track-wrap">
-    <ul class="track" id="reviews">
-      <li class="review"><p class="review__sum">1&nbsp;240&nbsp;₽</p><p class="review__meta">вывод на&nbsp;счёт телефона / 2&nbsp;окт</p><p class="review__text">Текст отзыва: что понравилось, сколько заданий сделал и&nbsp;как быстро пришли деньги.</p><div class="review__who"><span class="av">А</span><div><b>Имя Ф.</b><span>27 заданий</span></div></div></li>
-      <li class="review"><p class="review__sum">450&nbsp;₽</p><p class="review__meta">вывод на&nbsp;счёт телефона / 1&nbsp;окт</p><p class="review__text">Короткий отзыв на&nbsp;одну-две строки.</p><div class="review__who"><span class="av">М</span><div><b>Имя Ф.</b><span>10 заданий</span></div></div></li>
-      <li class="review"><p class="review__sum">2&nbsp;100&nbsp;₽</p><p class="review__meta">вывод на&nbsp;счёт телефона / 30&nbsp;сен</p><p class="review__text">Длинный отзыв для проверки вёрстки: человек рассказывает, какие задания выбирал, сколько времени потратил и&nbsp;что поддержка ответила быстро.</p><div class="review__who"><span class="av">Д</span><div><b>Имя Ф.</b><span>48 заданий</span></div></div></li>
-      <li class="review"><p class="review__sum">780&nbsp;₽</p><p class="review__meta">вывод на&nbsp;счёт телефона / 29&nbsp;сен</p><p class="review__text">Текст отзыва средней длины о&nbsp;первом выводе.</p><div class="review__who"><span class="av">К</span><div><b>Имя Ф.</b><span>17 заданий</span></div></div></li>
-    </ul>
-  </div>
-  <div class="wrap">
-    <div class="ctrl" data-target="reviews">
-      <div class="ctrl__bar" aria-hidden="true"><span></span></div>
-      <div class="ctrl__btns">
-        <button class="arrow" type="button" data-dir="-1" aria-label="Назад"><svg><use href="#i-arrow-l"/></svg></button>
-        <button class="arrow" type="button" data-dir="1" aria-label="Вперёд"><svg><use href="#i-arrow"/></svg></button>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- 9. ОТЗЫВЫ — секция снята до появления настоящих отзывов.
+     Автор макета пометил её как шаблон «тексты заменить реальными перед
+     запуском», а выдуманные отзывы под видом настоящих — это и обман
+     читателя, и повод для претензий. Разметка лежит в истории этого файла:
+     вернуть её вместе с реальными суммами, датами и подписями — одна правка. -->
 
 <!-- 10. ВОПРОСЫ + ФИНАЛ -->
 <section class="sec faq" aria-labelledby="faq-title">
@@ -359,13 +338,7 @@
       <a href="/terms">Пользовательское соглашение</a>
     </nav>
     <div class="foot__legal">
-      <p>[ООО «Название», ИНН&nbsp;0000000000, ОГРН&nbsp;0000000000000, адрес]</p>
       <p>Поддержка: <span class="sel">support@craft-money.com</span></p>
-      <p class="foot__ad">Реклама. [ООО «Название»], erid: [—]</p>
-    </div>
-    <div class="stores">
-      <a class="store" href="#" aria-label="Скачать в App Store"><svg class="store__ic"><use href="#i-apple"/></svg><span><small>Скачать в</small>App Store</span></a>
-      <a class="store" href="#" aria-label="Скачать в Google Play"><svg class="store__ic store__ic--gp" viewBox="0 0 24 24"><path d="M3.6 1.8 13.4 12 3.6 22.2c-.35-.2-.6-.6-.6-1.1V2.9c0-.5.25-.9.6-1.1z" fill="#00C3FF"/><path d="M3.6 1.8c.3-.17.7-.2 1.1.02L16.6 8.6 13.4 12z" fill="#00E676"/><path d="M13.4 12l3.2 3.4-11.9 6.78c-.4.22-.8.2-1.1.02z" fill="#FF3D57"/><path d="M16.6 8.6l3.4 1.95c.95.55.95 1.85 0 2.4l-3.4 1.95L13.4 12z" fill="#FFD400"/></svg><span><small>Скачать в</small>Google Play</span></a>
     </div>
   </div>
 </footer>
