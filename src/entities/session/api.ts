@@ -5,11 +5,21 @@ export const sessionApi = baseApi.injectEndpoints({
   endpoints: (b) => ({
     register: b.mutation<
       AuthResponse,
-      { email: string; password: string; full_name?: string; platform?: string; referral_code?: string }
+      {
+        email: string
+        password: string
+        full_name?: string
+        platform?: string
+        country?: string
+        referral_code?: string
+      }
     >({
       query: (body) => ({ url: '/auth/register', method: 'POST', body }),
     }),
-    login: b.mutation<AuthResponse, { email: string; password: string }>({
+    // `country` is whatever the sign-in form's select is showing: it is saved
+    // on every login, which is the one moment a permanent VPN user is offered
+    // a correction.
+    login: b.mutation<AuthResponse, { email: string; password: string; country?: string }>({
       query: (body) => ({ url: '/auth/login', method: 'POST', body }),
     }),
     adminLogin: b.mutation<AuthResponse, { email: string; password: string }>({

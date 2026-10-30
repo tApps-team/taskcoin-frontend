@@ -1,4 +1,5 @@
 import { Headset, LogOut } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
@@ -6,6 +7,7 @@ import { useGetUserUnreadQuery } from '@/entities/feedback'
 import { ReferralCard } from '@/features/referrals'
 import { loggedOut, useMeQuery, useUpdateProfileMutation } from '@/entities/session'
 import { baseApi } from '@/shared/api'
+import { countryOptions } from '@/shared/lib/countries'
 import { useGetMyStatsQuery } from '@/entities/user'
 import {
   Avatar,
@@ -20,20 +22,6 @@ import {
   Spinner,
 } from '@/shared/ui'
 
-const COUNTRIES = [
-  { value: 'RU', label: 'Россия' },
-  { value: 'UZ', label: 'Узбекистан' },
-  { value: 'KZ', label: 'Казахстан' },
-  { value: 'BY', label: 'Беларусь' },
-  { value: 'UA', label: 'Украина' },
-  { value: 'KG', label: 'Киргизия' },
-  { value: 'TJ', label: 'Таджикистан' },
-  { value: 'AZ', label: 'Азербайджан' },
-  { value: 'AM', label: 'Армения' },
-  { value: 'GE', label: 'Грузия' },
-  { value: 'MD', label: 'Молдова' },
-]
-
 export function ProfilePage() {
   const { t } = useTranslation()
   const dispatch = useDispatch()
@@ -42,8 +30,25 @@ export function ProfilePage() {
   const { data: stats } = useGetMyStatsQuery()
   const { data: unread } = useGetUserUnreadQuery(undefined, { pollingInterval: 30000 })
   const [updateProfile] = useUpdateProfileMutation()
+  // Changing the country used to give no sign it had worked at all, on the one
+  // setting that decides whether any tasks show up.
+  const [saved, setSaved] = useState(false)
+  useEffect(() => {
+    if (!saved) return
+    const id = setTimeout(() => setSaved(false), 2000)
+    return () => clearTimeout(id)
+  }, [saved])
 
   if (isLoading || !me) return <Spinner />
+
+  const onCountry = async (value: string) => {
+    try {
+      await updateProfile({ country: value }).unwrap()
+      setSaved(true)
+    } catch {
+      // Nothing to add: the select still shows what the server has.
+    }
+  }
 
   const onLogout = () => {
     dispatch(loggedOut())
@@ -83,13 +88,18 @@ export function ProfilePage() {
 
       <Card className="mb-6">
         <CardContent className="p-4">
-          <div className="text-sm text-muted-foreground mb-2">{t('profile.country')}</div>
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm text-muted-foreground">{t('profile.country')}</div>
+            {saved && <div className="text-xs text-brand-teal">{t('common.saved')}</div>}
+          </div>
           <SimpleSelect
             className="w-full"
-            value={me.country || 'RU'}
-            onValueChange={(v) => updateProfile({ country: v })}
-            options={COUNTRIES}
+            value={me.country || ''}
+            onValueChange={onCountry}
+            placeholder={t('auth.countryPlaceholder')}
+            options={countryOptions(me.country)}
           />
+          <p className="text-xs text-muted-foreground mt-1.5">{t('profile.countryHint')}</p>
         </CardContent>
       </Card>
 

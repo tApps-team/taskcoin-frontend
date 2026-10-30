@@ -12,11 +12,22 @@ export function Spinner() {
   )
 }
 
-export function EmptyState({ emoji = '🪙', text }: { emoji?: string; text: string }) {
+export function EmptyState({
+  emoji = '🪙',
+  text,
+  children,
+}: {
+  emoji?: string
+  text: string
+  // Somewhere to say *why* it is empty, and offer the fix. An empty screen
+  // that explains nothing is how a VPN user concludes there is no work.
+  children?: React.ReactNode
+}) {
   return (
     <div className="text-center py-16 text-muted-foreground">
       <div className="text-5xl mb-3 opacity-80">{emoji}</div>
       <p>{text}</p>
+      {children && <div className="mt-5 flex flex-col items-center gap-3">{children}</div>}
     </div>
   )
 }

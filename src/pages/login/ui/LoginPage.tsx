@@ -1,12 +1,24 @@
 import { Wallet } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useGetGeoQuery } from '@/entities/geo'
 import { setCredentials, useLoginMutation, useRegisterMutation } from '@/entities/session'
+import { countryOptions } from '@/shared/lib/countries'
 import { getErrorMessage } from '@/shared/lib/errors'
 import { detectPlatform } from '@/shared/lib/platform'
-import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '@/shared/ui'
+import { safeInternalPath } from '@/shared/lib/redirect'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  SimpleSelect,
+} from '@/shared/ui'
 
 type Mode = 'login' | 'register'
 
@@ -20,7 +32,12 @@ export function LoginPage() {
   const [params] = useSearchParams()
   // Arriving on an invite link means they came to sign up, not to sign in.
   const referralCode = (params.get('ref') || '').trim().toUpperCase()
-  const [mode, setMode] = useState<Mode>(referralCode ? 'register' : 'login')
+  // Where they were headed before the guard sent them here, or which tab the
+  // promo page's button meant to open.
+  const next = safeInternalPath(params.get('next'))
+  const [mode, setMode] = useState<Mode>(
+    referralCode || params.get('mode') === 'register' ? 'register' : 'login',
+  )
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
@@ -28,6 +45,17 @@ export function LoginPage() {
   const [login, { isLoading: loggingIn }] = useLoginMutation()
   const [register, { isLoading: registering }] = useRegisterMutation()
   const isLoading = loggingIn || registering
+
+  // The country is what decides which tasks exist for this person, and they
+  // may well be on a VPN — so it is shown here, pre-filled from the IP, and
+  // saved on every sign-in rather than guessed once at registration.
+  const { data: geo } = useGetGeoQuery()
+  const [country, setCountry] = useState('')
+  const [countryTouched, setCountryTouched] = useState(false)
+  useEffect(() => {
+    // Adopt the detected country once, and never over an edit they made.
+    if (!countryTouched && geo?.country) setCountry(geo.country)
+  }, [geo?.country, countryTouched])
 
   const emailInvalid = email.length > 0 && !isValidEmail(email)
 
@@ -44,16 +72,17 @@ export function LoginPage() {
     try {
       const res =
         mode === 'login'
-          ? await login({ email, password }).unwrap()
+          ? await login({ email, password, country: country || undefined }).unwrap()
           : await register({
               email,
               password,
               full_name: name || undefined,
               platform: detectPlatform(),
+              country: country || undefined,
               referral_code: referralCode || undefined,
             }).unwrap()
       dispatch(setCredentials(res))
-      navigate(res.user.role === 'super_admin' ? '/admin' : '/app')
+      navigate(res.user.role === 'super_admin' ? '/admin' : (next ?? '/app'))
     } catch (e) {
       setError(getErrorMessage(e, t('auth.invalidCredentials')))
     }
@@ -111,6 +140,22 @@ export function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && email && password && submit()}
             />
+            <div>
+              <Label>{t('auth.country')}</Label>
+              <SimpleSelect
+                className="w-full"
+                value={country}
+                onValueChange={(v) => {
+                  setCountryTouched(true)
+                  setCountry(v)
+                }}
+                placeholder={t('auth.countryPlaceholder')}
+                options={countryOptions(country)}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                {geo && !geo.detected ? t('auth.countryUndetected') : t('auth.countryHint')}
+              </p>
+            </div>
             <Button
               variant="teal"
               className="w-full"

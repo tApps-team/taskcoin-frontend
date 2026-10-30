@@ -3,14 +3,18 @@ import { ChevronRight, Smartphone } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useGetOffersQuery } from '@/entities/offer'
+import { useMeQuery } from '@/entities/session'
+import { countryName } from '@/shared/lib/countries'
 import { listContainer, listItem } from '@/shared/lib/motion'
-import { Card, CardContent, CoinAmount, EmptyState, ListRowSkeleton } from '@/shared/ui'
+import { Button, Card, CardContent, CoinAmount, EmptyState, ListRowSkeleton } from '@/shared/ui'
 import { NewsSlider } from '@/widgets/news-slider'
 
 export function OffersPage() {
   const { t } = useTranslation()
   const reduce = useReducedMotion()
   const { data, isLoading } = useGetOffersQuery(undefined, { pollingInterval: 30000 })
+  // Already cached by the layout's header — this costs no extra request.
+  const { data: me } = useMeQuery()
 
   return (
     <div>
@@ -24,7 +28,16 @@ export function OffersPage() {
           ))}
         </div>
       ) : !data || data.length === 0 ? (
-        <EmptyState emoji="📭" text={t('offers.empty')} />
+        // Tasks are filtered by country, and the people this hits hardest are on
+        // a VPN — so name the country instead of leaving them to guess.
+        <EmptyState emoji="📭" text={t('offers.empty')}>
+          <p className="text-sm max-w-xs">
+            {t('offers.emptyGeoHint', { country: countryName(me?.country) || '—' })}
+          </p>
+          <Button asChild variant="outline" size="sm">
+            <Link to="/app/profile">{t('offers.emptyGeoAction')}</Link>
+          </Button>
+        </EmptyState>
       ) : (
         <motion.div
           className="space-y-3"
