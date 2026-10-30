@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CraftMoney — реальные деньги за простые задания</title>
+<meta name="description" content="Реальные деньги за простые задания в телефоне: выводите на Steam, PlayStation, подписки и счёт телефона. Вывод от 100 ₽ без комиссии.">
+<link rel="canonical" href="https://craft-money.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://craft-money.com/">
+<meta property="og:title" content="CraftMoney — реальные деньги за простые задания">
+<meta property="og:description" content="Реальные деньги за простые задания в телефоне: выводите на Steam, PlayStation, подписки и счёт телефона. Вывод от 100 ₽ без комиссии.">
+<meta property="og:image" content="https://craft-money.com/promo/assets/hero.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F4F2EE">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<script>
+  // Кто уже вошёл, тот пришёл работать, а не читать витрину. Ключ тот же, под
+  // которым приложение хранит токен; разойдись они — человек каждый раз
+  // попадал бы на промо вместо заданий.
+  // Только на "/": по адресу /about эта же страница должна открываться всем,
+  // иначе показать её своему же пользователю станет невозможно.
+  try {
+    if (location.pathname === '/' && localStorage.getItem('taskcoin_access')) location.replace('/app')
+  } catch (e) {}
+</script>
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Onest:wght@400;500&display=swap">
+<link rel="stylesheet" href="/promo/styles.css">
+</head>
+<body>
+
+
+
+
+
+
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-pickaxe" viewBox="0 0 24 24"><path d="M14.5 12.5 6.6 20.4a1.4 1.4 0 0 1-2-2l7.9-7.9"/><path d="M15.7 4.3A12.5 12.5 0 0 0 5.5 3a1 1 0 0 0 .1 1.7 22 22 0 0 1 6.3 3.4"/><path d="M17.7 3.7a1 1 0 0 0-1.4 0l-4.6 4.6a1 1 0 0 0 0 1.4l2.6 2.6a1 1 0 0 0 1.4 0l4.6-4.6a1 1 0 0 0 0-1.4z"/><path d="M19.7 8.3a12.5 12.5 0 0 1 1.3 10.2 1 1 0 0 1-1.7-.1 22 22 0 0 0-3.4-6.3"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></symbol>
+  <symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m11 6-6 6 6 6"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="15" rx="3"/><path d="m10 9.5 5 3-5 3z"/></symbol>
+  <symbol id="i-survey" viewBox="0 0 24 24"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M8 12h8"/><path d="M8 16h5"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
+  <symbol id="i-tg" viewBox="0 0 24 24"><path d="M9.04 15.6l-.37 5.2c.53 0 .76-.23 1.04-.5l2.5-2.4 5.18 3.8c.95.52 1.62.25 1.88-.88l3.4-15.96c.3-1.4-.5-1.95-1.43-1.6L1.3 10.98c-1.37.53-1.35 1.3-.23 1.65l5.1 1.6L18.03 6.8c.56-.37 1.07-.17.65.2z"/></symbol>
+  <symbol id="i-apple" viewBox="0 0 24 24"><path d="M16.37 12.6c-.02-2.3 1.88-3.4 1.97-3.46-1.07-1.57-2.74-1.78-3.33-1.8-1.42-.14-2.77.83-3.49.83-.72 0-1.83-.81-3.01-.79-1.55.02-2.98.9-3.78 2.29-1.61 2.8-.41 6.94 1.16 9.21.77 1.11 1.68 2.36 2.88 2.31 1.16-.05 1.6-.75 3-.75s1.79.75 3.01.72c1.24-.02 2.03-1.13 2.79-2.25.88-1.29 1.24-2.54 1.26-2.6-.03-.01-2.42-.93-2.46-3.71zM14.08 5.85c.64-.77 1.07-1.85.95-2.92-.92.04-2.03.61-2.69 1.38-.59.68-1.11 1.78-.97 2.83 1.02.08 2.07-.52 2.71-1.29z"/></symbol>
+</svg>
+
+<header class="top" id="top">
+  <div class="wrap top__in">
+    <a class="logo" href="#top" aria-label="CraftMoney, наверх">
+      <img class="logo__mark" src="/promo/assets/logo-mark.svg" width="36" height="36" alt="">
+      <span class="logo__word">Craft<b>Money</b></span>
+    </a>
+    <div class="top__act">
+      <a class="tg" href="https://t.me/" aria-label="CraftMoney в Telegram"><svg><use href="#i-tg"/></svg></a>
+      <a class="btn btn--line btn--sm" href="/login?next=%2Fapp"><span class="btn__fill"></span><span class="btn__label">Войти</span></a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- 1. ПЕРВЫЙ ЭКРАН -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap hero__in">
+    <div class="hero__text">
+      <h1 class="hero__title" id="hero-title">
+        <span class="rise" data-d="0">Хочешь новые игры<br>или скины?</span>
+        <span class="hand hero__hand rise" data-d="120">Твой телефон<br class="d-br"> поможет в&nbsp;этом!</span>
+      </h1>
+      <div class="cta cta--hero rise" data-d="240" id="hero-cta">
+        <a class="btn btn--solid" href="/login?mode=register&amp;next=%2Fapp"><span class="btn__fill"></span><span class="btn__label">Получить первое задание</span><svg class="btn__arrow"><use href="#i-arrow"/></svg></a>
+      </div>
+    </div>
+    <button class="hero__art rise" data-d="60" type="button" aria-label="Кубик с телефоном: Steam пополнен на 1 500 рублей. Нажмите на него">
+      <span class="hero__shadow" aria-hidden="true"></span><img src="/promo/assets/hero.webp" width="840" height="840" alt="" fetchpriority="high">
+      <span class="pop" aria-hidden="true">+33&nbsp;₽</span>
+    </button>
+  </div>
+</section>
+
+<!-- 2. ОФФЕР -->
+<section class="offer" aria-label="Условия коротко">
+  <div class="wrap offer__in">
+    <div class="offer__price rise">
+      <p class="price">Реальные деньги<br>за&nbsp;простые задания</p>
+      <p class="hand offer__hand"><span class="offer__lead">15 заданий<svg class="underline" viewBox="0 0 114 9" aria-hidden="true"><path d="M2 6c18-3 36-4 55-2s38 1 55-2"/></svg></span> — и&nbsp;500&nbsp;₽ на&nbsp;Steam</p>
+    </div>
+    <ul class="facts rise" data-d="100">
+      <li><b>≈&nbsp;2&nbsp;мин</b><span>на&nbsp;одно<br>задание</span></li>
+      <li><b>от&nbsp;100&nbsp;₽</b><span>минимальный<br>вывод</span></li>
+      <li><b>10%</b><span>с&nbsp;заданий<br>друзей</span></li>
+    </ul>
+    <div class="cta cta--offer rise" data-d="160" id="offer-cta">
+      <a class="btn btn--solid" href="/login?mode=register&amp;next=%2Fapp"><span class="btn__fill"></span><span class="btn__label">Получить первое задание</span><svg class="btn__arrow"><use href="#i-arrow"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- 2б. БЕГУЩАЯ СТРОКА СЕРВИСОВ (единственный marquee — по запросу) -->
+<section class="svc" aria-label="Куда можно вывести">
+  <ul class="svc__list" id="svc">
+    <li><img src="/promo/assets/logos/steam.webp" width="48" height="48" alt="">Steam</li>
+    <li><img src="/promo/assets/logos/ps.webp" width="48" height="48" alt="">PlayStation</li>
+    <li><img src="/promo/assets/logos/xbox.webp" width="48" height="48" alt="">Xbox</li>
+    <li><img src="/promo/assets/logos/nintendo.webp" width="48" height="48" alt="">Nintendo</li>
+    <li><img src="/promo/assets/logos/roblox.webp" width="48" height="48" alt="">Roblox</li>
+    <li><img src="/promo/assets/logos/chatgpt.webp" width="48" height="48" alt="">ChatGPT</li>
+    <li><img src="/promo/assets/logos/telegram.webp" width="48" height="48" alt="">Telegram&nbsp;Stars</li>
+    <li><img src="/promo/assets/logos/spotify.webp" width="48" height="48" alt="">Spotify</li>
+    <li><img src="/promo/assets/logos/appstore.webp" width="48" height="48" alt="">App&nbsp;Store</li>
+    <li><img src="/promo/assets/logos/apple.webp" width="48" height="48" alt="">App&nbsp;Store&nbsp;&amp;&nbsp;iTunes</li>
+    <li><img src="/promo/assets/logos/ozon.webp" width="48" height="48" alt="">Ozon</li>
+    <li><img src="/promo/assets/pay-phone.webp" width="48" height="48" alt="">Счёт&nbsp;телефона</li>
+  </ul>
+</section>
+
+<!-- 3. ВЫВОД -->
+<section class="payout" aria-labelledby="pay-title">
+  <div class="payout__art">
+    <span class="pa pa--glow" aria-hidden="true"></span>
+    <span class="pa pa--core" aria-hidden="true"></span>
+    <span class="pa pa--sh1" aria-hidden="true"></span>
+    <span class="pa pa--sh2" aria-hidden="true"></span>
+    <span class="pa pa--sh3" aria-hidden="true"></span>
+    <picture>
+      <source media="(min-width: 960px)" srcset="assets/payout-d.webp" width="996" height="966">
+      <img src="/promo/assets/payout-m.webp" width="1044" height="957" alt="Кирка раскалывает куб, из него вылетают карты Плати.Маркет, Steam, Xbox, Ozon и сим-карта">
+    </picture>
+  </div>
+  <div class="payout__body">
+    <h2 class="rise" id="pay-title">Выводите,<br>куда удобно</h2>
+    <dl class="terms rise">
+      <div><dt>от&nbsp;5&nbsp;мин</dt><dd>время<br>пополнения</dd></div>
+      <div><dt>20+<span class="d-only"> сервисов</span></dt><dd>игры, подписки,<br>нейросети</dd></div>
+      <div><dt>0&nbsp;₽</dt><dd>комиссия<br>за&nbsp;вывод</dd></div>
+    </dl>
+    <ul class="ways" id="ways" aria-label="Способы вывода">
+      <li class="way"><img src="/promo/assets/pay-phone.webp" width="48" height="48" alt=""><div><span class="way__name">Счёт телефона</span><span class="chip">Все операторы</span></div></li>
+      <li class="way"><img src="/promo/assets/pay-plati.webp" width="48" height="48" alt=""><div><span class="way__name">Плати.Маркет</span><span class="chip">Игры и&nbsp;подписки</span></div></li>
+      <li class="way"><img src="/promo/assets/pay-ozon.webp" width="48" height="48" alt=""><div><span class="way__name">Ozon</span><span class="chip">На&nbsp;баланс Ozon</span></div></li>
+    </ul>
+    <div class="ctrl ctrl--ways" data-target="ways">
+      <div class="ctrl__bar" aria-hidden="true"><span></span></div>
+      <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="ctrl__btns">
+        <button class="arrow" type="button" data-dir="-1" aria-label="Назад"><svg><use href="#i-arrow-l"/></svg></button>
+        <button class="arrow" type="button" data-dir="1" aria-label="Вперёд"><svg><use href="#i-arrow"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- 4. КАК ЭТО РАБОТАЕТ -->
+<section class="sec how" aria-labelledby="how-title">
+  <div class="wrap how__in">
+    <div class="how__text">
+      <h2 class="rise" id="how-title">От регистрации<br>до&nbsp;первых денег</h2>
+      <ol class="steps">
+        <li class="step rise"><span class="step__n">01</span><div><h3>Регистрируетесь по&nbsp;почте</h3><p>Почта и&nbsp;пароль. Паспорт и&nbsp;данные карты при&nbsp;регистрации не&nbsp;нужны.</p></div></li>
+        <li class="step rise" data-d="100"><span class="step__n">02</span><div><h3>Берёте задание</h3><p>Посмотрите ролик или пройдите опрос. Цена видна до&nbsp;начала.</p></div></li>
+        <li class="step rise" data-d="200"><span class="step__n">03</span><div><h3>Забираете деньги</h3><p>Проверяем выполнение до&nbsp;24&nbsp;часов и&nbsp;начисляем на&nbsp;баланс. Выводите от&nbsp;100&nbsp;₽.</p></div></li>
+      </ol>
+    </div>
+    <!-- Видео-инструкция: заставка + Play, по нажатию запускается assets/howto.mp4 со звуком -->
+    <figure class="phone rise" aria-label="Как выглядит задание в приложении">
+      <div class="phone__body">
+        <div class="phone__island" aria-hidden="true"></div>
+        <div class="phone__screen">
+          <img src="/promo/assets/phone-splash.webp" width="504" height="1108" alt="Заставка видео: логотип CraftMoney и подпись «Посмотреть инструкцию»">
+          <video class="phone__video" poster="assets/phone-splash.webp" preload="metadata" playsinline controls controlslist="nodownload noplaybackrate" disablepictureinpicture hidden><source src="/promo/assets/howto.mp4" type="video/mp4"><source src="/promo/assets/howto.webm" type="video/webm"></video>
+          <button class="phone__play" type="button" aria-label="Смотреть инструкцию: как выполнить задание"><img src="/promo/assets/play.webp" width="152" height="152" alt=""></button>
+        </div>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<!-- 5. ТИПЫ ЗАДАНИЙ -->
+<section class="sec tasks" aria-labelledby="tasks-title">
+  <div class="wrap">
+    <h2 class="rise" id="tasks-title">Много заданий,<br>хватит на&nbsp;всех</h2>
+    <div class="tiles">
+      <article class="tile tile--main rise">
+        <div class="tile__top"><span class="tile__icon"><svg><use href="#i-download"/></svg></span><span class="tag">Основное</span></div>
+        <h3>Установка приложений</h3>
+        <p class="tile__sum">15–80&nbsp;₽ <span>за&nbsp;установку</span></p>
+        <p class="tile__text">Скачать, открыть, иногда пройти пару уровней. Таких заданий больше всего, в&nbsp;среднем 45&nbsp;₽ за&nbsp;штуку.</p>
+      </article>
+      <article class="tile rise" data-d="100">
+        <div class="tile__top"><span class="tile__icon"><svg><use href="#i-survey"/></svg></span></div>
+        <h3>Опросы</h3>
+        <p class="tile__sum">20–150&nbsp;₽ <span>за&nbsp;опрос</span></p>
+        <p class="tile__text">5–15 минут о&nbsp;ваших покупках и&nbsp;привычках. Ответы обезличены.</p>
+      </article>
+      <article class="tile rise" data-d="150">
+        <div class="tile__top"><span class="tile__icon"><svg><use href="#i-play"/></svg></span></div>
+        <h3>Реклама</h3>
+        <p class="tile__sum">5–10&nbsp;₽ <span>за&nbsp;ролик</span></p>
+        <p class="tile__text">Ролики по&nbsp;15–30 секунд. Удобно в&nbsp;очереди или в&nbsp;метро.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- 6. СРАВНЕНИЕ -->
+<section class="sec compare" aria-labelledby="cmp-title">
+  <div class="wrap">
+    <img class="compare__char-m rise" src="/promo/assets/kubik-cards.webp" width="863" height="783" alt="Кубик с телефоном и карточками заданий">
+    <div class="panel">
+      <div class="panel__left">
+        <h2 class="rise" id="cmp-title">Сколько заданий<br>до&nbsp;первых 500&nbsp;₽</h2>
+        <img class="panel__char rise" data-d="100" src="/promo/assets/kubik-cards.webp" width="863" height="783" alt="">
+      </div>
+      <div class="panel__right">
+        <div class="race" role="img" aria-label="CraftMoney: 15 заданий примерно по 33 рубля. Другие сервисы: 34 задания по 15 рублей.">
+          <div class="race__row race__row--us">
+            <div class="race__head"><span class="race__name">CraftMoney</span><span class="race__rate">≈&nbsp;33&nbsp;₽ за&nbsp;задание</span></div>
+            <div class="race__track"><div class="blocks" data-count="15"></div><b class="race__num">15</b></div>
+          </div>
+          <div class="race__row race__row--them">
+            <div class="race__head"><span class="race__name">Другие сервисы</span><span class="race__rate">15&nbsp;₽ в&nbsp;среднем</span></div>
+            <div class="race__track"><div class="blocks" data-count="34"></div><b class="race__num">34</b></div>
+          </div>
+        </div>
+        <p class="hand compare__hand rise">почти в&nbsp;3&nbsp;раза быстрее до&nbsp;вывода</p>
+        <p class="note">Средняя ставка за&nbsp;установку в&nbsp;сервисах заданий. Ставка конкретного задания видна до&nbsp;его начала.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- 7. РЕФЕРАЛКА -->
+<section class="ref" aria-labelledby="ref-title">
+  <img class="ref__hand ref__hand--l" src="/promo/assets/hand-open.webp" width="596" height="283" alt="" >
+  <img class="ref__hand ref__hand--r" src="/promo/assets/hand-coin.webp" width="655" height="334" alt="" >
+  <span class="ref__badge hand">Реферальная программа</span>
+  <img class="ref__hands-m" src="/promo/assets/hands-mobile.webp" width="780" height="408" alt="" >
+  <div class="wrap ref__in">
+    <h2 class="rise" id="ref-title">10% с&nbsp;заданий <br class="m-br">каждого друга</h2>
+    <p class="lead rise" data-d="80">Бессрочно. Друг получает свои деньги,<br class="d-br"> а&nbsp;мы платим процент вам.</p>
+    <div class="calc-wrap rise" data-d="160">
+      <span class="sticker hand">Реферальная программа</span>
+      <div class="calc">
+        <div class="calc__row"><span>Друг сделал</span><b>20 заданий</b></div>
+        <div class="calc__row"><span>Он получил</span><b>900&nbsp;₽</b></div>
+        <div class="calc__row calc__row--you"><span>Вам начислено</span><b>90&nbsp;₽</b></div>
+        <p class="hand calc__hand">И&nbsp;так с&nbsp;каждого друга и&nbsp;его заданий</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. УСЛОВИЯ -->
+<section class="sec rules" aria-labelledby="rules-title">
+  <div class="wrap">
+    <h2 class="rise" id="rules-title">Что обещаем<br>и&nbsp;чего не&nbsp;обещаем</h2>
+    <div class="rules__grid">
+      <div class="rise">
+        <h3>Гарантируем</h3>
+        <ul class="list">
+          <li><svg class="ok"><use href="#i-check"/></svg>Оплату каждого засчитанного задания по&nbsp;цене, которую вы видели до&nbsp;начала</li>
+          <li><svg class="ok"><use href="#i-check"/></svg>Вывод от&nbsp;100&nbsp;₽ без комиссий и&nbsp;скрытых удержаний</li>
+          <li><svg class="ok"><use href="#i-check"/></svg>Причину отказа в&nbsp;истории, если задание не&nbsp;засчитано</li>
+          <li><svg class="ok"><use href="#i-check"/></svg>Ответ поддержки в&nbsp;течение 24&nbsp;часов</li>
+        </ul>
+      </div>
+      <div class="rise" data-d="100">
+        <h3>Не&nbsp;обещаем</h3>
+        <ul class="list">
+          <li><svg class="no"><use href="#i-x"/></svg>Фиксированный доход в&nbsp;месяц. Всё зависит от&nbsp;заданий для&nbsp;вашего телефона</li>
+          <li><svg class="no"><use href="#i-x"/></svg>Заданий на&nbsp;полный рабочий день</li>
+          <li><svg class="no"><use href="#i-x"/></svg>Оплату заданий с&nbsp;эмуляторов и&nbsp;вторых аккаунтов</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- 9. ОТЗЫВЫ: шаблон, тексты заменить реальными перед запуском -->
+<section class="sec reviews" aria-labelledby="rev-title">
+  <div class="wrap">
+    <div class="reviews__head">
+      <h2 class="rise" id="rev-title">Говорят те,<br>кто уже вывел</h2>
+      <p class="hand swipe rise" data-d="80">листайте <svg viewBox="0 0 40 18" aria-hidden="true"><path d="M2 11c8-6 20-8 33-3"/><path d="M29 3.5 35.5 8 29 13"/></svg></p>
+    </div>
+  </div>
+  <div class="track-wrap">
+    <ul class="track" id="reviews">
+      <li class="review"><p class="review__sum">1&nbsp;240&nbsp;₽</p><p class="review__meta">вывод на&nbsp;счёт телефона / 2&nbsp;окт</p><p class="review__text">Текст отзыва: что понравилось, сколько заданий сделал и&nbsp;как быстро пришли деньги.</p><div class="review__who"><span class="av">А</span><div><b>Имя Ф.</b><span>27 заданий</span></div></div></li>
+      <li class="review"><p class="review__sum">450&nbsp;₽</p><p class="review__meta">вывод на&nbsp;счёт телефона / 1&nbsp;окт</p><p class="review__text">Короткий отзыв на&nbsp;одну-две строки.</p><div class="review__who"><span class="av">М</span><div><b>Имя Ф.</b><span>10 заданий</span></div></div></li>
+      <li class="review"><p class="review__sum">2&nbsp;100&nbsp;₽</p><p class="review__meta">вывод на&nbsp;счёт телефона / 30&nbsp;сен</p><p class="review__text">Длинный отзыв для проверки вёрстки: человек рассказывает, какие задания выбирал, сколько времени потратил и&nbsp;что поддержка ответила быстро.</p><div class="review__who"><span class="av">Д</span><div><b>Имя Ф.</b><span>48 заданий</span></div></div></li>
+      <li class="review"><p class="review__sum">780&nbsp;₽</p><p class="review__meta">вывод на&nbsp;счёт телефона / 29&nbsp;сен</p><p class="review__text">Текст отзыва средней длины о&nbsp;первом выводе.</p><div class="review__who"><span class="av">К</span><div><b>Имя Ф.</b><span>17 заданий</span></div></div></li>
+    </ul>
+  </div>
+  <div class="wrap">
+    <div class="ctrl" data-target="reviews">
+      <div class="ctrl__bar" aria-hidden="true"><span></span></div>
+      <div class="ctrl__btns">
+        <button class="arrow" type="button" data-dir="-1" aria-label="Назад"><svg><use href="#i-arrow-l"/></svg></button>
+        <button class="arrow" type="button" data-dir="1" aria-label="Вперёд"><svg><use href="#i-arrow"/></svg></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. ВОПРОСЫ + ФИНАЛ -->
+<section class="sec faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <div class="faq__grid">
+      <h2 class="rise" id="faq-title">Частые вопросы</h2>
+      <div class="faq__list">
+        <details class="qa"><summary>Это не&nbsp;развод?<svg><use href="#i-plus"/></svg></summary><p>Нет. Рекламодатели платят за&nbsp;установки своих приложений, часть этих денег получаете вы. Ставки, минимальный вывод и&nbsp;сроки видны до&nbsp;регистрации и&nbsp;закреплены в&nbsp;соглашении.</p></details>
+        <details class="qa"><summary>Почему у&nbsp;вас ставки выше?<svg><use href="#i-plus"/></svg></summary><p>Работаем с&nbsp;рекламодателями напрямую, без цепочки посредников, и&nbsp;оставляем себе меньшую долю.</p></details>
+        <details class="qa"><summary>Когда придут деньги?<svg><use href="#i-plus"/></svg></summary><p>Задание проверяем до&nbsp;24&nbsp;часов. Когда на&nbsp;балансе 100&nbsp;₽ и&nbsp;больше, создаёте заявку, и&nbsp;деньги приходят на&nbsp;счёт телефона в&nbsp;течение суток.</p></details>
+        <details class="qa"><summary>Почему задание могут не&nbsp;засчитать?<svg><use href="#i-plus"/></svg></summary><p>Если приложение удалили раньше срока из&nbsp;условий, задание выполнено с&nbsp;эмулятора или со&nbsp;второго аккаунта. Причина всегда видна в&nbsp;истории, оспорить решение можно через поддержку.</p></details>
+        <details class="qa"><summary>Сколько можно заработать?<svg><use href="#i-plus"/></svg></summary><p>Зависит от&nbsp;того, сколько заданий доступно для&nbsp;вашего телефона и&nbsp;региона. Конкретных сумм в&nbsp;месяц не&nbsp;обещаем: число заданий меняется каждый день.</p></details>
+        <details class="qa"><summary>Нужно ли платить налог?<svg><use href="#i-plus"/></svg></summary><p>Вознаграждение считается вашим доходом. Как его учесть, рассказываем в&nbsp;разделе помощи внутри сервиса.</p></details>
+        <details class="qa"><summary>С&nbsp;какого возраста можно?<svg><use href="#i-plus"/></svg></summary><p>С&nbsp;18&nbsp;лет. Это условие пользовательского соглашения.</p></details>
+      </div>
+    </div>
+
+    <div class="final rise">
+      <img class="final__img" src="/promo/assets/kubik-thumb.webp" width="783" height="759" alt="" >
+      <div class="final__text">
+        <h2>Хватит листать,<br>пора крафтить</h2>
+        <div class="cta cta--final" id="final-cta">
+          <a class="btn btn--solid" href="/login?mode=register&amp;next=%2Fapp"><span class="btn__fill"></span><span class="btn__label">Получить первое задание</span><svg class="btn__arrow"><use href="#i-arrow"/></svg></a>
+          <p class="calm">Регистрация по&nbsp;почте за&nbsp;минуту</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <div>
+      <div class="foot__brand">
+        <span class="logo"><img class="logo__mark" src="/promo/assets/logo-mark.svg" width="36" height="36" alt=""><span class="logo__word">Craft<b>Money</b></span></span>
+        <a class="tg" href="https://t.me/" aria-label="CraftMoney в Telegram"><svg><use href="#i-tg"/></svg></a>
+      </div>
+      <p class="foot__age">Сервис для&nbsp;пользователей старше 18&nbsp;лет</p>
+    </div>
+    <nav class="foot__links" aria-label="Документы">
+      <a href="/privacy">Политика конфиденциальности</a>
+      <a href="/personal-data">Согласие на&nbsp;обработку персональных данных</a>
+      <a href="/terms">Пользовательское соглашение</a>
+    </nav>
+    <div class="foot__legal">
+      <p>[ООО «Название», ИНН&nbsp;0000000000, ОГРН&nbsp;0000000000000, адрес]</p>
+      <p>Поддержка: <span class="sel">support@craft-money.com</span></p>
+      <p class="foot__ad">Реклама. [ООО «Название»], erid: [—]</p>
+    </div>
+    <div class="stores">
+      <a class="store" href="#" aria-label="Скачать в App Store"><svg class="store__ic"><use href="#i-apple"/></svg><span><small>Скачать в</small>App Store</span></a>
+      <a class="store" href="#" aria-label="Скачать в Google Play"><svg class="store__ic store__ic--gp" viewBox="0 0 24 24"><path d="M3.6 1.8 13.4 12 3.6 22.2c-.35-.2-.6-.6-.6-1.1V2.9c0-.5.25-.9.6-1.1z" fill="#00C3FF"/><path d="M3.6 1.8c.3-.17.7-.2 1.1.02L16.6 8.6 13.4 12z" fill="#00E676"/><path d="M13.4 12l3.2 3.4-11.9 6.78c-.4.22-.8.2-1.1.02z" fill="#FF3D57"/><path d="M16.6 8.6l3.4 1.95c.95.55.95 1.85 0 2.4l-3.4 1.95L13.4 12z" fill="#FFD400"/></svg><span><small>Скачать в</small>Google Play</span></a>
+    </div>
+  </div>
+</footer>
+
+<div class="sticky" id="sticky" aria-hidden="true">
+  <a class="btn btn--solid" href="/login?mode=register&amp;next=%2Fapp" tabindex="-1"><span class="btn__fill"></span><span class="btn__label">Получить первое задание</span><svg class="btn__arrow"><use href="#i-arrow"/></svg></a>
+</div>
+
+<script src="/promo/script.js"></script>
+
+
+</body></html>
