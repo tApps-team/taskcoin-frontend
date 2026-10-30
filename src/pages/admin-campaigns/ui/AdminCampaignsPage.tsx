@@ -10,7 +10,17 @@ import {
   type Campaign,
 } from '@/entities/campaign'
 import { CampaignModal } from '@/features/manage-campaigns'
-import { Button, Card, CardContent, CoinAmount, EmptyState, SimpleSelect, Spinner, StatusBadge } from '@/shared/ui'
+import {
+  Button,
+  Card,
+  CardContent,
+  CoinAmount,
+  EmptyState,
+  SimpleSelect,
+  Spinner,
+  StatusBadge,
+  StoreBadge,
+} from '@/shared/ui'
 
 export function AdminCampaignsPage() {
   const { t } = useTranslation()
@@ -62,7 +72,7 @@ export function AdminCampaignsPage() {
                     )}
                     <Link to={`/admin/campaigns/${c.id}`} className="min-w-0 flex-1 hover:text-brand-teal">
                       <div className="font-semibold truncate">{c.application.name}</div>
-                      <div className="text-xs text-muted-foreground uppercase">{c.application.platform}</div>
+                      <StoreBadge store={c.application.store} />
                     </Link>
                     <CoinAmount value={c.price} className="text-brand-teal font-bold" />
                     <StatusBadge status={c.status} />

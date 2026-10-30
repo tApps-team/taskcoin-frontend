@@ -1,5 +1,5 @@
 import { Plus, Star, Trash2, X } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAdminGetApplicationsQuery, useAdminUploadImageMutation } from '@/entities/application'
 import {
@@ -13,7 +13,8 @@ import {
 } from '@/entities/standard-instruction'
 import { getErrorMessage } from '@/shared/lib/errors'
 import { Button, Input, Label, Modal, SimpleSelect, Textarea } from '@/shared/ui'
-import { storeName } from '@/shared/lib/store'
+import { STORE_OPTIONS, storePlatform } from '@/shared/lib/store'
+import type { Store } from '@/shared/api/types'
 import { PercentSliders } from './PercentSliders'
 
 interface KeywordRow {
@@ -23,7 +24,40 @@ interface KeywordRow {
   autoPosition?: number | null
 }
 
-const STARS = [1, 2, 3, 4, 5]
+const STARS = [4, 5]
+
+// Legacy campaigns were created while 1-3★ were still on offer. The form no
+// longer shows those stars, so their percent has to go somewhere: scale the
+// surviving shares back up to 100 instead of letting the total silently drop.
+// A quota summing to 70 makes the backend treat 70% as the whole run, and the
+// admin would never see it happen.
+function normalizeRatingWeights(raw?: Record<string, number> | null): Record<string, number> {
+  const w = raw ?? {}
+  const kept = STARS.map((s) => Math.max(0, Math.round(Number(w[String(s)]) || 0)))
+  const total = kept.reduce((a, b) => a + b, 0)
+  // Nothing survived: split evenly rather than leave every star at zero. The
+  // backend drops zero weights, so an all-zero campaign asks the user for a
+  // rating screenshot and then assigns no rating at all.
+  const shares = total === 0 ? STARS.map(() => 100 / STARS.length) : kept.map((v) => (v / total) * 100)
+  const out = shares.map(Math.floor)
+  let leftover = 100 - out.reduce((a, b) => a + b, 0)
+  shares
+    .map((x, i) => ({ i, frac: x - Math.floor(x) }))
+    .sort((a, b) => b.frac - a.frac)
+    .forEach(({ i }) => {
+      if (leftover-- > 0) out[i] += 1
+    })
+  return Object.fromEntries(STARS.map((s, i) => [String(s), out[i]]))
+}
+
+// Stars the form can no longer express, kept only so the admin is told that the
+// distribution on screen is not the one that was saved.
+function droppedStars(raw?: Record<string, number> | null): string[] {
+  return Object.entries(raw ?? {})
+    .filter(([k, v]) => !STARS.includes(Number(k)) && Number(v) > 0)
+    .map(([k]) => k)
+    .sort()
+}
 
 // daily_schedule keys are Moscow (UTC+3) calendar dates, matching the backend.
 const MSK_FMT = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Moscow' }) // YYYY-MM-DD
@@ -133,6 +167,10 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
   const [update, { isLoading: updating }] = useAdminUpdateCampaignMutation()
   const [uploadImage, { isLoading: uploadingInstruction }] = useAdminUploadImageMutation()
 
+  // Store first, app second: a flat list of a hundred apps is exactly what the
+  // admin complained about. Editing starts from the app's own store so the
+  // campaign's current app stays selectable.
+  const [store, setStore] = useState<Store | ''>(campaign?.application.store || '')
   const [applicationId, setApplicationId] = useState(campaign?.application.id || '')
   const [type, setType] = useState(campaign?.type || 'install')
   const [price, setPrice] = useState(campaign?.price || '10')
@@ -146,10 +184,12 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
   const [requiresOpen, setRequiresOpen] = useState(campaign?.requires_open ?? true)
   const [requiresRating, setRequiresRating] = useState(campaign?.requires_rating ?? false)
   const [requiresReview, setRequiresReview] = useState(campaign?.requires_review ?? false)
-  const [ratingWeights, setRatingWeights] = useState<Record<string, number>>(() => {
-    const w = campaign?.rating_weights ?? {}
-    return Object.fromEntries(STARS.map((s) => [String(s), w[String(s)] ?? 0]))
-  })
+  const [ratingWeights, setRatingWeights] = useState<Record<string, number>>(() =>
+    normalizeRatingWeights(campaign?.rating_weights),
+  )
+  // Read once from the row we opened: the notice must not vanish the moment the
+  // admin drags a slider.
+  const [migratedStars] = useState(() => droppedStars(campaign?.rating_weights))
   // Main-screen screenshot instruction
   const [useStandard, setUseStandard] = useState(campaign?.use_standard_instruction ?? true)
   const [instructionText, setInstructionText] = useState(campaign?.instruction_text || '')
@@ -233,8 +273,25 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
     e.target.value = ''
   }
 
-  // Standard instruction preview depends on the selected app's platform.
-  const platform = (apps || []).find((a) => a.id === applicationId)?.platform
+  const storeApps = useMemo(
+    () =>
+      store
+        ? (apps || []).filter((a) => a.store === store).sort((a, b) => a.name.localeCompare(b.name, 'ru'))
+        : [],
+    [apps, store],
+  )
+
+  const onStoreChange = (next: string) => {
+    setStore(next as Store)
+    // The app select is scoped to the store, so an id left over from the
+    // previous store would be invisible in the list yet still submitted.
+    setApplicationId('')
+  }
+
+  // The store implies the OS (RuStore and Play Market are both Android), so the
+  // standard-instruction preview is correct as soon as the store is picked —
+  // without waiting for the app.
+  const platform = store ? storePlatform(store as Store) : undefined
   const stdReview = platform === 'ios' ? standardInstruction?.review_ios : standardInstruction?.review_android
   const stdRating = platform === 'ios' ? standardInstruction?.rating_ios : standardInstruction?.rating_android
 
@@ -289,15 +346,30 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
   return (
     <Modal title={campaign ? t('admin.campaigns.edit') : t('admin.campaigns.create')} onClose={onClose}>
       <div className="space-y-3">
-        <div>
-          <Label>{t('admin.campaigns.application')}</Label>
-          <SimpleSelect
-            className="w-full"
-            value={applicationId}
-            onValueChange={setApplicationId}
-            placeholder={t('admin.campaigns.selectApp')}
-            options={(apps || []).map((a) => ({ value: a.id, label: `${a.name} (${storeName(a.store)})` }))}
-          />
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label>{t('admin.campaigns.store')}</Label>
+            <SimpleSelect
+              className="w-full"
+              value={store}
+              onValueChange={onStoreChange}
+              placeholder={t('admin.campaigns.selectStore')}
+              options={STORE_OPTIONS}
+            />
+          </div>
+          <div>
+            <Label>{t('admin.campaigns.application')}</Label>
+            <SimpleSelect
+              className="w-full"
+              value={applicationId}
+              onValueChange={setApplicationId}
+              placeholder={store ? t('admin.campaigns.selectApp') : t('admin.campaigns.selectStoreFirst')}
+              options={storeApps.map((a) => ({ value: a.id, label: a.name }))}
+            />
+            {store && storeApps.length === 0 && (
+              <p className="text-xs text-amber-400 mt-1">{t('admin.campaigns.noAppsInStore')}</p>
+            )}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -396,6 +468,11 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
               {requiresRating && (
                 <div className="pl-6 space-y-2">
                   <p className="text-xs text-muted-foreground">{t('admin.campaigns.ratingWeightsHint')}</p>
+                  {migratedStars.length > 0 && (
+                    <p className="text-xs text-amber-400">
+                      {t('admin.campaigns.ratingWeightsMigrated', { stars: migratedStars.join(', ') })}
+                    </p>
+                  )}
                   <PercentSliders
                     items={STARS.map((s) => ({
                       key: String(s),
@@ -521,7 +598,7 @@ export function CampaignModal({ campaign, onClose }: { campaign?: Campaign | nul
         </div>
 
         {error && <p className="text-destructive text-sm">{error}</p>}
-        <Button className="w-full" disabled={creating || updating || !applicationId || !price} onClick={save}>
+        <Button className="w-full" disabled={creating || updating || !store || !applicationId || !price} onClick={save}>
           {t('common.save')}
         </Button>
       </div>
