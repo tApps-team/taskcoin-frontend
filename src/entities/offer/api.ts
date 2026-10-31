@@ -9,7 +9,11 @@ export const offerApi = baseApi.injectEndpoints({
     }),
     getOffer: b.query<OfferDetail, string>({
       query: (id) => `/offers/${id}`,
-      providesTags: (_r, _e, id) => [{ type: 'Offers', id }],
+      // The bare 'Offers' tag comes along with the per-id one: RTK Query treats
+      // 'Offers' and { type: 'Offers', id } as different tags, so without it an
+      // invalidation of the list would leave a stale detail page cached for an
+      // offer the user can no longer take (country changed -> 409 on start).
+      providesTags: (_r, _e, id) => [{ type: 'Offers', id }, 'Offers'],
     }),
     startOffer: b.mutation<Execution, { campaignId: string; keywordId?: string }>({
       query: ({ campaignId, keywordId }) => ({

@@ -30,7 +30,12 @@ export const sessionApi = baseApi.injectEndpoints({
       { full_name?: string; platform?: string; country?: string }
     >({
       query: (body) => ({ url: '/users/me', method: 'PATCH', body }),
-      invalidatesTags: ['Me'],
+      // Country and OS are exactly what the offer list is filtered by, so a
+      // change to either has to drop the cached offers — otherwise the user
+      // saves a new country and the old, empty list is served straight back
+      // from cache. A name change touches nothing but the profile.
+      invalidatesTags: (_r, _e, arg) =>
+        arg.country || arg.platform ? ['Me', 'Offers'] : ['Me'],
     }),
     me: b.query<User, void>({
       query: () => '/auth/me',

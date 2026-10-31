@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useGetGeoQuery } from '@/entities/geo'
 import { setCredentials, useLoginMutation, useRegisterMutation } from '@/entities/session'
+import { baseApi } from '@/shared/api'
 import { countryOptions } from '@/shared/lib/countries'
 import { getErrorMessage } from '@/shared/lib/errors'
 import { detectPlatform } from '@/shared/lib/platform'
@@ -81,6 +82,10 @@ export function LoginPage() {
               country: country || undefined,
               referral_code: referralCode || undefined,
             }).unwrap()
+      // A sign-in starts a new session, and /login is reachable without logging
+      // out first — so whatever the store still holds belongs to the previous
+      // visit, including an offer list built for the previous country.
+      dispatch(baseApi.util.resetApiState())
       dispatch(setCredentials(res))
       navigate(res.user.role === 'super_admin' ? '/admin' : (next ?? '/app'))
     } catch (e) {

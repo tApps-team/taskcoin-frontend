@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import { setCredentials, useAdminLoginMutation } from '@/entities/session'
+import { baseApi } from '@/shared/api'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@/shared/ui'
 
 export function AdminLoginPage() {
@@ -19,6 +20,9 @@ export function AdminLoginPage() {
     setError('')
     try {
       const res = await adminLogin({ email, password }).unwrap()
+      // Same reason as the user sign-in: the store may still hold the cache of
+      // whoever was signed in before.
+      dispatch(baseApi.util.resetApiState())
       dispatch(setCredentials(res))
       navigate('/admin/dashboard')
     } catch {
